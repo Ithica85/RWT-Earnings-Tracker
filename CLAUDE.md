@@ -23,9 +23,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | File | Description |
 |------|-------------|
 | `get_company_facts.py` | Main script — fetches SEC data, extracts EPS, exports CSV |
-| `extract_quarterly_eps_v2.py` | Alternative version of the EPS extraction script |
 | `rwt_quarterly_eps.csv` | Output — one row per quarter of diluted EPS data |
-| `rwt_quarterly_eps_complete.csv` | Extended CSV output |
 
 ## What get_company_facts.py does
 
