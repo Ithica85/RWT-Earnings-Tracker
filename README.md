@@ -23,8 +23,10 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | File | Description |
 |------|-------------|
 | `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, derives missing Q4 values, exports both CSVs |
+| `plot_eps.py` | Reads `rwt_quarterly_eps_complete.csv` and renders a bar chart to `rwt_eps_chart.png` (no API call) |
 | `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
 | `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
+| `rwt_eps_chart.png` | Output of `plot_eps.py` — quarterly EPS bar chart |
 
 ## What get_company_facts.py does
 
@@ -39,16 +41,25 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 9. The SEC never tags a standalone Q4 frame for EPS, so for each year where Q1, Q2, Q3, and the annual figure are all present, derives Q4 as `Annual - Q1 - Q2 - Q3`
 10. Merges reported + derived quarters, prints each with a `<- derived` flag where applicable, and exports to `rwt_quarterly_eps_complete.csv` with a `source` column
 
+## What plot_eps.py does
+
+Reads `rwt_quarterly_eps_complete.csv` (does not call the SEC API) and renders a bar chart to `rwt_eps_chart.png`:
+
+1. Colors each bar green (positive EPS) or red (negative EPS) so the profit/loss trend reads at a glance
+2. Hatches derived Q4 bars so they're visually distinguishable from SEC-reported values
+3. Checks whether the largest-magnitude quarter dwarfs the rest (e.g. CY2020Q1's COVID write-down of -8.28) — if so, clips the y-axis to the bulk of the data and annotates the clipped bar with its real value, so one outlier doesn't flatten every other quarter
+
 ## How to run
 
 ```
 python3 get_company_facts.py
+python3 plot_eps.py
 ```
 
-Requires the `requests` library. Install it with:
+Requires the `requests` and `matplotlib` libraries. Install them with:
 
 ```
-pip3 install requests
+pip3 install requests matplotlib
 ```
 
 ## EPS record structure
@@ -100,4 +111,4 @@ Each record returned by the SEC API looks like:
 
 - Extract additional KPIs beyond EPS (e.g. book value, dividends, net interest income)
 - Filter to a specific date range
-- Build trend analysis or visualisation on top of the CSV
+- Interactive UI (e.g. Streamlit) if static charts stop being enough
