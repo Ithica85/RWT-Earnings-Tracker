@@ -22,40 +22,27 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 
 | File | Description |
 |------|-------------|
-| `get_company_facts.py` | Main script — fetches SEC data, extracts EPS, exports CSV |
-| `extract_quarterly_eps_v2.py` | Alternative version — derives missing Q4 values, exports the complete CSV |
-| `rwt_quarterly_eps.csv` | Output of `get_company_facts.py` — one row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
-| `rwt_quarterly_eps_complete.csv` | Output of `extract_quarterly_eps_v2.py` — same data plus derived Q4 values, with a `source` column |
+| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, derives missing Q4 values, exports both CSVs |
+| `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
+| `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 
 ## What get_company_facts.py does
 
-1. Fetches the full CompanyFacts JSON for RWT from the SEC API
+1. Fetches the full CompanyFacts JSON for RWT from the SEC API (one call total)
 2. Prints top-level structure and company name to confirm the response
 3. Lists all US-GAAP concepts (612 total) and searches by keyword (`earn`, `share`, `income`, `net`)
 4. Safely extracts `EarningsPerShareDiluted` — checks the concept exists before accessing it, and prints alternatives if not found
 5. Prints the EPS data structure (`label`, `description`, `units`)
 6. Shows the first 5 and most recent 10 raw EPS records
-7. Filters to quarterly records only (frames containing `"Q"`, e.g. `CY2025Q1`)
-8. Deduplicates — the same quarter can appear in multiple filings; keeps only the latest-filed value
-9. Sorts chronologically by frame string (lexicographic order works because the format is `CY####Q#`)
-10. Prints all quarterly EPS with quarter-over-quarter % change
-11. Exports to `rwt_quarterly_eps.csv`
-
-## What extract_quarterly_eps_v2.py does
-
-The SEC only tags explicit `CY####Q#` frames for Q1–Q3; Q4 has no standalone frame (it's folded into the annual `CY####` figure). This script fills that gap:
-
-1. Fetches CompanyFacts and pulls `EarningsPerShareDiluted` (same dedup-by-latest-filed logic as the main script, but keeps every framed record, not just quarterly ones)
-2. Pulls out explicit quarterly frames as-is (`reported`)
-3. For each year where Q1, Q2, Q3, and the annual figure are all present, derives Q4 as `Annual - Q1 - Q2 - Q3` and tags it `derived (Annual - Q1 - Q2 - Q3)`
-4. Merges reported + derived quarters, sorts chronologically, prints each with a `<- derived` flag where applicable
-5. Exports to `rwt_quarterly_eps_complete.csv`, including the `source` column so derived values are always distinguishable from reported ones
+7. Deduplicates by latest-filed value, keeping every framed record (quarterly *and* annual — the annual figure is needed in step 9)
+8. Filters to quarterly records (frames containing `"Q"`, e.g. `CY2025Q1`), sorts chronologically by frame string, prints quarter-over-quarter % change, and exports to `rwt_quarterly_eps.csv`
+9. The SEC never tags a standalone Q4 frame for EPS, so for each year where Q1, Q2, Q3, and the annual figure are all present, derives Q4 as `Annual - Q1 - Q2 - Q3`
+10. Merges reported + derived quarters, prints each with a `<- derived` flag where applicable, and exports to `rwt_quarterly_eps_complete.csv` with a `source` column
 
 ## How to run
 
 ```
 python3 get_company_facts.py
-python3 extract_quarterly_eps_v2.py
 ```
 
 Requires the `requests` library. Install it with:
@@ -88,7 +75,7 @@ Each record returned by the SEC API looks like:
 - **`record.get("frame")`** instead of `record["frame"]` — avoids a `KeyError` crash on records that have no frame field.
 - **QoQ % change edge cases:** Sign flips (EPS crosses zero between quarters) and zero prior-quarter values are flagged as `N/A` rather than printing a misleading percentage.
 - **Dynamic unit detection:** `unit_name = list(eps["units"].keys())[0]` picks the unit type automatically rather than hardcoding `"USD/shares"`, making the pattern reusable for other concepts.
-- **Derived Q4 (v2 only):** SEC frames don't include a standalone Q4 for EPS, so Q4 is backed out as `Annual - Q1 - Q2 - Q3` whenever all four inputs are available for a year. Every derived row is tagged in the `source` column so it's never confused with an SEC-reported figure.
+- **Derived Q4:** SEC frames don't include a standalone Q4 for EPS, so Q4 is backed out as `Annual - Q1 - Q2 - Q3` whenever all four inputs are available for a year. Every derived row is tagged in the `source` column so it's never confused with an SEC-reported figure.
 
 ## CSV output columns
 
@@ -114,4 +101,3 @@ Each record returned by the SEC API looks like:
 - Extract additional KPIs beyond EPS (e.g. book value, dividends, net interest income)
 - Filter to a specific date range
 - Build trend analysis or visualisation on top of the CSV
-- Merge `get_company_facts.py` and `extract_quarterly_eps_v2.py` into one script, or otherwise clarify which is the canonical entry point

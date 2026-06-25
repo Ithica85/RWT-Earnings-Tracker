@@ -73,32 +73,39 @@ print("\nUnits:")
 print(eps["units"].keys())  # show what unit types the EPS values are reported in (e.g. USD/shares)
 
 unit_name = list(eps["units"].keys())[0]  # grab the first (and only) unit type as a string: "USD/shares"
-
-print("\nFirst 5 EPS Records:")
-
-for record in eps["units"][unit_name][:5]:  # loop through only the first 5 entries in the list
-    print(record)
-
 records = eps["units"][unit_name]  # store the full list of EPS records in a variable
 
-print("\nMost Recent 10 Records:")
+print("\nFirst 5 EPS Records:")
+for record in records[:5]:  # loop through only the first 5 entries in the list
+    print(record)
 
+print("\nMost Recent 10 Records:")
 for record in records[-10:]:  # [-10:] means "start from 10 from the end", giving us the last 10
     print(record)
 
-quarterly_eps = {}  # use a dict keyed by frame to deduplicate (same quarter can appear in multiple filings)
+# Dedup by latest-filed value per frame. We keep every framed record (quarterly
+# AND annual), not just quarterly ones, because the annual ("CY####") figure is
+# needed below to derive Q4, which the SEC never tags with its own frame.
+by_frame = {}
 
 for record in records:
     frame = record.get("frame")  # .get() returns None if "frame" doesn't exist, avoiding a KeyError
-    if frame and "Q" in frame:
-        existing = quarterly_eps.get(frame)
-        if existing is None or record["filed"] > existing["filed"]:  # keep only the latest filed value per quarter
-            quarterly_eps[frame] = {
-                "quarter": frame,
-                "eps": record["val"],
-                "filed": record["filed"],
-                "form": record.get("form"),
-            }
+    if not frame:
+        continue
+    existing = by_frame.get(frame)
+    if existing is None or record["filed"] > existing["filed"]:  # keep only the latest filed value per frame
+        by_frame[frame] = record
+
+# Reported quarters: SEC tags Q1-Q3 with their own "CY####Q#" frame directly
+quarterly_eps = {}
+for frame, record in by_frame.items():
+    if "Q" in frame:
+        quarterly_eps[frame] = {
+            "quarter": frame,
+            "eps": record["val"],
+            "filed": record["filed"],
+            "form": record.get("form"),
+        }
 
 # sort chronologically — "CY2024Q1" < "CY2024Q2" works because the string format is lexicographically ordered
 sorted_quarters = sorted(quarterly_eps.values(), key=lambda x: x["quarter"])
@@ -132,3 +139,45 @@ with open("rwt_quarterly_eps.csv", "w", newline="") as f:
     writer.writerows(sorted_quarters)
 
 print("\nExported to rwt_quarterly_eps.csv")
+
+# Derive missing Q4 values as Annual - (Q1 + Q2 + Q3), for any year where the
+# annual figure and all three reported quarters are available.
+reported_eps = {frame: item["eps"] for frame, item in quarterly_eps.items()}
+years_present = set(int(f[2:6]) for f in reported_eps)
+derived_q4 = {}
+
+for year in years_present:
+    annual_frame = f"CY{year}"
+    q1 = reported_eps.get(f"CY{year}Q1")
+    q2 = reported_eps.get(f"CY{year}Q2")
+    q3 = reported_eps.get(f"CY{year}Q3")
+    q4_frame = f"CY{year}Q4"
+
+    if q4_frame in reported_eps:
+        continue  # already have it explicitly, no need to derive
+
+    annual_record = by_frame.get(annual_frame)
+    if annual_record and q1 is not None and q2 is not None and q3 is not None:
+        derived_q4[q4_frame] = round(annual_record["val"] - q1 - q2 - q3, 2)
+
+# Merge reported + derived, tag the source so you always know which is which
+all_quarters = {}
+for frame, item in quarterly_eps.items():
+    all_quarters[frame] = {"quarter": frame, "eps": item["eps"], "source": "reported"}
+for frame, val in derived_q4.items():
+    all_quarters[frame] = {"quarter": frame, "eps": val, "source": "derived (Annual - Q1 - Q2 - Q3)"}
+
+sorted_all_quarters = sorted(all_quarters.values(), key=lambda x: x["quarter"])
+
+print(f"\nFound {len(sorted_all_quarters)} quarterly EPS data points including derived Q4 "
+      f"({len(quarterly_eps)} reported, {len(derived_q4)} derived):\n")
+for item in sorted_all_quarters:
+    flag = "  <- derived" if item["source"].startswith("derived") else ""
+    print(f"{item['quarter']:10s} EPS: {item['eps']:>7.2f}{flag}")
+
+with open("rwt_quarterly_eps_complete.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["quarter", "eps", "source"])
+    writer.writeheader()
+    writer.writerows(sorted_all_quarters)
+
+print("\nExported to rwt_quarterly_eps_complete.csv")
