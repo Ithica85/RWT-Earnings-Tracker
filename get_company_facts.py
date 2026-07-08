@@ -181,3 +181,88 @@ with open("rwt_quarterly_eps_complete.csv", "w", newline="") as f:
     writer.writerows(sorted_all_quarters)
 
 print("\nExported to rwt_quarterly_eps_complete.csv")
+
+# ---------------------------------------------------------------------------
+# Book Value Per Share (BVPS)
+# ---------------------------------------------------------------------------
+# Unlike EPS (a duration measure only tagged for Q1-Q3), StockholdersEquity and
+# CommonStockSharesOutstanding are balance-sheet ("instant") measures tagged at
+# every quarter-end, including Q4 -- so no Q4-derivation step is needed here.
+# Instant frames carry an "I" suffix, e.g. "CY2025Q4I", to distinguish them
+# from EPS's duration frames like "CY2025Q4".
+#
+# BVPS is computed per *common* share: (StockholdersEquity - PreferredStockValue)
+# / CommonStockSharesOutstanding. RWT carries preferred stock on its balance
+# sheet, and preferred holders don't share in common book value, so it's
+# subtracted out of the numerator.
+
+equity_concept_name = "StockholdersEquity"
+shares_concept_name = "CommonStockSharesOutstanding"
+preferred_concept_name = "PreferredStockValue"
+
+for concept_name in (equity_concept_name, shares_concept_name):
+    if concept_name not in us_gaap_facts:
+        raise SystemExit(f"'{concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+
+
+def latest_instant_by_frame(concept_name):
+    """Same dedup approach as the EPS section above: keep only the most
+    recently filed value per frame. Restricted to instant ('I'-suffixed)
+    frames since balance-sheet concepts are point-in-time, not a range."""
+    concept = us_gaap_facts[concept_name]
+    unit_name = list(concept["units"].keys())[0]
+    records = concept["units"][unit_name]
+
+    by_frame = {}
+    for record in records:
+        frame = record.get("frame")
+        if not frame or not frame.endswith("I"):
+            continue
+        existing = by_frame.get(frame)
+        if existing is None or record["filed"] > existing["filed"]:
+            by_frame[frame] = record
+    return by_frame
+
+
+equity_by_frame = latest_instant_by_frame(equity_concept_name)
+shares_by_frame = latest_instant_by_frame(shares_concept_name)
+
+# Preferred stock is optional -- not every company has any outstanding
+preferred_by_frame = latest_instant_by_frame(preferred_concept_name) if preferred_concept_name in us_gaap_facts else {}
+
+# Only compute BVPS for quarters where we have both equity and shares data
+common_frames = sorted(set(equity_by_frame) & set(shares_by_frame))
+
+print(f"\nFound {len(common_frames)} quarterly Book Value Per Share data points:\n")
+
+bvps_rows = []
+for frame in common_frames:
+    equity = equity_by_frame[frame]["val"]
+    shares = shares_by_frame[frame]["val"]
+    preferred = preferred_by_frame.get(frame, {}).get("val", 0)  # 0 if no preferred stock that quarter
+
+    common_equity = equity - preferred
+    bvps = common_equity / shares
+
+    quarter = frame[:-1]  # strip the trailing "I" so labels match the EPS "CY2025Q4" style
+
+    bvps_rows.append({
+        "quarter": quarter,
+        "book_value_per_share": round(bvps, 2),
+        "stockholders_equity": equity,
+        "preferred_stock_value": preferred,
+        "shares_outstanding": shares,
+        "filed": equity_by_frame[frame]["filed"],
+        "form": equity_by_frame[frame].get("form"),
+    })
+    print(f"{quarter:10s} BVPS: {bvps:>7.2f}   (equity {equity:,}, preferred {preferred:,}, shares {shares:,})")
+
+with open("rwt_quarterly_bvps.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=[
+        "quarter", "book_value_per_share", "stockholders_equity",
+        "preferred_stock_value", "shares_outstanding", "filed", "form",
+    ])
+    writer.writeheader()
+    writer.writerows(bvps_rows)
+
+print("\nExported to rwt_quarterly_bvps.csv")
