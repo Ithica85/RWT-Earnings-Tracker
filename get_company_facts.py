@@ -266,3 +266,95 @@ with open("rwt_quarterly_bvps.csv", "w", newline="") as f:
     writer.writerows(bvps_rows)
 
 print("\nExported to rwt_quarterly_bvps.csv")
+
+# ---------------------------------------------------------------------------
+# Dividends Per Common Share
+# ---------------------------------------------------------------------------
+# CommonStockDividendsPerShareDeclared is a duration measure like EPS. The SEC
+# tagged an explicit Q4 frame for it from 2010-2019, but from 2020 onward only
+# tags Q1-Q3 plus the annual figure -- the exact same gap EPS has for every
+# year -- so recent years reuse the same "derive Q4 from the annual" approach.
+
+div_concept_name = "CommonStockDividendsPerShareDeclared"
+if div_concept_name not in us_gaap_facts:
+    raise SystemExit(f"'{div_concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+
+dividends = us_gaap_facts[div_concept_name]
+div_unit_name = list(dividends["units"].keys())[0]
+div_records = dividends["units"][div_unit_name]
+
+# Dedup by latest-filed value per frame (same approach as EPS/BVPS above)
+div_by_frame = {}
+for record in div_records:
+    frame = record.get("frame")
+    if not frame:
+        continue
+    existing = div_by_frame.get(frame)
+    if existing is None or record["filed"] > existing["filed"]:
+        div_by_frame[frame] = record
+
+# Reported quarters: frames containing "Q", e.g. "CY2025Q1"
+quarterly_dividends = {}
+for frame, record in div_by_frame.items():
+    if "Q" in frame:
+        quarterly_dividends[frame] = {
+            "quarter": frame,
+            "dividend_per_share": record["val"],
+            "filed": record["filed"],
+            "form": record.get("form"),
+        }
+
+sorted_div_quarters = sorted(quarterly_dividends.values(), key=lambda x: x["quarter"])
+
+print(f"\nFound {len(sorted_div_quarters)} quarterly dividend-per-share data points:\n")
+for item in sorted_div_quarters:
+    print(f"{item['quarter']:10s} Dividend/Share: {item['dividend_per_share']:>6.2f}   (filed {item['filed']}, {item['form']})")
+
+with open("rwt_quarterly_dividends.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["quarter", "dividend_per_share", "filed", "form"])
+    writer.writeheader()
+    writer.writerows(sorted_div_quarters)
+
+print("\nExported to rwt_quarterly_dividends.csv")
+
+# Derive missing Q4 as Annual - (Q1 + Q2 + Q3), for any year where the annual
+# figure and all three reported quarters are available (mirrors the EPS logic)
+reported_dividends = {frame: item["dividend_per_share"] for frame, item in quarterly_dividends.items()}
+div_years_present = set(int(f[2:6]) for f in reported_dividends)
+derived_div_q4 = {}
+
+for year in div_years_present:
+    annual_frame = f"CY{year}"
+    q1 = reported_dividends.get(f"CY{year}Q1")
+    q2 = reported_dividends.get(f"CY{year}Q2")
+    q3 = reported_dividends.get(f"CY{year}Q3")
+    q4_frame = f"CY{year}Q4"
+
+    if q4_frame in reported_dividends:
+        continue  # already have it explicitly, no need to derive
+
+    annual_record = div_by_frame.get(annual_frame)
+    if annual_record and q1 is not None and q2 is not None and q3 is not None:
+        derived_div_q4[q4_frame] = round(annual_record["val"] - q1 - q2 - q3, 2)
+
+# Merge reported + derived, tag the source so you always know which is which
+all_div_quarters = {}
+for frame, item in quarterly_dividends.items():
+    all_div_quarters[frame] = {"quarter": frame, "dividend_per_share": item["dividend_per_share"], "source": "reported"}
+for frame, val in derived_div_q4.items():
+    all_div_quarters[frame] = {"quarter": frame, "dividend_per_share": val, "source": "derived (Annual - Q1 - Q2 - Q3)"}
+
+sorted_all_div_quarters = sorted(all_div_quarters.values(), key=lambda x: x["quarter"])
+
+print(f"\nFound {len(sorted_all_div_quarters)} quarterly dividend data points including derived Q4 "
+      f"({len(quarterly_dividends)} reported, {len(derived_div_q4)} derived):\n")
+for item in sorted_all_div_quarters:
+    flag = "  <- derived" if item["source"].startswith("derived") else ""
+    print(f"{item['quarter']:10s} Dividend/Share: {item['dividend_per_share']:>6.2f}{flag}")
+
+with open("rwt_quarterly_dividends_complete.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["quarter", "dividend_per_share", "source"])
+    writer.writeheader()
+    writer.writerows(sorted_all_div_quarters)
+
+print("\nExported to rwt_quarterly_dividends_complete.csv")
