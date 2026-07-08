@@ -22,18 +22,22 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 
 | File | Description |
 |------|-------------|
-| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, and dividends per share (deriving missing Q4 values for EPS and dividends), exports CSVs |
+| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, and net interest income (deriving missing Q4 values via a shared helper for the three duration-measure KPIs), exports CSVs |
 | `plot_eps.py` | Reads `rwt_quarterly_eps_complete.csv` and renders a bar chart to `rwt_eps_chart.png` (no API call) |
 | `plot_bvps.py` | Reads `rwt_quarterly_bvps.csv` and renders a line chart to `rwt_bvps_chart.png` (no API call) |
 | `plot_dividends.py` | Reads `rwt_quarterly_dividends_complete.csv` and renders a bar chart to `rwt_dividends_chart.png` (no API call) |
+| `plot_nii.py` | Reads `rwt_quarterly_nii_complete.csv` and renders a bar chart to `rwt_nii_chart.png` (no API call) |
 | `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
 | `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_bvps.csv` | One row per quarter of book value per common share, computed from balance-sheet data |
 | `rwt_quarterly_dividends.csv` | One row per reported quarter of dividends per common share (SEC tagged Q4 directly through 2019 only; missing thereafter) |
 | `rwt_quarterly_dividends_complete.csv` | Same data plus derived Q4 values (2020+), with a `source` column distinguishing reported vs. derived |
+| `rwt_quarterly_nii.csv` | One row per reported quarter of net interest income (Q4 missing from 2020 onward, same gap as EPS) |
+| `rwt_quarterly_nii_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_eps_chart.png` | Output of `plot_eps.py` — quarterly EPS bar chart |
 | `rwt_bvps_chart.png` | Output of `plot_bvps.py` — quarterly BVPS line chart |
 | `rwt_dividends_chart.png` | Output of `plot_dividends.py` — quarterly dividends-per-share bar chart |
+| `rwt_nii_chart.png` | Output of `plot_nii.py` — quarterly net interest income bar chart |
 
 ## What get_company_facts.py does
 
@@ -43,12 +47,11 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 4. Safely extracts `EarningsPerShareDiluted` — checks the concept exists before accessing it, and prints alternatives if not found
 5. Prints the EPS data structure (`label`, `description`, `units`)
 6. Shows the first 5 and most recent 10 raw EPS records
-7. Deduplicates by latest-filed value, keeping every framed record (quarterly *and* annual — the annual figure is needed in step 9)
-8. Filters to quarterly records (frames containing `"Q"`, e.g. `CY2025Q1`), sorts chronologically by frame string, prints quarter-over-quarter % change, and exports to `rwt_quarterly_eps.csv`
-9. The SEC never tags a standalone Q4 frame for EPS, so for each year where Q1, Q2, Q3, and the annual figure are all present, derives Q4 as `Annual - Q1 - Q2 - Q3`
-10. Merges reported + derived quarters, prints each with a `<- derived` flag where applicable, and exports to `rwt_quarterly_eps_complete.csv` with a `source` column
-11. Extracts `StockholdersEquity`, `CommonStockSharesOutstanding`, and `PreferredStockValue` (all balance-sheet "instant" concepts, already tagged for every quarter including Q4 — no derivation needed), computes book value per common share as `(StockholdersEquity - PreferredStockValue) / CommonStockSharesOutstanding`, and exports to `rwt_quarterly_bvps.csv`
-12. Extracts `CommonStockDividendsPerShareDeclared` — a duration measure like EPS, with the same Q4 gap from 2020 onward (Q4 was tagged directly 2010–2019). Dedupes, exports reported quarters to `rwt_quarterly_dividends.csv`, derives missing Q4 as `Annual - Q1 - Q2 - Q3`, and exports the merged result to `rwt_quarterly_dividends_complete.csv` with a `source` column
+7. Defines `extract_quarterly_duration_kpi()` — a shared helper (used by EPS, dividends, and net interest income below) that dedupes by latest-filed value per frame (keeping every framed record, quarterly *and* annual — the annual figure is needed to derive Q4), filters to quarterly records (frames containing `"Q"`, e.g. `CY2025Q1`), sorts chronologically, exports reported-only quarters to `{csv_stem}.csv`, derives any missing Q4 as `Annual - Q1 - Q2 - Q3`, and exports the merged reported+derived result to `{csv_stem}_complete.csv` with a `source` column
+8. Calls it for `EarningsPerShareDiluted` → `rwt_quarterly_eps.csv` / `rwt_quarterly_eps_complete.csv`, with quarter-over-quarter % change printed as an EPS-specific extra step
+9. Extracts `StockholdersEquity`, `CommonStockSharesOutstanding`, and `PreferredStockValue` (all balance-sheet "instant" concepts, already tagged for every quarter including Q4 — no derivation needed), computes book value per common share as `(StockholdersEquity - PreferredStockValue) / CommonStockSharesOutstanding`, and exports to `rwt_quarterly_bvps.csv`
+10. Calls the shared helper for `CommonStockDividendsPerShareDeclared` → `rwt_quarterly_dividends.csv` / `rwt_quarterly_dividends_complete.csv` (Q4 tagged directly 2010–2019, derived from 2020 onward)
+11. Calls the shared helper for `InterestIncomeExpenseNet` → `rwt_quarterly_nii.csv` / `rwt_quarterly_nii_complete.csv` (same Q4 gap as EPS — missing every year from 2020 onward)
 
 ## What plot_eps.py does
 
@@ -73,6 +76,14 @@ Reads `rwt_quarterly_dividends_complete.csv` (does not call the SEC API) and ren
 1. Single-hue bars (dividends per share never go negative, so — like BVPS — no red/green profit/loss split is needed)
 2. Hatches derived Q4 bars (2020+) so they're visually distinguishable from SEC-reported values, same convention as `plot_eps.py`
 
+## What plot_nii.py does
+
+Reads `rwt_quarterly_nii_complete.csv` (does not call the SEC API) and renders a bar chart to `rwt_nii_chart.png`:
+
+1. Single-hue bars (net interest income never goes negative for RWT historically, so no red/green profit/loss split is needed)
+2. Values are divided by 1,000,000 before plotting so the y-axis reads in whole $M rather than raw dollars
+3. Hatches derived Q4 bars so they're visually distinguishable from SEC-reported values, same convention as `plot_eps.py` / `plot_dividends.py`
+
 ## How to run
 
 ```
@@ -80,6 +91,7 @@ python3 get_company_facts.py
 python3 plot_eps.py
 python3 plot_bvps.py
 python3 plot_dividends.py
+python3 plot_nii.py
 ```
 
 Requires the `requests` and `matplotlib` libraries. Install them with:
@@ -116,6 +128,7 @@ Each record returned by the SEC API looks like:
 - **Instant vs. duration frames:** Balance-sheet concepts (`StockholdersEquity`, `CommonStockSharesOutstanding`, `PreferredStockValue`) are point-in-time ("instant") measures, tagged with frames ending in `I` (e.g. `CY2025Q4I`) rather than EPS's duration frames (e.g. `CY2025Q4`). Because they're snapshots at each quarter-end, the SEC tags Q4 directly — no derivation step like EPS needs.
 - **BVPS uses common equity, not total equity:** RWT carries preferred stock on its balance sheet (~$66.9M as of 2023+), and preferred holders don't share in common book value. BVPS is computed as `(StockholdersEquity - PreferredStockValue) / CommonStockSharesOutstanding`, not `StockholdersEquity / CommonStockSharesOutstanding`.
 - **Dividends share EPS's Q4 gap:** `CommonStockDividendsPerShareDeclared` is a duration measure, and the SEC stopped tagging a standalone Q4 frame for it starting in 2020 (it did tag Q4 directly from 2010–2019) — a coincidental match with EPS's gap, not a related concept. Same derive-from-annual treatment applies.
+- **Shared helper for duration KPIs:** EPS, dividends, and net interest income (`InterestIncomeExpenseNet`) all turned out to have the identical shape — a duration measure, deduped by latest filing, with Q4 derived from the annual figure. After the third KPI repeated this exact pattern, the dedup/derive/export logic was extracted into `extract_quarterly_duration_kpi()` rather than copy-pasting a fourth near-identical block. BVPS stays separate since it's an instant (not duration) measure with a different shape (no Q4 derivation needed, preferred-stock subtraction instead).
 
 ## CSV output columns
 
@@ -165,8 +178,25 @@ Each record returned by the SEC API looks like:
 | `dividend_per_share` | Dividend per common share in USD (reported or derived) |
 | `source` | `reported` (direct from an SEC frame) or `derived (Annual - Q1 - Q2 - Q3)` |
 
+`rwt_quarterly_nii.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2025Q1`) |
+| `net_interest_income` | Net interest income in USD (interest income minus interest expense) |
+| `filed` | Date the source filing was submitted to SEC |
+| `form` | Form type (`10-Q` or `10-K`) |
+
+`rwt_quarterly_nii_complete.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2025Q4`) |
+| `net_interest_income` | Net interest income in USD (reported or derived) |
+| `source` | `reported` (direct from an SEC frame) or `derived (Annual - Q1 - Q2 - Q3)` |
+
 ## Next steps (not yet built)
 
-- Extract additional KPIs beyond EPS, book value, and dividends (e.g. net interest income)
+- Extract additional KPIs beyond EPS, book value, dividends, and net interest income
 - Filter to a specific date range
 - Interactive UI (e.g. Streamlit) if static charts stop being enough

@@ -83,104 +83,133 @@ print("\nMost Recent 10 Records:")
 for record in records[-10:]:  # [-10:] means "start from 10 from the end", giving us the last 10
     print(record)
 
-# Dedup by latest-filed value per frame. We keep every framed record (quarterly
-# AND annual), not just quarterly ones, because the annual ("CY####") figure is
-# needed below to derive Q4, which the SEC never tags with its own frame.
-by_frame = {}
+# ---------------------------------------------------------------------------
+# Shared pattern: quarterly duration KPIs with a Q4 tagging gap
+# ---------------------------------------------------------------------------
+# EPS, dividends per share, and net interest income are all XBRL "duration"
+# measures (they cover a start-end period, not a single point in time) where
+# the SEC tags Q1-Q3 with their own "CY####Q#" frame directly but stops
+# tagging a standalone Q4 frame at some point (EPS and net interest income:
+# always; dividends: from 2020 onward). Every year where Q1, Q2, Q3, and the
+# annual figure are all present gets Q4 backed out as Annual - Q1 - Q2 - Q3.
 
-for record in records:
-    frame = record.get("frame")  # .get() returns None if "frame" doesn't exist, avoiding a KeyError
-    if not frame:
-        continue
-    existing = by_frame.get(frame)
-    if existing is None or record["filed"] > existing["filed"]:  # keep only the latest filed value per frame
-        by_frame[frame] = record
+def extract_quarterly_duration_kpi(concept_name, value_key, label, csv_stem, print_qoq_change=False):
+    """Dedupes by latest-filed value per frame, exports reported-only quarters
+    to '{csv_stem}.csv', derives missing Q4 values, and exports the merged
+    (reported + derived) result to '{csv_stem}_complete.csv' with a `source`
+    column. Returns (quarterly, sorted_all_quarters) for any extra
+    metric-specific analysis (e.g. EPS's quarter-over-quarter change)."""
 
-# Reported quarters: SEC tags Q1-Q3 with their own "CY####Q#" frame directly
-quarterly_eps = {}
-for frame, record in by_frame.items():
-    if "Q" in frame:
-        quarterly_eps[frame] = {
-            "quarter": frame,
-            "eps": record["val"],
-            "filed": record["filed"],
-            "form": record.get("form"),
-        }
+    if concept_name not in us_gaap_facts:
+        raise SystemExit(f"'{concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
 
-# sort chronologically — "CY2024Q1" < "CY2024Q2" works because the string format is lexicographically ordered
-sorted_quarters = sorted(quarterly_eps.values(), key=lambda x: x["quarter"])
+    concept = us_gaap_facts[concept_name]
+    unit_name = list(concept["units"].keys())[0]  # grab the unit type automatically, e.g. "USD/shares" or "USD"
+    records = concept["units"][unit_name]
 
-print(f"\nFound {len(sorted_quarters)} quarterly EPS data points:\n")
-for item in sorted_quarters:
-    print(f"{item['quarter']:10s} EPS: {item['eps']:>7.2f}   (filed {item['filed']}, {item['form']})")
+    # Dedup by latest-filed value per frame. We keep every framed record
+    # (quarterly AND annual), not just quarterly ones, because the annual
+    # ("CY####") figure is needed below to derive Q4.
+    by_frame = {}
+    for record in records:
+        frame = record.get("frame")  # .get() returns None if "frame" doesn't exist, avoiding a KeyError
+        if not frame:
+            continue
+        existing = by_frame.get(frame)
+        if existing is None or record["filed"] > existing["filed"]:  # keep only the latest filed value per frame
+            by_frame[frame] = record
 
-# quarter-over-quarter change — handle edge cases that produce misleading percentages
-print("\nQuarter-over-quarter change:\n")
-for i in range(1, len(sorted_quarters)):
-    prev = sorted_quarters[i - 1]
-    curr = sorted_quarters[i]
-    prev_val = prev["eps"]
-    curr_val = curr["eps"]
+    # Reported quarters: frames containing "Q", e.g. "CY2025Q1"
+    quarterly = {}
+    for frame, record in by_frame.items():
+        if "Q" in frame:
+            quarterly[frame] = {
+                "quarter": frame,
+                value_key: record["val"],
+                "filed": record["filed"],
+                "form": record.get("form"),
+            }
 
-    if prev_val == 0:
-        change_str = "N/A (prior quarter EPS was 0)"
-    elif (prev_val < 0) != (curr_val < 0):  # True when signs differ (one positive, one negative)
-        change_str = f"N/A (sign flip: {prev_val} -> {curr_val}, % change is misleading)"
-    else:
-        change = ((curr_val - prev_val) / abs(prev_val)) * 100
-        change_str = f"{change:+.1f}%"
+    # sort chronologically — "CY2024Q1" < "CY2024Q2" works because the string format is lexicographically ordered
+    sorted_quarters = sorted(quarterly.values(), key=lambda x: x["quarter"])
 
-    print(f"{prev['quarter']} -> {curr['quarter']}: {prev_val:>6.2f} -> {curr_val:>6.2f}   {change_str}")
+    print(f"\nFound {len(sorted_quarters)} quarterly {label} data points:\n")
+    for item in sorted_quarters:
+        print(f"{item['quarter']:10s} {label}: {item[value_key]:>15,.2f}   (filed {item['filed']}, {item['form']})")
 
-# export to CSV
-with open("rwt_quarterly_eps.csv", "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=["quarter", "eps", "filed", "form"])
-    writer.writeheader()
-    writer.writerows(sorted_quarters)
+    if print_qoq_change:
+        # quarter-over-quarter change — handle edge cases that produce misleading percentages
+        print("\nQuarter-over-quarter change:\n")
+        for i in range(1, len(sorted_quarters)):
+            prev = sorted_quarters[i - 1]
+            curr = sorted_quarters[i]
+            prev_val = prev[value_key]
+            curr_val = curr[value_key]
 
-print("\nExported to rwt_quarterly_eps.csv")
+            if prev_val == 0:
+                change_str = f"N/A (prior quarter {label} was 0)"
+            elif (prev_val < 0) != (curr_val < 0):  # True when signs differ (one positive, one negative)
+                change_str = f"N/A (sign flip: {prev_val} -> {curr_val}, % change is misleading)"
+            else:
+                change = ((curr_val - prev_val) / abs(prev_val)) * 100
+                change_str = f"{change:+.1f}%"
 
-# Derive missing Q4 values as Annual - (Q1 + Q2 + Q3), for any year where the
-# annual figure and all three reported quarters are available.
-reported_eps = {frame: item["eps"] for frame, item in quarterly_eps.items()}
-years_present = set(int(f[2:6]) for f in reported_eps)
-derived_q4 = {}
+            print(f"{prev['quarter']} -> {curr['quarter']}: {prev_val:>6.2f} -> {curr_val:>6.2f}   {change_str}")
 
-for year in years_present:
-    annual_frame = f"CY{year}"
-    q1 = reported_eps.get(f"CY{year}Q1")
-    q2 = reported_eps.get(f"CY{year}Q2")
-    q3 = reported_eps.get(f"CY{year}Q3")
-    q4_frame = f"CY{year}Q4"
+    with open(f"{csv_stem}.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["quarter", value_key, "filed", "form"])
+        writer.writeheader()
+        writer.writerows(sorted_quarters)
 
-    if q4_frame in reported_eps:
-        continue  # already have it explicitly, no need to derive
+    print(f"\nExported to {csv_stem}.csv")
 
-    annual_record = by_frame.get(annual_frame)
-    if annual_record and q1 is not None and q2 is not None and q3 is not None:
-        derived_q4[q4_frame] = round(annual_record["val"] - q1 - q2 - q3, 2)
+    # Derive missing Q4 values as Annual - (Q1 + Q2 + Q3), for any year where the
+    # annual figure and all three reported quarters are available.
+    reported_values = {frame: item[value_key] for frame, item in quarterly.items()}
+    years_present = set(int(f[2:6]) for f in reported_values)
+    derived_q4 = {}
 
-# Merge reported + derived, tag the source so you always know which is which
-all_quarters = {}
-for frame, item in quarterly_eps.items():
-    all_quarters[frame] = {"quarter": frame, "eps": item["eps"], "source": "reported"}
-for frame, val in derived_q4.items():
-    all_quarters[frame] = {"quarter": frame, "eps": val, "source": "derived (Annual - Q1 - Q2 - Q3)"}
+    for year in years_present:
+        annual_frame = f"CY{year}"
+        q1 = reported_values.get(f"CY{year}Q1")
+        q2 = reported_values.get(f"CY{year}Q2")
+        q3 = reported_values.get(f"CY{year}Q3")
+        q4_frame = f"CY{year}Q4"
 
-sorted_all_quarters = sorted(all_quarters.values(), key=lambda x: x["quarter"])
+        if q4_frame in reported_values:
+            continue  # already have it explicitly, no need to derive
 
-print(f"\nFound {len(sorted_all_quarters)} quarterly EPS data points including derived Q4 "
-      f"({len(quarterly_eps)} reported, {len(derived_q4)} derived):\n")
-for item in sorted_all_quarters:
-    flag = "  <- derived" if item["source"].startswith("derived") else ""
-    print(f"{item['quarter']:10s} EPS: {item['eps']:>7.2f}{flag}")
+        annual_record = by_frame.get(annual_frame)
+        if annual_record and q1 is not None and q2 is not None and q3 is not None:
+            derived_q4[q4_frame] = round(annual_record["val"] - q1 - q2 - q3, 2)
 
-with open("rwt_quarterly_eps_complete.csv", "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=["quarter", "eps", "source"])
-    writer.writeheader()
-    writer.writerows(sorted_all_quarters)
+    # Merge reported + derived, tag the source so you always know which is which
+    all_quarters = {}
+    for frame, item in quarterly.items():
+        all_quarters[frame] = {"quarter": frame, value_key: item[value_key], "source": "reported"}
+    for frame, val in derived_q4.items():
+        all_quarters[frame] = {"quarter": frame, value_key: val, "source": "derived (Annual - Q1 - Q2 - Q3)"}
 
-print("\nExported to rwt_quarterly_eps_complete.csv")
+    sorted_all_quarters = sorted(all_quarters.values(), key=lambda x: x["quarter"])
+
+    print(f"\nFound {len(sorted_all_quarters)} quarterly {label} data points including derived Q4 "
+          f"({len(quarterly)} reported, {len(derived_q4)} derived):\n")
+    for item in sorted_all_quarters:
+        flag = "  <- derived" if item["source"].startswith("derived") else ""
+        print(f"{item['quarter']:10s} {label}: {item[value_key]:>15,.2f}{flag}")
+
+    with open(f"{csv_stem}_complete.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["quarter", value_key, "source"])
+        writer.writeheader()
+        writer.writerows(sorted_all_quarters)
+
+    print(f"\nExported to {csv_stem}_complete.csv")
+
+    return quarterly, sorted_all_quarters
+
+
+quarterly_eps, sorted_all_eps = extract_quarterly_duration_kpi(
+    eps_concept_name, "eps", "EPS", "rwt_quarterly_eps", print_qoq_change=True)
 
 # ---------------------------------------------------------------------------
 # Book Value Per Share (BVPS)
@@ -270,91 +299,19 @@ print("\nExported to rwt_quarterly_bvps.csv")
 # ---------------------------------------------------------------------------
 # Dividends Per Common Share
 # ---------------------------------------------------------------------------
-# CommonStockDividendsPerShareDeclared is a duration measure like EPS. The SEC
-# tagged an explicit Q4 frame for it from 2010-2019, but from 2020 onward only
-# tags Q1-Q3 plus the annual figure -- the exact same gap EPS has for every
-# year -- so recent years reuse the same "derive Q4 from the annual" approach.
+# CommonStockDividendsPerShareDeclared is a duration measure with the same
+# shape as EPS: the SEC tagged an explicit Q4 frame for it from 2010-2019, but
+# from 2020 onward only tags Q1-Q3 plus the annual figure.
 
-div_concept_name = "CommonStockDividendsPerShareDeclared"
-if div_concept_name not in us_gaap_facts:
-    raise SystemExit(f"'{div_concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+quarterly_dividends, sorted_all_dividends = extract_quarterly_duration_kpi(
+    "CommonStockDividendsPerShareDeclared", "dividend_per_share", "Dividend/Share", "rwt_quarterly_dividends")
 
-dividends = us_gaap_facts[div_concept_name]
-div_unit_name = list(dividends["units"].keys())[0]
-div_records = dividends["units"][div_unit_name]
+# ---------------------------------------------------------------------------
+# Net Interest Income
+# ---------------------------------------------------------------------------
+# InterestIncomeExpenseNet (total interest income minus interest expense) is
+# also a duration measure with the identical Q4 gap: explicit through 2019,
+# derived from the annual figure from 2020 onward.
 
-# Dedup by latest-filed value per frame (same approach as EPS/BVPS above)
-div_by_frame = {}
-for record in div_records:
-    frame = record.get("frame")
-    if not frame:
-        continue
-    existing = div_by_frame.get(frame)
-    if existing is None or record["filed"] > existing["filed"]:
-        div_by_frame[frame] = record
-
-# Reported quarters: frames containing "Q", e.g. "CY2025Q1"
-quarterly_dividends = {}
-for frame, record in div_by_frame.items():
-    if "Q" in frame:
-        quarterly_dividends[frame] = {
-            "quarter": frame,
-            "dividend_per_share": record["val"],
-            "filed": record["filed"],
-            "form": record.get("form"),
-        }
-
-sorted_div_quarters = sorted(quarterly_dividends.values(), key=lambda x: x["quarter"])
-
-print(f"\nFound {len(sorted_div_quarters)} quarterly dividend-per-share data points:\n")
-for item in sorted_div_quarters:
-    print(f"{item['quarter']:10s} Dividend/Share: {item['dividend_per_share']:>6.2f}   (filed {item['filed']}, {item['form']})")
-
-with open("rwt_quarterly_dividends.csv", "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=["quarter", "dividend_per_share", "filed", "form"])
-    writer.writeheader()
-    writer.writerows(sorted_div_quarters)
-
-print("\nExported to rwt_quarterly_dividends.csv")
-
-# Derive missing Q4 as Annual - (Q1 + Q2 + Q3), for any year where the annual
-# figure and all three reported quarters are available (mirrors the EPS logic)
-reported_dividends = {frame: item["dividend_per_share"] for frame, item in quarterly_dividends.items()}
-div_years_present = set(int(f[2:6]) for f in reported_dividends)
-derived_div_q4 = {}
-
-for year in div_years_present:
-    annual_frame = f"CY{year}"
-    q1 = reported_dividends.get(f"CY{year}Q1")
-    q2 = reported_dividends.get(f"CY{year}Q2")
-    q3 = reported_dividends.get(f"CY{year}Q3")
-    q4_frame = f"CY{year}Q4"
-
-    if q4_frame in reported_dividends:
-        continue  # already have it explicitly, no need to derive
-
-    annual_record = div_by_frame.get(annual_frame)
-    if annual_record and q1 is not None and q2 is not None and q3 is not None:
-        derived_div_q4[q4_frame] = round(annual_record["val"] - q1 - q2 - q3, 2)
-
-# Merge reported + derived, tag the source so you always know which is which
-all_div_quarters = {}
-for frame, item in quarterly_dividends.items():
-    all_div_quarters[frame] = {"quarter": frame, "dividend_per_share": item["dividend_per_share"], "source": "reported"}
-for frame, val in derived_div_q4.items():
-    all_div_quarters[frame] = {"quarter": frame, "dividend_per_share": val, "source": "derived (Annual - Q1 - Q2 - Q3)"}
-
-sorted_all_div_quarters = sorted(all_div_quarters.values(), key=lambda x: x["quarter"])
-
-print(f"\nFound {len(sorted_all_div_quarters)} quarterly dividend data points including derived Q4 "
-      f"({len(quarterly_dividends)} reported, {len(derived_div_q4)} derived):\n")
-for item in sorted_all_div_quarters:
-    flag = "  <- derived" if item["source"].startswith("derived") else ""
-    print(f"{item['quarter']:10s} Dividend/Share: {item['dividend_per_share']:>6.2f}{flag}")
-
-with open("rwt_quarterly_dividends_complete.csv", "w", newline="") as f:
-    writer = csv.DictWriter(f, fieldnames=["quarter", "dividend_per_share", "source"])
-    writer.writeheader()
-    writer.writerows(sorted_all_div_quarters)
-
-print("\nExported to rwt_quarterly_dividends_complete.csv")
+quarterly_nii, sorted_all_nii = extract_quarterly_duration_kpi(
+    "InterestIncomeExpenseNet", "net_interest_income", "Net Interest Income", "rwt_quarterly_nii")
