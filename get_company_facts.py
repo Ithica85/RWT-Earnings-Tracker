@@ -398,3 +398,47 @@ with open("rwt_quarterly_liabilities.csv", "w", newline="") as f:
     writer.writerows(liabilities_rows)
 
 print("\nExported to rwt_quarterly_liabilities.csv")
+
+# ---------------------------------------------------------------------------
+# Debt-to-Equity Ratio
+# ---------------------------------------------------------------------------
+# Purely derived from data already extracted above -- no new SEC concept, no
+# extra API call. Uses total stockholders' equity (equity_by_frame, computed
+# in the BVPS section), not common equity, since debt-to-equity is
+# conventionally measured against total GAAP equity.
+
+debt_to_equity_frames = sorted(set(equity_by_frame) & set(liabilities_by_frame))
+
+print(f"\nFound {len(debt_to_equity_frames)} quarterly Debt-to-Equity data points:\n")
+
+debt_to_equity_rows = []
+for frame in debt_to_equity_frames:
+    equity_record = equity_by_frame[frame]
+    liabilities_record = liabilities_by_frame[frame]
+    equity = equity_record["val"]
+    liabilities_val = liabilities_record["val"]
+
+    if equity == 0:
+        continue  # avoid a ZeroDivisionError; RWT has never reported zero equity, but guard anyway
+
+    ratio = liabilities_val / equity
+    quarter = frame[:-1]  # strip the trailing "I" so labels match the EPS "CY2025Q4" style
+
+    debt_to_equity_rows.append({
+        "quarter": quarter,
+        "debt_to_equity": round(ratio, 2),
+        "total_liabilities": liabilities_val,
+        "stockholders_equity": equity,
+        "filed": equity_record["filed"],
+        "form": equity_record.get("form"),
+    })
+    print(f"{quarter:10s} Debt-to-Equity: {ratio:>6.2f}x   (liabilities {liabilities_val:,}, equity {equity:,})")
+
+with open("rwt_quarterly_debt_to_equity.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=[
+        "quarter", "debt_to_equity", "total_liabilities", "stockholders_equity", "filed", "form",
+    ])
+    writer.writeheader()
+    writer.writerows(debt_to_equity_rows)
+
+print("\nExported to rwt_quarterly_debt_to_equity.csv")

@@ -22,7 +22,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 
 | File | Description |
 |------|-------------|
-| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, and total liabilities (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
+| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, total liabilities, and debt-to-equity ratio (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
 | `plot_eps.py` | Reads `rwt_quarterly_eps_complete.csv` and renders a bar chart to `rwt_eps_chart.png` (no API call) |
 | `plot_bvps.py` | Reads `rwt_quarterly_bvps.csv` and renders a line chart to `rwt_bvps_chart.png` (no API call) |
 | `plot_dividends.py` | Reads `rwt_quarterly_dividends_complete.csv` and renders a bar chart to `rwt_dividends_chart.png` (no API call) |
@@ -30,6 +30,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `plot_net_income.py` | Reads `rwt_quarterly_net_income_complete.csv` and renders a bar chart to `rwt_net_income_chart.png` (no API call) |
 | `plot_assets.py` | Reads `rwt_quarterly_assets.csv` and renders a line chart to `rwt_assets_chart.png` (no API call) |
 | `plot_liabilities.py` | Reads `rwt_quarterly_liabilities.csv` and renders a line chart to `rwt_liabilities_chart.png` (no API call) |
+| `plot_debt_to_equity.py` | Reads `rwt_quarterly_debt_to_equity.csv` and renders a line chart to `rwt_debt_to_equity_chart.png` (no API call) |
 | `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
 | `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_bvps.csv` | One row per quarter of book value per common share, computed from balance-sheet data |
@@ -41,6 +42,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_quarterly_net_income_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_assets.csv` | One row per quarter of total assets, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
 | `rwt_quarterly_liabilities.csv` | One row per quarter of total liabilities, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
+| `rwt_quarterly_debt_to_equity.csv` | One row per quarter of debt-to-equity ratio (Total Liabilities / Stockholders' Equity), purely derived from data already extracted — no new SEC concept |
 | `rwt_eps_chart.png` | Output of `plot_eps.py` — quarterly EPS bar chart |
 | `rwt_bvps_chart.png` | Output of `plot_bvps.py` — quarterly BVPS line chart |
 | `rwt_dividends_chart.png` | Output of `plot_dividends.py` — quarterly dividends-per-share bar chart |
@@ -48,6 +50,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_net_income_chart.png` | Output of `plot_net_income.py` — quarterly net income bar chart |
 | `rwt_assets_chart.png` | Output of `plot_assets.py` — quarterly total assets line chart |
 | `rwt_liabilities_chart.png` | Output of `plot_liabilities.py` — quarterly total liabilities line chart |
+| `rwt_debt_to_equity_chart.png` | Output of `plot_debt_to_equity.py` — quarterly debt-to-equity ratio line chart |
 
 ## What get_company_facts.py does
 
@@ -65,6 +68,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 12. Calls the shared helper for `NetIncomeLoss` → `rwt_quarterly_net_income.csv` / `rwt_quarterly_net_income_complete.csv` (same Q4 gap as EPS — missing every year from 2020 onward; this is the bottom-line dollar figure EPS is derived from)
 13. Extracts `Assets` (total assets, a balance-sheet "instant" concept tagged for every quarter including Q4 — no derivation needed, reusing `latest_instant_by_frame()` from the BVPS section) and exports to `rwt_quarterly_assets.csv`
 14. Extracts `Liabilities` (total liabilities, same instant-measure shape as `Assets`) and exports to `rwt_quarterly_liabilities.csv`, to pair with total assets for a leverage view (Assets − Liabilities = Equity)
+15. Computes debt-to-equity ratio (Total Liabilities / Stockholders' Equity) purely from data already extracted above — no new SEC concept, no extra API call — and exports to `rwt_quarterly_debt_to_equity.csv`
 
 ## What plot_eps.py does
 
@@ -124,6 +128,14 @@ Reads `rwt_quarterly_liabilities.csv` (does not call the SEC API) and renders a 
 3. Values are divided by 1,000,000,000 before plotting so the y-axis reads in whole $B
 4. No hatching for derived Q4 — `Liabilities` is an instant measure tagged every quarter, so there's nothing derived
 
+## What plot_debt_to_equity.py does
+
+Reads `rwt_quarterly_debt_to_equity.csv` (does not call the SEC API) and renders a line chart to `rwt_debt_to_equity_chart.png`:
+
+1. Same single-hue line style as `plot_assets.py`, `plot_liabilities.py`, and `plot_bvps.py`
+2. Direct-labels only the most recent quarter's value, formatted as a multiple (e.g. `27.0x`)
+3. No unit conversion needed — the ratio is already a small dimensionless number
+
 ## How to run
 
 ```
@@ -135,6 +147,7 @@ python3 plot_nii.py
 python3 plot_net_income.py
 python3 plot_assets.py
 python3 plot_liabilities.py
+python3 plot_debt_to_equity.py
 ```
 
 Requires the `requests` and `matplotlib` libraries. Install them with:
@@ -175,6 +188,7 @@ Each record returned by the SEC API looks like:
 - **Net income can go negative, unlike NII/dividends:** `plot_net_income.py` follows `plot_eps.py`'s red/green sign-based coloring and outlier-clipping convention rather than `plot_nii.py`'s single-hue approach, since RWT has posted quarterly net losses (e.g. -$943M in CY2020Q1).
 - **Total Assets reuses the BVPS instant-measure pattern, not the duration helper:** `Assets` is tagged every quarter (frames end in `I`, same as `StockholdersEquity`), so it's extracted with the existing `latest_instant_by_frame()` helper rather than `extract_quarterly_duration_kpi()` — no Q4 derivation needed. `plot_assets.py` mirrors `plot_bvps.py`'s single-hue line-chart style rather than a bar chart.
 - **Total Liabilities pairs with Total Assets to reveal a leverage trend BVPS alone doesn't show as starkly:** both are instant measures extracted the same way. From CY2019Q4 to CY2026Q1, total assets roughly doubled ($18.0B → $26.8B) but implied equity (Assets − Liabilities) *shrank* in dollar terms ($1.83B → $0.96B) as the liabilities/assets ratio climbed from 89.8% to 96.4% — the balance sheet grew mostly on borrowed money, corroborating BVPS's decline from the balance-sheet side rather than the per-share side.
+- **Debt-to-equity is purely derived, no new API data:** computed as Total Liabilities / Stockholders' Equity by reusing `equity_by_frame` (already built in the BVPS section) and `liabilities_by_frame` — no new SEC concept, no extra API call. Uses total GAAP equity (not common-only, unlike BVPS) since that's the conventional denominator for this ratio. This is the sharpest trend of any KPI so far: the ratio held in a roughly 3–11x band from 2009 through 2023 (aside from a 16x COVID spike in CY2020Q1), then broke out — climbing from 12.5x (CY2024Q2) to 27.0x (CY2026Q1) in just six quarters, nearly double its prior all-time high.
 
 ## CSV output columns
 
@@ -276,8 +290,19 @@ Each record returned by the SEC API looks like:
 | `filed` | Date the source filing was submitted to SEC |
 | `form` | Form type (`10-Q` or `10-K`) |
 
+`rwt_quarterly_debt_to_equity.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2025Q4`) |
+| `debt_to_equity` | Total Liabilities / Stockholders' Equity, rounded to 2dp |
+| `total_liabilities` | Total liabilities in USD, as of quarter-end |
+| `stockholders_equity` | Total stockholders' equity in USD, as of quarter-end |
+| `filed` | Date the source filing was submitted to SEC |
+| `form` | Form type (`10-Q` or `10-K`) |
+
 ## Next steps (not yet built)
 
-- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, and total liabilities
+- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, total liabilities, and debt-to-equity
 - Filter to a specific date range
 - Interactive UI (e.g. Streamlit) if static charts stop being enough
