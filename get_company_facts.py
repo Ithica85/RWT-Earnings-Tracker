@@ -442,3 +442,44 @@ with open("rwt_quarterly_debt_to_equity.csv", "w", newline="") as f:
     writer.writerows(debt_to_equity_rows)
 
 print("\nExported to rwt_quarterly_debt_to_equity.csv")
+
+# ---------------------------------------------------------------------------
+# Credit Loss Allowance
+# ---------------------------------------------------------------------------
+# ProvisionForLoanLeaseAndOtherLosses (the originally-planned "loan loss
+# provision" concept) turned out to be stale -- RWT only tagged it 2010-2018,
+# retired once the CECL accounting standard changed how credit losses are
+# reported starting 2020. DebtSecuritiesAvailableForSaleAllowanceForCreditLoss
+# is the current equivalent: a balance-sheet ("instant") measure tracking the
+# running credit-loss reserve on available-for-sale debt securities, tagged
+# every quarter from CY2019Q4 onward. Same shape as Assets/Liabilities/BVPS,
+# so it reuses latest_instant_by_frame().
+
+credit_loss_concept_name = "DebtSecuritiesAvailableForSaleAllowanceForCreditLoss"
+if credit_loss_concept_name not in us_gaap_facts:
+    raise SystemExit(f"'{credit_loss_concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+
+credit_loss_by_frame = latest_instant_by_frame(credit_loss_concept_name)
+sorted_credit_loss_frames = sorted(credit_loss_by_frame)
+
+print(f"\nFound {len(sorted_credit_loss_frames)} quarterly Credit Loss Allowance data points:\n")
+
+credit_loss_rows = []
+for frame in sorted_credit_loss_frames:
+    record = credit_loss_by_frame[frame]
+    quarter = frame[:-1]  # strip the trailing "I" so labels match the EPS "CY2025Q4" style
+
+    credit_loss_rows.append({
+        "quarter": quarter,
+        "credit_loss_allowance": record["val"],
+        "filed": record["filed"],
+        "form": record.get("form"),
+    })
+    print(f"{quarter:10s} Credit Loss Allowance: {record['val']:>15,.0f}   (filed {record['filed']}, {record.get('form')})")
+
+with open("rwt_quarterly_credit_loss_allowance.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["quarter", "credit_loss_allowance", "filed", "form"])
+    writer.writeheader()
+    writer.writerows(credit_loss_rows)
+
+print("\nExported to rwt_quarterly_credit_loss_allowance.csv")

@@ -22,7 +22,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 
 | File | Description |
 |------|-------------|
-| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, total liabilities, and debt-to-equity ratio (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
+| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, total liabilities, debt-to-equity ratio, and credit loss allowance (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
 | `plot_eps.py` | Reads `rwt_quarterly_eps_complete.csv` and renders a bar chart to `rwt_eps_chart.png` (no API call) |
 | `plot_bvps.py` | Reads `rwt_quarterly_bvps.csv` and renders a line chart to `rwt_bvps_chart.png` (no API call) |
 | `plot_dividends.py` | Reads `rwt_quarterly_dividends_complete.csv` and renders a bar chart to `rwt_dividends_chart.png` (no API call) |
@@ -32,6 +32,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `plot_liabilities.py` | Reads `rwt_quarterly_liabilities.csv` and renders a line chart to `rwt_liabilities_chart.png` (no API call) |
 | `plot_debt_to_equity.py` | Reads `rwt_quarterly_debt_to_equity.csv` and renders a line chart to `rwt_debt_to_equity_chart.png` (no API call) |
 | `plot_leverage_dashboard.py` | Reads `rwt_quarterly_assets.csv`, `rwt_quarterly_liabilities.csv`, and `rwt_quarterly_debt_to_equity.csv` and renders a two-panel combined chart to `rwt_leverage_dashboard.png` (no API call) |
+| `plot_credit_loss_allowance.py` | Reads `rwt_quarterly_credit_loss_allowance.csv` and renders a line chart to `rwt_credit_loss_allowance_chart.png` (no API call) |
 | `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
 | `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_bvps.csv` | One row per quarter of book value per common share, computed from balance-sheet data |
@@ -44,6 +45,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_quarterly_assets.csv` | One row per quarter of total assets, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
 | `rwt_quarterly_liabilities.csv` | One row per quarter of total liabilities, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
 | `rwt_quarterly_debt_to_equity.csv` | One row per quarter of debt-to-equity ratio (Total Liabilities / Stockholders' Equity), purely derived from data already extracted — no new SEC concept |
+| `rwt_quarterly_credit_loss_allowance.csv` | One row per quarter of the credit loss allowance on available-for-sale debt securities, a balance-sheet "instant" measure (tagged every quarter from CY2019Q4 onward, no derivation needed) |
 | `rwt_eps_chart.png` | Output of `plot_eps.py` — quarterly EPS bar chart |
 | `rwt_bvps_chart.png` | Output of `plot_bvps.py` — quarterly BVPS line chart |
 | `rwt_dividends_chart.png` | Output of `plot_dividends.py` — quarterly dividends-per-share bar chart |
@@ -53,6 +55,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_liabilities_chart.png` | Output of `plot_liabilities.py` — quarterly total liabilities line chart |
 | `rwt_debt_to_equity_chart.png` | Output of `plot_debt_to_equity.py` — quarterly debt-to-equity ratio line chart |
 | `rwt_leverage_dashboard.png` | Output of `plot_leverage_dashboard.py` — combined Assets/Liabilities + Debt-to-Equity dashboard |
+| `rwt_credit_loss_allowance_chart.png` | Output of `plot_credit_loss_allowance.py` — quarterly credit loss allowance line chart |
 
 ## What get_company_facts.py does
 
@@ -71,6 +74,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 13. Extracts `Assets` (total assets, a balance-sheet "instant" concept tagged for every quarter including Q4 — no derivation needed, reusing `latest_instant_by_frame()` from the BVPS section) and exports to `rwt_quarterly_assets.csv`
 14. Extracts `Liabilities` (total liabilities, same instant-measure shape as `Assets`) and exports to `rwt_quarterly_liabilities.csv`, to pair with total assets for a leverage view (Assets − Liabilities = Equity)
 15. Computes debt-to-equity ratio (Total Liabilities / Stockholders' Equity) purely from data already extracted above — no new SEC concept, no extra API call — and exports to `rwt_quarterly_debt_to_equity.csv`
+16. Extracts `DebtSecuritiesAvailableForSaleAllowanceForCreditLoss` (credit loss allowance on AFS debt securities — the current, CECL-era replacement for the retired `ProvisionForLoanLeaseAndOtherLosses` concept, which stopped being tagged after 2018) and exports to `rwt_quarterly_credit_loss_allowance.csv`
 
 ## What plot_eps.py does
 
@@ -148,6 +152,14 @@ Reads `rwt_quarterly_assets.csv`, `rwt_quarterly_liabilities.csv`, and `rwt_quar
 4. A legend on the top panel (required for 2 series); both panels direct-label only their endpoint values
 5. Debt-to-equity has a few quarters (2013–2015) where `StockholdersEquity` wasn't framed, unlike Assets/Liabilities which have full coverage — those gaps are plotted as `NaN` on a shared numeric x-axis (indexed to Assets' quarters) so the line breaks visibly at the gap instead of connecting straight across it or drifting out of alignment with the other two series
 
+## What plot_credit_loss_allowance.py does
+
+Reads `rwt_quarterly_credit_loss_allowance.csv` (does not call the SEC API) and renders a line chart to `rwt_credit_loss_allowance_chart.png`:
+
+1. Same single-hue line style as `plot_assets.py` / `plot_liabilities.py` / `plot_bvps.py`
+2. Direct-labels only the most recent quarter's value
+3. Values are divided by 1,000,000 before plotting so the y-axis reads in $M — this KPI is two to three orders of magnitude smaller than Assets/Liabilities, so it gets its own scale rather than $B
+
 ## How to run
 
 ```
@@ -161,6 +173,7 @@ python3 plot_assets.py
 python3 plot_liabilities.py
 python3 plot_debt_to_equity.py
 python3 plot_leverage_dashboard.py
+python3 plot_credit_loss_allowance.py
 ```
 
 Requires the `requests` and `matplotlib` libraries. Install them with:
@@ -202,6 +215,7 @@ Each record returned by the SEC API looks like:
 - **Total Assets reuses the BVPS instant-measure pattern, not the duration helper:** `Assets` is tagged every quarter (frames end in `I`, same as `StockholdersEquity`), so it's extracted with the existing `latest_instant_by_frame()` helper rather than `extract_quarterly_duration_kpi()` — no Q4 derivation needed. `plot_assets.py` mirrors `plot_bvps.py`'s single-hue line-chart style rather than a bar chart.
 - **Total Liabilities pairs with Total Assets to reveal a leverage trend BVPS alone doesn't show as starkly:** both are instant measures extracted the same way. From CY2019Q4 to CY2026Q1, total assets roughly doubled ($18.0B → $26.8B) but implied equity (Assets − Liabilities) *shrank* in dollar terms ($1.83B → $0.96B) as the liabilities/assets ratio climbed from 89.8% to 96.4% — the balance sheet grew mostly on borrowed money, corroborating BVPS's decline from the balance-sheet side rather than the per-share side.
 - **Debt-to-equity is purely derived, no new API data:** computed as Total Liabilities / Stockholders' Equity by reusing `equity_by_frame` (already built in the BVPS section) and `liabilities_by_frame` — no new SEC concept, no extra API call. Uses total GAAP equity (not common-only, unlike BVPS) since that's the conventional denominator for this ratio. This is the sharpest trend of any KPI so far: the ratio held in a roughly 3–11x band from 2009 through 2023 (aside from a 16x COVID spike in CY2020Q1), then broke out — climbing from 12.5x (CY2024Q2) to 27.0x (CY2026Q1) in just six quarters, nearly double its prior all-time high.
+- **"Loan loss provisions" needed a concept swap:** the originally-planned `ProvisionForLoanLeaseAndOtherLosses` stopped being tagged after 2018 (retired when the CECL accounting standard changed credit-loss reporting starting 2020), so building on it would produce a chart with no current data. `DebtSecuritiesAvailableForSaleAllowanceForCreditLoss` is the modern equivalent — an instant (balance) measure with full coverage from CY2019Q4 onward, reusing `latest_instant_by_frame()`. Small dollar magnitude (under $5M throughout), so it's plotted in $M rather than $B, unlike Assets/Liabilities.
 
 ## CSV output columns
 
@@ -314,8 +328,17 @@ Each record returned by the SEC API looks like:
 | `filed` | Date the source filing was submitted to SEC |
 | `form` | Form type (`10-Q` or `10-K`) |
 
+`rwt_quarterly_credit_loss_allowance.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2025Q4`) |
+| `credit_loss_allowance` | Credit loss allowance on AFS debt securities in USD, as of quarter-end |
+| `filed` | Date the source filing was submitted to SEC |
+| `form` | Form type (`10-Q` or `10-K`) |
+
 ## Next steps (not yet built)
 
-- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, total liabilities, and debt-to-equity (the dashboard is a combined view of the last three, not a new SEC extraction)
+- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, total liabilities, debt-to-equity, and credit loss allowance (the dashboard is a combined view of assets/liabilities/D-to-E, not a new SEC extraction)
 - Filter to a specific date range
 - Interactive UI (e.g. Streamlit) if static charts stop being enough
