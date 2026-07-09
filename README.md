@@ -31,6 +31,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `plot_assets.py` | Reads `rwt_quarterly_assets.csv` and renders a line chart to `rwt_assets_chart.png` (no API call) |
 | `plot_liabilities.py` | Reads `rwt_quarterly_liabilities.csv` and renders a line chart to `rwt_liabilities_chart.png` (no API call) |
 | `plot_debt_to_equity.py` | Reads `rwt_quarterly_debt_to_equity.csv` and renders a line chart to `rwt_debt_to_equity_chart.png` (no API call) |
+| `plot_leverage_dashboard.py` | Reads `rwt_quarterly_assets.csv`, `rwt_quarterly_liabilities.csv`, and `rwt_quarterly_debt_to_equity.csv` and renders a two-panel combined chart to `rwt_leverage_dashboard.png` (no API call) |
 | `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
 | `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_bvps.csv` | One row per quarter of book value per common share, computed from balance-sheet data |
@@ -51,6 +52,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_assets_chart.png` | Output of `plot_assets.py` — quarterly total assets line chart |
 | `rwt_liabilities_chart.png` | Output of `plot_liabilities.py` — quarterly total liabilities line chart |
 | `rwt_debt_to_equity_chart.png` | Output of `plot_debt_to_equity.py` — quarterly debt-to-equity ratio line chart |
+| `rwt_leverage_dashboard.png` | Output of `plot_leverage_dashboard.py` — combined Assets/Liabilities + Debt-to-Equity dashboard |
 
 ## What get_company_facts.py does
 
@@ -136,6 +138,16 @@ Reads `rwt_quarterly_debt_to_equity.csv` (does not call the SEC API) and renders
 2. Direct-labels only the most recent quarter's value, formatted as a multiple (e.g. `27.0x`)
 3. No unit conversion needed — the ratio is already a small dimensionless number
 
+## What plot_leverage_dashboard.py does
+
+Reads `rwt_quarterly_assets.csv`, `rwt_quarterly_liabilities.csv`, and `rwt_quarterly_debt_to_equity.csv` (does not call the SEC API) and renders a combined two-panel chart to `rwt_leverage_dashboard.png`. Built with the dataviz skill's procedure:
+
+1. **Two stacked panels sharing one x-axis, not a dual-axis chart** — Assets/Liabilities ($B) and the Debt-to-Equity ratio (a dimensionless multiple) are different scales, so per the skill's non-negotiable ("never two y-scales on one axis"), they get small multiples instead
+2. **Top panel:** Total Assets and Total Liabilities as two categorical-hued lines (blue `#2a78d6`, orange `#eb6834` — validated for CVD separation via the skill's `validate_palette.js`), with the gap between them shaded in muted gray to visualize implied equity (Assets − Liabilities) as a derived area, not a third competing series
+3. **Bottom panel:** Debt-to-equity ratio, single-hue blue (consistent with `plot_debt_to_equity.py` since it's alone in its own panel)
+4. A legend on the top panel (required for 2 series); both panels direct-label only their endpoint values
+5. Debt-to-equity has a few quarters (2013–2015) where `StockholdersEquity` wasn't framed, unlike Assets/Liabilities which have full coverage — those gaps are plotted as `NaN` on a shared numeric x-axis (indexed to Assets' quarters) so the line breaks visibly at the gap instead of connecting straight across it or drifting out of alignment with the other two series
+
 ## How to run
 
 ```
@@ -148,6 +160,7 @@ python3 plot_net_income.py
 python3 plot_assets.py
 python3 plot_liabilities.py
 python3 plot_debt_to_equity.py
+python3 plot_leverage_dashboard.py
 ```
 
 Requires the `requests` and `matplotlib` libraries. Install them with:
@@ -303,6 +316,6 @@ Each record returned by the SEC API looks like:
 
 ## Next steps (not yet built)
 
-- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, total liabilities, and debt-to-equity
+- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, total liabilities, and debt-to-equity (the dashboard is a combined view of the last three, not a new SEC extraction)
 - Filter to a specific date range
 - Interactive UI (e.g. Streamlit) if static charts stop being enough
