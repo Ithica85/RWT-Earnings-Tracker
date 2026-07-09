@@ -22,13 +22,14 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 
 | File | Description |
 |------|-------------|
-| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, and total assets (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
+| `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, and total liabilities (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
 | `plot_eps.py` | Reads `rwt_quarterly_eps_complete.csv` and renders a bar chart to `rwt_eps_chart.png` (no API call) |
 | `plot_bvps.py` | Reads `rwt_quarterly_bvps.csv` and renders a line chart to `rwt_bvps_chart.png` (no API call) |
 | `plot_dividends.py` | Reads `rwt_quarterly_dividends_complete.csv` and renders a bar chart to `rwt_dividends_chart.png` (no API call) |
 | `plot_nii.py` | Reads `rwt_quarterly_nii_complete.csv` and renders a bar chart to `rwt_nii_chart.png` (no API call) |
 | `plot_net_income.py` | Reads `rwt_quarterly_net_income_complete.csv` and renders a bar chart to `rwt_net_income_chart.png` (no API call) |
 | `plot_assets.py` | Reads `rwt_quarterly_assets.csv` and renders a line chart to `rwt_assets_chart.png` (no API call) |
+| `plot_liabilities.py` | Reads `rwt_quarterly_liabilities.csv` and renders a line chart to `rwt_liabilities_chart.png` (no API call) |
 | `rwt_quarterly_eps.csv` | One row per reported quarter of diluted EPS (Q1–Q3 only; SEC doesn't tag a standalone Q4 frame) |
 | `rwt_quarterly_eps_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_bvps.csv` | One row per quarter of book value per common share, computed from balance-sheet data |
@@ -39,12 +40,14 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_quarterly_net_income.csv` | One row per reported quarter of net income (Q4 missing from 2020 onward, same gap as EPS) |
 | `rwt_quarterly_net_income_complete.csv` | Same data plus derived Q4 values, with a `source` column distinguishing reported vs. derived |
 | `rwt_quarterly_assets.csv` | One row per quarter of total assets, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
+| `rwt_quarterly_liabilities.csv` | One row per quarter of total liabilities, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
 | `rwt_eps_chart.png` | Output of `plot_eps.py` — quarterly EPS bar chart |
 | `rwt_bvps_chart.png` | Output of `plot_bvps.py` — quarterly BVPS line chart |
 | `rwt_dividends_chart.png` | Output of `plot_dividends.py` — quarterly dividends-per-share bar chart |
 | `rwt_nii_chart.png` | Output of `plot_nii.py` — quarterly net interest income bar chart |
 | `rwt_net_income_chart.png` | Output of `plot_net_income.py` — quarterly net income bar chart |
 | `rwt_assets_chart.png` | Output of `plot_assets.py` — quarterly total assets line chart |
+| `rwt_liabilities_chart.png` | Output of `plot_liabilities.py` — quarterly total liabilities line chart |
 
 ## What get_company_facts.py does
 
@@ -61,6 +64,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 11. Calls the shared helper for `InterestIncomeExpenseNet` → `rwt_quarterly_nii.csv` / `rwt_quarterly_nii_complete.csv` (same Q4 gap as EPS — missing every year from 2020 onward)
 12. Calls the shared helper for `NetIncomeLoss` → `rwt_quarterly_net_income.csv` / `rwt_quarterly_net_income_complete.csv` (same Q4 gap as EPS — missing every year from 2020 onward; this is the bottom-line dollar figure EPS is derived from)
 13. Extracts `Assets` (total assets, a balance-sheet "instant" concept tagged for every quarter including Q4 — no derivation needed, reusing `latest_instant_by_frame()` from the BVPS section) and exports to `rwt_quarterly_assets.csv`
+14. Extracts `Liabilities` (total liabilities, same instant-measure shape as `Assets`) and exports to `rwt_quarterly_liabilities.csv`, to pair with total assets for a leverage view (Assets − Liabilities = Equity)
 
 ## What plot_eps.py does
 
@@ -111,6 +115,15 @@ Reads `rwt_quarterly_assets.csv` (does not call the SEC API) and renders a line 
 3. Values are divided by 1,000,000,000 before plotting so the y-axis reads in whole $B rather than raw dollars
 4. No hatching for derived Q4 — `Assets` is an instant measure tagged every quarter, so there's nothing derived
 
+## What plot_liabilities.py does
+
+Reads `rwt_quarterly_liabilities.csv` (does not call the SEC API) and renders a line chart to `rwt_liabilities_chart.png`:
+
+1. Same single-hue line style as `plot_assets.py` and `plot_bvps.py`
+2. Direct-labels only the most recent quarter's value
+3. Values are divided by 1,000,000,000 before plotting so the y-axis reads in whole $B
+4. No hatching for derived Q4 — `Liabilities` is an instant measure tagged every quarter, so there's nothing derived
+
 ## How to run
 
 ```
@@ -121,6 +134,7 @@ python3 plot_dividends.py
 python3 plot_nii.py
 python3 plot_net_income.py
 python3 plot_assets.py
+python3 plot_liabilities.py
 ```
 
 Requires the `requests` and `matplotlib` libraries. Install them with:
@@ -160,6 +174,7 @@ Each record returned by the SEC API looks like:
 - **Shared helper for duration KPIs:** EPS, dividends, net interest income (`InterestIncomeExpenseNet`), and net income (`NetIncomeLoss`) all turned out to have the identical shape — a duration measure, deduped by latest filing, with Q4 derived from the annual figure. After the third KPI repeated this exact pattern, the dedup/derive/export logic was extracted into `extract_quarterly_duration_kpi()` rather than copy-pasting a near-identical block each time. BVPS stays separate since it's an instant (not duration) measure with a different shape (no Q4 derivation needed, preferred-stock subtraction instead).
 - **Net income can go negative, unlike NII/dividends:** `plot_net_income.py` follows `plot_eps.py`'s red/green sign-based coloring and outlier-clipping convention rather than `plot_nii.py`'s single-hue approach, since RWT has posted quarterly net losses (e.g. -$943M in CY2020Q1).
 - **Total Assets reuses the BVPS instant-measure pattern, not the duration helper:** `Assets` is tagged every quarter (frames end in `I`, same as `StockholdersEquity`), so it's extracted with the existing `latest_instant_by_frame()` helper rather than `extract_quarterly_duration_kpi()` — no Q4 derivation needed. `plot_assets.py` mirrors `plot_bvps.py`'s single-hue line-chart style rather than a bar chart.
+- **Total Liabilities pairs with Total Assets to reveal a leverage trend BVPS alone doesn't show as starkly:** both are instant measures extracted the same way. From CY2019Q4 to CY2026Q1, total assets roughly doubled ($18.0B → $26.8B) but implied equity (Assets − Liabilities) *shrank* in dollar terms ($1.83B → $0.96B) as the liabilities/assets ratio climbed from 89.8% to 96.4% — the balance sheet grew mostly on borrowed money, corroborating BVPS's decline from the balance-sheet side rather than the per-share side.
 
 ## CSV output columns
 
@@ -252,8 +267,17 @@ Each record returned by the SEC API looks like:
 | `filed` | Date the source filing was submitted to SEC |
 | `form` | Form type (`10-Q` or `10-K`) |
 
+`rwt_quarterly_liabilities.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2025Q4`) |
+| `total_liabilities` | Total liabilities in USD, as of quarter-end |
+| `filed` | Date the source filing was submitted to SEC |
+| `form` | Form type (`10-Q` or `10-K`) |
+
 ## Next steps (not yet built)
 
-- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, and total assets
+- Extract additional KPIs beyond EPS, book value, dividends, net interest income, net income, total assets, and total liabilities
 - Filter to a specific date range
 - Interactive UI (e.g. Streamlit) if static charts stop being enough

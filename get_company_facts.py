@@ -361,3 +361,40 @@ with open("rwt_quarterly_assets.csv", "w", newline="") as f:
     writer.writerows(assets_rows)
 
 print("\nExported to rwt_quarterly_assets.csv")
+
+# ---------------------------------------------------------------------------
+# Total Liabilities
+# ---------------------------------------------------------------------------
+# Liabilities is a balance-sheet ("instant") measure, same shape as Assets
+# above: tagged at every quarter-end including Q4, so no Q4-derivation step is
+# needed. Reuses latest_instant_by_frame(), defined in the BVPS section.
+# Paired with Assets to see the leverage trend (Assets - Liabilities = Equity).
+
+liabilities_concept_name = "Liabilities"
+if liabilities_concept_name not in us_gaap_facts:
+    raise SystemExit(f"'{liabilities_concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+
+liabilities_by_frame = latest_instant_by_frame(liabilities_concept_name)
+sorted_liabilities_frames = sorted(liabilities_by_frame)
+
+print(f"\nFound {len(sorted_liabilities_frames)} quarterly Total Liabilities data points:\n")
+
+liabilities_rows = []
+for frame in sorted_liabilities_frames:
+    record = liabilities_by_frame[frame]
+    quarter = frame[:-1]  # strip the trailing "I" so labels match the EPS "CY2025Q4" style
+
+    liabilities_rows.append({
+        "quarter": quarter,
+        "total_liabilities": record["val"],
+        "filed": record["filed"],
+        "form": record.get("form"),
+    })
+    print(f"{quarter:10s} Total Liabilities: {record['val']:>18,.0f}   (filed {record['filed']}, {record.get('form')})")
+
+with open("rwt_quarterly_liabilities.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["quarter", "total_liabilities", "filed", "form"])
+    writer.writeheader()
+    writer.writerows(liabilities_rows)
+
+print("\nExported to rwt_quarterly_liabilities.csv")
