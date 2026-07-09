@@ -325,3 +325,39 @@ quarterly_nii, sorted_all_nii = extract_quarterly_duration_kpi(
 
 quarterly_net_income, sorted_all_net_income = extract_quarterly_duration_kpi(
     "NetIncomeLoss", "net_income", "Net Income", "rwt_quarterly_net_income")
+
+# ---------------------------------------------------------------------------
+# Total Assets
+# ---------------------------------------------------------------------------
+# Assets is a balance-sheet ("instant") measure, same shape as StockholdersEquity
+# above: tagged at every quarter-end including Q4, so no Q4-derivation step is
+# needed. Reuses latest_instant_by_frame(), defined in the BVPS section.
+
+assets_concept_name = "Assets"
+if assets_concept_name not in us_gaap_facts:
+    raise SystemExit(f"'{assets_concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+
+assets_by_frame = latest_instant_by_frame(assets_concept_name)
+sorted_asset_frames = sorted(assets_by_frame)
+
+print(f"\nFound {len(sorted_asset_frames)} quarterly Total Assets data points:\n")
+
+assets_rows = []
+for frame in sorted_asset_frames:
+    record = assets_by_frame[frame]
+    quarter = frame[:-1]  # strip the trailing "I" so labels match the EPS "CY2025Q4" style
+
+    assets_rows.append({
+        "quarter": quarter,
+        "total_assets": record["val"],
+        "filed": record["filed"],
+        "form": record.get("form"),
+    })
+    print(f"{quarter:10s} Total Assets: {record['val']:>18,.0f}   (filed {record['filed']}, {record.get('form')})")
+
+with open("rwt_quarterly_assets.csv", "w", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["quarter", "total_assets", "filed", "form"])
+    writer.writeheader()
+    writer.writerows(assets_rows)
+
+print("\nExported to rwt_quarterly_assets.csv")
