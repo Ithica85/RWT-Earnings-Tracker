@@ -315,3 +315,13 @@ quarterly_dividends, sorted_all_dividends = extract_quarterly_duration_kpi(
 
 quarterly_nii, sorted_all_nii = extract_quarterly_duration_kpi(
     "InterestIncomeExpenseNet", "net_interest_income", "Net Interest Income", "rwt_quarterly_nii")
+
+# ---------------------------------------------------------------------------
+# Net Income
+# ---------------------------------------------------------------------------
+# NetIncomeLoss (bottom-line net income, the numerator EPS is derived from) is
+# also a duration measure with the identical Q4 gap: explicit through 2019,
+# derived from the annual figure from 2020 onward.
+
+quarterly_net_income, sorted_all_net_income = extract_quarterly_duration_kpi(
+    "NetIncomeLoss", "net_income", "Net Income", "rwt_quarterly_net_income")
