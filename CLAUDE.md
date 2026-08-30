@@ -23,6 +23,7 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | File | Description |
 |------|-------------|
 | `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, total liabilities, debt-to-equity ratio, and credit loss allowance (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
+| `get_segment_facts.py` | **Per-segment** extraction — a different pipeline to `get_company_facts.py`, because CompanyFacts returns consolidated figures only. Discovers every 10-Q/10-K, downloads and caches each filing's XBRL instance document, and reads dimensional facts tagged against `us-gaap:StatementBusinessSegmentsAxis`. Exports one long CSV plus two chart-ready wide CSVs |
 | `plot_eps.py` | Reads `rwt_quarterly_eps_complete.csv` and renders a bar chart to `rwt_eps_chart.png` (no API call) |
 | `plot_bvps.py` | Reads `rwt_quarterly_bvps.csv` and renders a line chart to `rwt_bvps_chart.png` (no API call) |
 | `plot_dividends.py` | Reads `rwt_quarterly_dividends_complete.csv` and renders a bar chart to `rwt_dividends_chart.png` (no API call) |
@@ -46,6 +47,10 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_quarterly_liabilities.csv` | One row per quarter of total liabilities, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
 | `rwt_quarterly_debt_to_equity.csv` | One row per quarter of debt-to-equity ratio (Total Liabilities / Stockholders' Equity), purely derived from data already extracted — no new SEC concept |
 | `rwt_quarterly_credit_loss_allowance.csv` | One row per quarter of the credit loss allowance on available-for-sale debt securities, a balance-sheet "instant" measure (tagged every quarter from CY2019Q4 onward, no derivation needed) |
+| `rwt_segment_quarterly.csv` | Long/tidy format — one row per segment × quarter × line item, across **all** segment structures, with full provenance (`filed`, `segment_structure`) so a reader can tell which rows are comparable |
+| `rwt_segment_contribution.csv` | Wide format — segment net income (contribution), one row per quarter, one column per segment. Restricted to the current 6-segment structure |
+| `rwt_segment_assets.csv` | Wide format — assets allocated per segment, same shape and same restriction as above |
+| `sec_cache/` | Downloaded XBRL instance documents, ~5 MB each (gitignored — re-downloadable at any time) |
 | `rwt_eps_chart.png` | Output of `plot_eps.py` — quarterly EPS bar chart |
 | `rwt_bvps_chart.png` | Output of `plot_bvps.py` — quarterly BVPS line chart |
 | `rwt_dividends_chart.png` | Output of `plot_dividends.py` — quarterly dividends-per-share bar chart |
@@ -75,6 +80,19 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 14. Extracts `Liabilities` (total liabilities, same instant-measure shape as `Assets`) and exports to `rwt_quarterly_liabilities.csv`, to pair with total assets for a leverage view (Assets − Liabilities = Equity)
 15. Computes debt-to-equity ratio (Total Liabilities / Stockholders' Equity) purely from data already extracted above — no new SEC concept, no extra API call — and exports to `rwt_quarterly_debt_to_equity.csv`
 16. Extracts `DebtSecuritiesAvailableForSaleAllowanceForCreditLoss` (credit loss allowance on AFS debt securities — the current, CECL-era replacement for the retired `ProvisionForLoanLeaseAndOtherLosses` concept, which stopped being tagged after 2018) and exports to `rwt_quarterly_credit_loss_allowance.csv`
+
+## What get_segment_facts.py does
+
+A separate pipeline from `get_company_facts.py`. The CompanyFacts API returns **consolidated** figures only — one number per concept per period for the whole company. Segment breakdowns are *dimensional* facts that live in each filing's own XBRL instance document, so they need a different approach.
+
+1. Calls `data.sec.gov/submissions/CIK0000930236.json` to discover every 10-Q and 10-K filed on or after `EARLIEST_FILING` (2025-01-01 — before that the segment structure is unrecognisably different)
+2. Downloads each filing's XBRL instance (`rwt-YYYYMMDD_htm.xml`, ~5 MB) into `sec_cache/`, **skipping anything already cached** — only new filings cost a request
+3. Parses XBRL *contexts* into `(segment, period)` pairs. A context is XBRL's way of saying "this number is about this entity, over this period, sliced these ways". Contexts carrying dimensions beyond segment + consolidation are rejected — those are sub-breakdowns (by range, by counterparty) that must not be mixed into clean segment totals
+4. Converts periods to calendar frames: ~90-day durations become `CY2026Q2`, ~365-day become `CY2026`, instants become `CY2026Q2I`. Six- and nine-month year-to-date periods are skipped
+5. Extracts 22 line items per segment — a full P&L (interest income/expense, mortgage banking activities, fair value changes, HEI, servicing, fees, G&A, portfolio management, loan acquisition, tax, net income) plus `Assets`
+6. Dedupes by latest filing, same convention as `get_company_facts.py`
+7. Derives Q4 as `Annual − Q1 − Q2 − Q3`, **but only when all four inputs come from filings reporting the same set of segments** (see design decisions below)
+8. Exports `rwt_segment_quarterly.csv` (long, all structures, with provenance) plus `rwt_segment_contribution.csv` and `rwt_segment_assets.csv` (wide, current structure only)
 
 ## What plot_eps.py does
 
@@ -164,6 +182,7 @@ Reads `rwt_quarterly_credit_loss_allowance.csv` (does not call the SEC API) and 
 
 ```
 python3 get_company_facts.py
+python3 get_segment_facts.py
 python3 plot_eps.py
 python3 plot_bvps.py
 python3 plot_dividends.py
@@ -176,11 +195,13 @@ python3 plot_leverage_dashboard.py
 python3 plot_credit_loss_allowance.py
 ```
 
-Requires the `requests` and `matplotlib` libraries. Install them with:
+Requires the `requests`, `matplotlib` and `lxml` libraries. Install them with:
 
 ```
-pip3 install requests matplotlib
+pip3 install requests matplotlib lxml
 ```
+
+`get_segment_facts.py` downloads ~37 MB of XBRL instance documents on its first run and caches them in `sec_cache/`. Later runs only fetch filings that are new.
 
 ## EPS record structure
 
@@ -215,6 +236,11 @@ Each record returned by the SEC API looks like:
 - **Total Assets reuses the BVPS instant-measure pattern, not the duration helper:** `Assets` is tagged every quarter (frames end in `I`, same as `StockholdersEquity`), so it's extracted with the existing `latest_instant_by_frame()` helper rather than `extract_quarterly_duration_kpi()` — no Q4 derivation needed. `plot_assets.py` mirrors `plot_bvps.py`'s single-hue line-chart style rather than a bar chart.
 - **Total Liabilities pairs with Total Assets to reveal a leverage trend BVPS alone doesn't show as starkly:** both are instant measures extracted the same way. From CY2019Q4 to CY2026Q1, total assets grew 49% ($18.0B → $26.8B, roughly doubling only if measured from the CY2023Q2 trough of $12.8B instead) but implied equity (Assets − Liabilities) *shrank* in dollar terms ($1.83B → $0.96B) as the liabilities/assets ratio climbed from 89.8% to 96.4% — the balance sheet grew mostly on borrowed money, corroborating BVPS's decline from the balance-sheet side rather than the per-share side.
 - **Debt-to-equity is purely derived, no new API data:** computed as Total Liabilities / Stockholders' Equity by reusing `equity_by_frame` (already built in the BVPS section) and `liabilities_by_frame` — no new SEC concept, no extra API call. Uses total GAAP equity (not common-only, unlike BVPS) since that's the conventional denominator for this ratio. This is the sharpest trend of any KPI so far: the ratio held in a roughly 3–11x band from 2009 through 2023 (aside from a 16x COVID spike in CY2020Q1), then broke out — climbing from 12.5x (CY2024Q2) to 27.0x (CY2026Q1) in just six quarters, nearly double its prior all-time high.
+- **Segment data needs a whole separate pipeline, not another KPI:** CompanyFacts has no dimensional data at all, so `get_segment_facts.py` downloads and parses filing instance documents instead. Instances are ~5 MB each and cached to `sec_cache/`; the rendered `R54.htm` report is 26× smaller (211 KB) but its R-number shifts between filings and its row/column mapping is positional, so the instance was chosen for stability over bandwidth.
+- **Redwood has redrawn its segments three times in four years, and this is the dominant constraint on segment analysis:** 2022–2023 reported Business Purpose Lending / Residential Lending / Third-Party Residential Investments; 2024 reported Residential Consumer Mortgage Banking / Residential Investor Lending / Residential Lending / Third-Party Residential Investments; 2025 reported CoreVest / Sequoia / Redwood Investments / Legacy Investments; 2026 added Aspire. **There is no long segment history to be had** — unlike the consolidated KPIs, which go back to 2009.
+- **Q4 derivation must not cross a segment restructure.** The arithmetic is the same as `extract_quarterly_duration_kpi()`, but subtracting quarters reported under one structure from an annual reported under another produces a plausible-looking wrong number. Concretely: the FY2025 annual predates the Aspire segment while Q1/Q2 2025 were later restated to include it, so a naive subtraction buries Aspire's whole result inside another segment's Q4 — the error was exactly Aspire's contribution. `derive_q4()` now requires all four inputs to share a segment structure and skips the quarter otherwise. This currently means **no derived segment Q4 at all** for 2024 or 2025.
+- **Restatement across structures is material for income, cosmetic for assets** (measured empirically by comparing CY2025Q2 as reported in the 5-segment 2025-08-08 filing against the 6-segment 2026-08-05 filing). *Assets:* Aspire's $137.8M was carved out of Sequoia exactly — every other segment identical to the dollar. *Income statement:* every segment moved, driven by a net-interest-income reallocation (Corporate +$16.6M, Legacy −$6.0M, Redwood Investments −$4.6M, Sequoia −$3.8M, CoreVest −$0.9M). So older segment income figures are **not** comparable to current ones, which is why the wide CSVs are restricted to the current structure. That currently yields **4 quarters** (CY2025Q1–Q2, CY2026Q1–Q2), growing by one per filing.
+- **Segment extraction validates cleanly against two independent sources:** segment contributions sum to consolidated `NetIncomeLoss` to the dollar ($0 difference) for all seven reported quarters, and CoreVest's CY2026Q1/Q2 values (−$3.29M, +$1.26M) match the Q2 2026 MD&A narrative ("segment net loss of $3 million... segment income of $1 million") exactly.
 - **"Loan loss provisions" needed a concept swap:** the originally-planned `ProvisionForLoanLeaseAndOtherLosses` stopped being tagged after 2018 (retired when the CECL accounting standard changed credit-loss reporting starting 2020), so building on it would produce a chart with no current data. `DebtSecuritiesAvailableForSaleAllowanceForCreditLoss` is the modern equivalent — an instant (balance) measure with full coverage from CY2019Q4 onward, reusing `latest_instant_by_frame()`. Small dollar magnitude (under $5M throughout), so it's plotted in $M rather than $B, unlike Assets/Liabilities.
 
 ## CSV output columns
@@ -336,6 +362,25 @@ Each record returned by the SEC API looks like:
 | `credit_loss_allowance` | Credit loss allowance on AFS debt securities in USD, as of quarter-end |
 | `filed` | Date the source filing was submitted to SEC |
 | `form` | Form type (`10-Q` or `10-K`) |
+
+`rwt_segment_quarterly.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2026Q2`) |
+| `segment` | `SequoiaMortgageBanking`, `CoreVestMortgageBanking`, `AspireMortgageBanking`, `RedwoodInvestments`, `LegacyInvestments`, or `Corporate` |
+| `line_item` | One of the 22 extracted concepts (e.g. `segment_contribution`, `net_interest_income`, `segment_assets`) |
+| `value` | Value in USD |
+| `source` | `reported` or `derived (Annual - Q1 - Q2 - Q3)` |
+| `filed` | Date of the filing this value came from |
+| `segment_structure` | Signature of the segment set that filing reported — rows with different signatures are **not** comparable |
+
+`rwt_segment_contribution.csv` / `rwt_segment_assets.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2026Q2`) |
+| *one column per segment* | Segment net income (contribution) or allocated assets, in USD |
 
 ## Next steps (not yet built)
 

@@ -57,5 +57,10 @@ logs/
 node_modules/
 npm-debug.log
 
+# SEC filing cache — XBRL instance documents downloaded by
+# get_segment_facts.py. ~5 MB per filing, re-downloadable at any time,
+# so there's no reason to put them in git.
+sec_cache/
+
 # Misc
 .env.example  # you CAN commit this (no secrets)
