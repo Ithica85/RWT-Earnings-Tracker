@@ -27,13 +27,19 @@ from datetime import date
 import requests
 from lxml import etree
 
+from ingest.edgar import client, xbrl
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
 CIK = "0000930236"
-HEADERS = {"User-Agent": "Daniel McDermott mcdermott.d.r@gmail.com"}
-CACHE_DIR = "sec_cache"
+CACHE_DIR = client.CACHE_DIR
+
+# Kept for the other scripts that import it. New code should go through
+# ingest.edgar.client, which rate-limits every SEC request from one place
+# rather than relying on each caller to sleep politely.
+HEADERS = {"User-Agent": client.user_agent()}
 
 # Only filings from this date forward use the current segment taxonomy
 # (Sequoia / CoreVest / Aspire / Redwood Investments / Legacy Investments).
@@ -124,22 +130,14 @@ def fetch_instance(accession, filing_date, primary_doc):
     _htm.xml - e.g. rwt-20260630.htm -> rwt-20260630_htm.xml. That file is the
     "extracted instance": the same facts as the inline-XBRL filing, but as
     plain XML with signs already normalised.
-    """
-    path = instance_path(accession, filing_date, primary_doc)
-    if os.path.exists(path):
-        return path, False
 
-    accn_nodash = accession.replace("-", "")
+    Filed documents never change, so once fetched a copy is reused forever.
+    """
     instance_name = primary_doc.replace(".htm", "_htm.xml")
-    url = (
-        f"https://www.sec.gov/Archives/edgar/data/930236/"
-        f"{accn_nodash}/{instance_name}"
+    url = client.archive_url(CIK, accession, instance_name)
+    return client.cached_get(
+        url, f"{filing_date}_{accession}.xml", binary=True, timeout=180
     )
-    response = requests.get(url, headers=HEADERS, timeout=180)
-    response.raise_for_status()
-    with open(path, "wb") as handle:
-        handle.write(response.content)
-    return path, True
 
 
 # ---------------------------------------------------------------------------
@@ -148,88 +146,18 @@ def fetch_instance(accession, filing_date, primary_doc):
 
 
 def period_to_frame(start, end, instant):
-    """Convert a context's dates into a calendar frame label.
-
-    Durations become CY2026Q2 (a single quarter) or CY2025 (a full year);
-    instants become CY2026Q2I. Six- and nine-month year-to-date periods are
-    returned as None so they get skipped - we only want discrete quarters and
-    the annual figure the Q4 derivation needs.
-    """
-    if instant is not None:
-        quarter = (instant.month - 1) // 3 + 1
-        return f"CY{instant.year}Q{quarter}I"
-
-    span = (end - start).days
-    quarter = (end.month - 1) // 3 + 1
-
-    if 80 <= span <= 100:
-        return f"CY{end.year}Q{quarter}"
-    if 350 <= span <= 380:
-        return f"CY{end.year}"
-    return None  # 6-month / 9-month year-to-date - not useful here
+    """Delegates to ingest.edgar.xbrl, where the shared version lives."""
+    return xbrl.period_to_frame(start, end, instant)
 
 
-def parse_contexts(root, prefix_of):
+def parse_contexts(root, prefix_of=None):
     """Map context id -> (segment_name, frame).
 
-    A context is XBRL's way of saying "this number is about this entity, over
-    this period, sliced these ways". We keep only contexts sliced by segment,
-    and reject any that carry an unrelated extra dimension - those would be
-    sub-breakdowns (by range, by counterparty) that must not be mixed in with
-    clean segment totals.
+    Delegates to ingest.edgar.xbrl.segment_contexts, which is where the
+    shared version lives. The `prefix_of` argument is unused and kept only so
+    existing callers do not break.
     """
-    contexts = {}
-
-    for ctx in root.iter(f"{{{NS_XBRLI}}}context"):
-        members = {}
-        for member in ctx.iter(f"{{{NS_XBRLDI}}}explicitMember"):
-            axis = member.get("dimension", "")
-            axis_local = axis.split(":")[-1]
-            value_local = (member.text or "").strip().split(":")[-1]
-            members[axis_local] = value_local
-
-        if not members:
-            continue
-
-        # Work out which segment this context describes.
-        segment = None
-        if SEGMENT_AXIS in members:
-            segment = (
-                members[SEGMENT_AXIS]
-                .replace("Member", "")
-                .replace("Segment", "")
-            )
-        elif members.get(CONSOLIDATION_AXIS) == "CorporateNonSegmentMember":
-            segment = "Corporate"
-
-        if segment is None:
-            continue
-
-        # Reject contexts carrying dimensions beyond segment + consolidation.
-        extra = set(members) - {SEGMENT_AXIS, CONSOLIDATION_AXIS}
-        if extra:
-            continue
-
-        period = ctx.find(f"{{{NS_XBRLI}}}period")
-        if period is None:
-            continue
-
-        start_el = period.find(f"{{{NS_XBRLI}}}startDate")
-        end_el = period.find(f"{{{NS_XBRLI}}}endDate")
-        instant_el = period.find(f"{{{NS_XBRLI}}}instant")
-
-        def to_date(element):
-            return date.fromisoformat(element.text.strip()) if element is not None else None
-
-        frame = period_to_frame(
-            to_date(start_el), to_date(end_el), to_date(instant_el)
-        )
-        if frame is None:
-            continue
-
-        contexts[ctx.get("id")] = (segment, frame)
-
-    return contexts
+    return xbrl.segment_contexts(root)
 
 
 # ---------------------------------------------------------------------------
@@ -238,46 +166,21 @@ def parse_contexts(root, prefix_of):
 
 
 def extract_facts(path):
-    """Return [(segment, frame, line_item, value), ...] for one filing."""
-    tree = etree.parse(path)
-    root = tree.getroot()
+    """Return [(segment, frame, line_item, value), ...] for one filing.
 
-    # Reverse the namespace map so we can turn a namespace URI back into
-    # its prefix without hardcoding the us-gaap year.
-    prefix_of = {uri: prefix for prefix, uri in root.nsmap.items() if prefix}
-
-    contexts = parse_contexts(root, prefix_of)
+    The parsing itself lives in ingest.edgar.xbrl so other companies reuse it;
+    what stays here is the RWT-specific choice of which 22 line items matter
+    and what to call them.
+    """
+    root = xbrl.parse(path)
+    contexts = xbrl.segment_contexts(root)
     if not contexts:
         return []
 
     results = []
-    for element in root.iter():
-        context_ref = element.get("contextRef")
-        if context_ref is None or context_ref not in contexts:
-            continue
-
-        tag = etree.QName(element)
-        if tag.localname not in LINE_ITEMS:
-            continue
-
-        text = (element.text or "").strip()
-        if not text:
-            continue
-
-        try:
-            value = float(text)
-        except ValueError:
-            continue
-
-        # XBRL records some expense concepts as positive numbers that the
-        # filing renders in parentheses. The sign attribute, when present,
-        # carries that flip.
-        if element.get("sign") == "-":
-            value = -value
-
+    for context_ref, name, value in xbrl.facts_for_contexts(root, contexts, set(LINE_ITEMS)):
         segment, frame = contexts[context_ref]
-        results.append((segment, frame, LINE_ITEMS[tag.localname], value))
-
+        results.append((segment, frame, LINE_ITEMS[name], value))
     return results
 
 
@@ -344,11 +247,8 @@ def derive_q4(records, structure_of):
 
 
 def quarter_sort_key(frame):
-    """Sort CY2026Q2 / CY2026Q2I chronologically."""
-    match = re.match(r"CY(\d{4})Q(\d)", frame)
-    if match:
-        return (int(match.group(1)), int(match.group(2)))
-    return (int(frame[2:6]), 9)
+    """Delegates to ingest.edgar.xbrl."""
+    return xbrl.quarter_sort_key(frame)
 
 
 def export_long(records, sources, filed_of, structure_of, filename):

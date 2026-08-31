@@ -2,6 +2,11 @@ import requests  # the "requests" library lets Python make web requests (like a 
 import json      # the "json" library converts JSON text into Python objects we can work with
 import csv       # the "csv" library lets Python write data to a CSV file
 
+# The reusable extraction logic lives here now, so other companies can share
+# it. This script keeps the RWT-specific concept choices, the printing, and
+# the CSV exports.
+from ingest.edgar import facts
+
 # Redwood Trust's unique identifier on SEC EDGAR
 # You can verify this at: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=redwood+trust&type=&dateb=&owner=include&count=40&search_text=
 CIK = "0000930236"
@@ -109,40 +114,21 @@ def extract_quarterly_duration_kpi(concept_name, value_key, label, csv_stem,
     if they disagree they are different measures, and splicing them would
     invent a step in the series. See the interest expense note in CLAUDE.md."""
 
-    if concept_name not in us_gaap_facts:
-        raise SystemExit(f"'{concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
+    # The extraction logic itself now lives in ingest/edgar/facts.py so other
+    # companies can reuse it. This function keeps the printing and the CSV
+    # writing, which are specific to how this script reports on RWT.
+    try:
+        records, unit_name = facts.concept_records(us_gaap_facts, concept_name, successor_concepts)
+    except KeyError as error:
+        raise SystemExit(f"{error}. Check available concepts and update the name.")
 
-    concept = us_gaap_facts[concept_name]
-    unit_name = list(concept["units"].keys())[0]  # grab the unit type automatically, e.g. "USD/shares" or "USD"
-    records = list(concept["units"][unit_name])
-
-    for successor in successor_concepts:
-        if successor not in us_gaap_facts:
-            raise SystemExit(f"Successor concept '{successor}' not found in us-gaap facts.")
-        records += us_gaap_facts[successor]["units"][unit_name]
-
-    # Dedup by latest-filed value per frame. We keep every framed record
+    # Dedup by latest-filed value per frame. Every framed record is kept
     # (quarterly AND annual), not just quarterly ones, because the annual
     # ("CY####") figure is needed below to derive Q4.
-    by_frame = {}
-    for record in records:
-        frame = record.get("frame")  # .get() returns None if "frame" doesn't exist, avoiding a KeyError
-        if not frame:
-            continue
-        existing = by_frame.get(frame)
-        if existing is None or record["filed"] > existing["filed"]:  # keep only the latest filed value per frame
-            by_frame[frame] = record
+    by_frame = facts.dedupe_by_frame(records)
 
     # Reported quarters: frames containing "Q", e.g. "CY2025Q1"
-    quarterly = {}
-    for frame, record in by_frame.items():
-        if "Q" in frame:
-            quarterly[frame] = {
-                "quarter": frame,
-                value_key: record["val"],
-                "filed": record["filed"],
-                "form": record.get("form"),
-            }
+    quarterly = facts.quarterly_from_frames(by_frame, value_key)
 
     # sort chronologically — "CY2024Q1" < "CY2024Q2" works because the string format is lexicographically ordered
     sorted_quarters = sorted(quarterly.values(), key=lambda x: x["quarter"])
@@ -179,30 +165,10 @@ def extract_quarterly_duration_kpi(concept_name, value_key, label, csv_stem,
 
     # Derive missing Q4 values as Annual - (Q1 + Q2 + Q3), for any year where the
     # annual figure and all three reported quarters are available.
-    reported_values = {frame: item[value_key] for frame, item in quarterly.items()}
-    years_present = set(int(f[2:6]) for f in reported_values)
-    derived_q4 = {}
-
-    for year in years_present:
-        annual_frame = f"CY{year}"
-        q1 = reported_values.get(f"CY{year}Q1")
-        q2 = reported_values.get(f"CY{year}Q2")
-        q3 = reported_values.get(f"CY{year}Q3")
-        q4_frame = f"CY{year}Q4"
-
-        if q4_frame in reported_values:
-            continue  # already have it explicitly, no need to derive
-
-        annual_record = by_frame.get(annual_frame)
-        if annual_record and q1 is not None and q2 is not None and q3 is not None:
-            derived_q4[q4_frame] = round(annual_record["val"] - q1 - q2 - q3, 2)
+    derived_q4 = facts.derive_q4(by_frame, quarterly, value_key)
 
     # Merge reported + derived, tag the source so you always know which is which
-    all_quarters = {}
-    for frame, item in quarterly.items():
-        all_quarters[frame] = {"quarter": frame, value_key: item[value_key], "source": "reported"}
-    for frame, val in derived_q4.items():
-        all_quarters[frame] = {"quarter": frame, value_key: val, "source": "derived (Annual - Q1 - Q2 - Q3)"}
+    all_quarters = facts.merge_reported_and_derived(quarterly, derived_q4, value_key)
 
     sorted_all_quarters = sorted(all_quarters.values(), key=lambda x: x["quarter"])
 
@@ -251,20 +217,11 @@ for concept_name in (equity_concept_name, shares_concept_name):
 def latest_instant_by_frame(concept_name):
     """Same dedup approach as the EPS section above: keep only the most
     recently filed value per frame. Restricted to instant ('I'-suffixed)
-    frames since balance-sheet concepts are point-in-time, not a range."""
-    concept = us_gaap_facts[concept_name]
-    unit_name = list(concept["units"].keys())[0]
-    records = concept["units"][unit_name]
+    frames since balance-sheet concepts are point-in-time, not a range.
 
-    by_frame = {}
-    for record in records:
-        frame = record.get("frame")
-        if not frame or not frame.endswith("I"):
-            continue
-        existing = by_frame.get(frame)
-        if existing is None or record["filed"] > existing["filed"]:
-            by_frame[frame] = record
-    return by_frame
+    Thin wrapper over ingest/edgar/facts.py so this script keeps reading the
+    way it did while the reusable version lives in the shared engine."""
+    return facts.latest_instant_by_frame(us_gaap_facts, concept_name)
 
 
 equity_by_frame = latest_instant_by_frame(equity_concept_name)
