@@ -1,0 +1,1826 @@
+{
+  "ticker": "AGNC",
+  "name": "AGNC Investment Corp.",
+  "cik": "0001423689",
+  "tier": "generic",
+  "kpis": {
+    "eps": {
+      "label": "Diluted EPS",
+      "available": true,
+      "unit": "usd_per_share",
+      "quarters": 36,
+      "first": "CY2017Q2",
+      "latest": "CY2026Q2",
+      "latest_value": 0.52,
+      "note": null,
+      "series": [
+        {
+          "quarter": "CY2017Q2",
+          "value": 0.05
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 0.74
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 1.06
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 0.7
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 0.45
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": -2.0
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 0.47
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": -0.85
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": -0.03
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 1.56
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": -4.46
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 1.24
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 1.15
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 1.41
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 1.77
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": -0.83
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 0.35
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": -0.07
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": -1.29
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": -0.87
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": -1.31
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 1.06
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": -0.31
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": 0.43
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": -0.68
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": 0.61
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": 0.59
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": -0.11
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": 0.39
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 0.06
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 0.02
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": -0.17
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 0.72
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 0.9
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": -0.17
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 0.52
+        }
+      ]
+    },
+    "net_income": {
+      "label": "Net Income",
+      "available": true,
+      "unit": "usd",
+      "quarters": 66,
+      "first": "CY2010Q1",
+      "latest": "CY2026Q2",
+      "latest_value": 654000000,
+      "note": null,
+      "series": [
+        {
+          "quarter": "CY2010Q1",
+          "value": 53150000
+        },
+        {
+          "quarter": "CY2010Q2",
+          "value": 36858000
+        },
+        {
+          "quarter": "CY2010Q3",
+          "value": 60028000
+        },
+        {
+          "quarter": "CY2010Q4",
+          "value": 138080000
+        },
+        {
+          "quarter": "CY2011Q1",
+          "value": 134000000
+        },
+        {
+          "quarter": "CY2011Q2",
+          "value": 177000000
+        },
+        {
+          "quarter": "CY2011Q3",
+          "value": 251000000
+        },
+        {
+          "quarter": "CY2011Q4",
+          "value": 208000000
+        },
+        {
+          "quarter": "CY2012Q1",
+          "value": 641000000
+        },
+        {
+          "quarter": "CY2012Q2",
+          "value": -261000000
+        },
+        {
+          "quarter": "CY2012Q3",
+          "value": 86000000
+        },
+        {
+          "quarter": "CY2012Q4",
+          "value": 810000000
+        },
+        {
+          "quarter": "CY2013Q1",
+          "value": 231000000
+        },
+        {
+          "quarter": "CY2013Q2",
+          "value": 1829000000
+        },
+        {
+          "quarter": "CY2013Q3",
+          "value": -701000000
+        },
+        {
+          "quarter": "CY2013Q4",
+          "value": -101000000
+        },
+        {
+          "quarter": "CY2014Q1",
+          "value": -141000000
+        },
+        {
+          "quarter": "CY2014Q2",
+          "value": 32000000
+        },
+        {
+          "quarter": "CY2014Q3",
+          "value": 197000000
+        },
+        {
+          "quarter": "CY2014Q4",
+          "value": -323000000
+        },
+        {
+          "quarter": "CY2015Q1",
+          "value": -252000000
+        },
+        {
+          "quarter": "CY2015Q2",
+          "value": 512000000
+        },
+        {
+          "quarter": "CY2015Q3",
+          "value": -633000000
+        },
+        {
+          "quarter": "CY2015Q4",
+          "value": 588000000
+        },
+        {
+          "quarter": "CY2016Q1",
+          "value": -772000000
+        },
+        {
+          "quarter": "CY2016Q2",
+          "value": -135000000
+        },
+        {
+          "quarter": "CY2016Q3",
+          "value": 511000000
+        },
+        {
+          "quarter": "CY2016Q4",
+          "value": 1019000000
+        },
+        {
+          "quarter": "CY2017Q1",
+          "value": 76000000
+        },
+        {
+          "quarter": "CY2017Q2",
+          "value": 24000000
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 286000000
+        },
+        {
+          "quarter": "CY2017Q4",
+          "value": 385000000
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 424000000
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 293000000
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 216000000
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": -804000000
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 265000000
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": -444000000
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": -4000000
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 871000000
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": -2421000000
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 718000000
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 662000000
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 129000000
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 975000000
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": -411000000
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 212000000
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": -27000000
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": -651000000
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": -434000000
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": -666000000
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 561000000
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": -151000000
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": 286000000
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": -392000000
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": 749000000
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": 443000000
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": -48000000
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": 346000000
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 122000000
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 50000000
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": -140000000
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 806000000
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 954000000
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": -148000000
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 654000000
+        }
+      ]
+    },
+    "revenues": {
+      "label": "Revenues",
+      "available": false,
+      "reason": "\"'Revenues' not found in us-gaap facts\""
+    },
+    "net_interest_income": {
+      "label": "Net Interest Income",
+      "available": true,
+      "unit": "usd",
+      "quarters": 66,
+      "first": "CY2010Q1",
+      "latest": "CY2026Q2",
+      "latest_value": 305000000,
+      "note": null,
+      "series": [
+        {
+          "quarter": "CY2010Q1",
+          "value": 23287000
+        },
+        {
+          "quarter": "CY2010Q2",
+          "value": 33241000
+        },
+        {
+          "quarter": "CY2010Q3",
+          "value": 44069000
+        },
+        {
+          "quarter": "CY2010Q4",
+          "value": 76382000
+        },
+        {
+          "quarter": "CY2011Q1",
+          "value": 129000000
+        },
+        {
+          "quarter": "CY2011Q2",
+          "value": 200000000
+        },
+        {
+          "quarter": "CY2011Q3",
+          "value": 233000000
+        },
+        {
+          "quarter": "CY2011Q4",
+          "value": 262000000
+        },
+        {
+          "quarter": "CY2012Q1",
+          "value": 408000000
+        },
+        {
+          "quarter": "CY2012Q2",
+          "value": 384000000
+        },
+        {
+          "quarter": "CY2012Q3",
+          "value": 381000000
+        },
+        {
+          "quarter": "CY2012Q4",
+          "value": 423000000
+        },
+        {
+          "quarter": "CY2013Q1",
+          "value": 407000000
+        },
+        {
+          "quarter": "CY2013Q2",
+          "value": 414000000
+        },
+        {
+          "quarter": "CY2013Q3",
+          "value": 413000000
+        },
+        {
+          "quarter": "CY2013Q4",
+          "value": 422000000
+        },
+        {
+          "quarter": "CY2014Q1",
+          "value": 291000000
+        },
+        {
+          "quarter": "CY2014Q2",
+          "value": 290000000
+        },
+        {
+          "quarter": "CY2014Q3",
+          "value": 269000000
+        },
+        {
+          "quarter": "CY2014Q4",
+          "value": 250000000
+        },
+        {
+          "quarter": "CY2015Q1",
+          "value": 297000000
+        },
+        {
+          "quarter": "CY2015Q2",
+          "value": 333000000
+        },
+        {
+          "quarter": "CY2015Q3",
+          "value": 218000000
+        },
+        {
+          "quarter": "CY2015Q4",
+          "value": 288000000
+        },
+        {
+          "quarter": "CY2016Q1",
+          "value": 196000000
+        },
+        {
+          "quarter": "CY2016Q2",
+          "value": 217000000
+        },
+        {
+          "quarter": "CY2016Q3",
+          "value": 219000000
+        },
+        {
+          "quarter": "CY2016Q4",
+          "value": 295000000
+        },
+        {
+          "quarter": "CY2017Q1",
+          "value": 198000000
+        },
+        {
+          "quarter": "CY2017Q2",
+          "value": 181000000
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 178000000
+        },
+        {
+          "quarter": "CY2017Q4",
+          "value": 212000000
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 225000000
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 177000000
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 188000000
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": 186000000
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 164000000
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": 123000000
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": 119000000
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 287000000
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": 65000000
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 295000000
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 302000000
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 183000000
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 528000000
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": 232000000
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 279000000
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": 247000000
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": 448000000
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": 315000000
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": 177000000
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 25000000
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": -98000000
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": -69000000
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": -53000000
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": -26000000
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": -30000000
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": -3000000
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": -64000000
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 115000000
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 159000000
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": 162000000
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 148000000
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 206000000
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": 319000000
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 305000000
+        }
+      ]
+    },
+    "total_assets": {
+      "label": "Total Assets",
+      "available": true,
+      "unit": "usd",
+      "quarters": 63,
+      "first": "CY2010Q4",
+      "latest": "CY2026Q2",
+      "latest_value": 121760000000,
+      "note": null,
+      "series": [
+        {
+          "quarter": "CY2010Q4",
+          "value": 14475829000
+        },
+        {
+          "quarter": "CY2011Q1",
+          "value": 29154963000
+        },
+        {
+          "quarter": "CY2011Q2",
+          "value": 43636570000
+        },
+        {
+          "quarter": "CY2011Q3",
+          "value": 47039429000
+        },
+        {
+          "quarter": "CY2011Q4",
+          "value": 57972000000
+        },
+        {
+          "quarter": "CY2012Q1",
+          "value": 88417000000
+        },
+        {
+          "quarter": "CY2012Q2",
+          "value": 84782000000
+        },
+        {
+          "quarter": "CY2012Q3",
+          "value": 102177000000
+        },
+        {
+          "quarter": "CY2012Q4",
+          "value": 100453000000
+        },
+        {
+          "quarter": "CY2013Q1",
+          "value": 93369000000
+        },
+        {
+          "quarter": "CY2013Q2",
+          "value": 98663000000
+        },
+        {
+          "quarter": "CY2013Q3",
+          "value": 97271000000
+        },
+        {
+          "quarter": "CY2013Q4",
+          "value": 76255000000
+        },
+        {
+          "quarter": "CY2014Q1",
+          "value": 67318000000
+        },
+        {
+          "quarter": "CY2014Q2",
+          "value": 66854000000
+        },
+        {
+          "quarter": "CY2014Q3",
+          "value": 62348000000
+        },
+        {
+          "quarter": "CY2014Q4",
+          "value": 67766000000
+        },
+        {
+          "quarter": "CY2015Q1",
+          "value": 73105000000
+        },
+        {
+          "quarter": "CY2015Q2",
+          "value": 62885000000
+        },
+        {
+          "quarter": "CY2015Q3",
+          "value": 60609000000
+        },
+        {
+          "quarter": "CY2015Q4",
+          "value": 57021000000
+        },
+        {
+          "quarter": "CY2016Q1",
+          "value": 62396000000
+        },
+        {
+          "quarter": "CY2016Q2",
+          "value": 60475000000
+        },
+        {
+          "quarter": "CY2016Q3",
+          "value": 55889000000
+        },
+        {
+          "quarter": "CY2016Q4",
+          "value": 56880000000
+        },
+        {
+          "quarter": "CY2017Q1",
+          "value": 56838000000
+        },
+        {
+          "quarter": "CY2017Q2",
+          "value": 56711000000
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 65490000000
+        },
+        {
+          "quarter": "CY2017Q4",
+          "value": 70376000000
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 69221000000
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 73138000000
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 92031000000
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": 109241000000
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 118807000000
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": 106576000000
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": 109761000000
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 113082000000
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": 85137000000
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 89853000000
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 79968000000
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 81817000000
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 85545000000
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": 75055000000
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 68805000000
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": 68149000000
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": 66394000000
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": 61240000000
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": 58524000000
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 51748000000
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": 66111000000
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": 60518000000
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": 69991000000
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": 71596000000
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": 71876000000
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": 79685000000
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": 89590000000
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 88015000000
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 95889000000
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": 102021000000
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 108969000000
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 115077000000
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": 118897000000
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 121760000000
+        }
+      ]
+    },
+    "total_liabilities": {
+      "label": "Total Liabilities",
+      "available": true,
+      "unit": "usd",
+      "quarters": 63,
+      "first": "CY2010Q4",
+      "latest": "CY2026Q2",
+      "latest_value": 109217000000,
+      "note": null,
+      "series": [
+        {
+          "quarter": "CY2010Q4",
+          "value": 12903765000
+        },
+        {
+          "quarter": "CY2011Q1",
+          "value": 25810462000
+        },
+        {
+          "quarter": "CY2011Q2",
+          "value": 38859924000
+        },
+        {
+          "quarter": "CY2011Q3",
+          "value": 42099173000
+        },
+        {
+          "quarter": "CY2011Q4",
+          "value": 51760000000
+        },
+        {
+          "quarter": "CY2012Q1",
+          "value": 79699000000
+        },
+        {
+          "quarter": "CY2012Q2",
+          "value": 75646000000
+        },
+        {
+          "quarter": "CY2012Q3",
+          "value": 90904000000
+        },
+        {
+          "quarter": "CY2012Q4",
+          "value": 89557000000
+        },
+        {
+          "quarter": "CY2013Q1",
+          "value": 81727000000
+        },
+        {
+          "quarter": "CY2013Q2",
+          "value": 88383000000
+        },
+        {
+          "quarter": "CY2013Q3",
+          "value": 87386000000
+        },
+        {
+          "quarter": "CY2013Q4",
+          "value": 67558000000
+        },
+        {
+          "quarter": "CY2014Q1",
+          "value": 58504000000
+        },
+        {
+          "quarter": "CY2014Q2",
+          "value": 57243000000
+        },
+        {
+          "quarter": "CY2014Q3",
+          "value": 52991000000
+        },
+        {
+          "quarter": "CY2014Q4",
+          "value": 58338000000
+        },
+        {
+          "quarter": "CY2015Q1",
+          "value": 63749000000
+        },
+        {
+          "quarter": "CY2015Q2",
+          "value": 54167000000
+        },
+        {
+          "quarter": "CY2015Q3",
+          "value": 52293000000
+        },
+        {
+          "quarter": "CY2015Q4",
+          "value": 49050000000
+        },
+        {
+          "quarter": "CY2016Q1",
+          "value": 54736000000
+        },
+        {
+          "quarter": "CY2016Q2",
+          "value": 52773000000
+        },
+        {
+          "quarter": "CY2016Q3",
+          "value": 47958000000
+        },
+        {
+          "quarter": "CY2016Q4",
+          "value": 49524000000
+        },
+        {
+          "quarter": "CY2017Q1",
+          "value": 49546000000
+        },
+        {
+          "quarter": "CY2017Q2",
+          "value": 48966000000
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 56699000000
+        },
+        {
+          "quarter": "CY2017Q4",
+          "value": 61622000000
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 60883000000
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 64096000000
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 82404000000
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": 99335000000
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 108306000000
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": 96230000000
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": 99548000000
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 102041000000
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": 75339000000
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 79503000000
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 69248000000
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 70738000000
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 74181000000
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": 64387000000
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 58126000000
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": 57858000000
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": 57464000000
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": 53200000000
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": 51302000000
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 43878000000
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": 58319000000
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": 52640000000
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": 62541000000
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": 63339000000
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": 63298000000
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": 71033000000
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": 79934000000
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 78253000000
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 85847000000
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": 91674000000
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 97525000000
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 102684000000
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": 106716000000
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 109217000000
+        }
+      ]
+    },
+    "stockholders_equity": {
+      "label": "Stockholders' Equity",
+      "available": true,
+      "unit": "usd",
+      "quarters": 65,
+      "first": "CY2008Q4",
+      "latest": "CY2026Q2",
+      "latest_value": 12543000000,
+      "note": null,
+      "series": [
+        {
+          "quarter": "CY2008Q4",
+          "value": 258151000
+        },
+        {
+          "quarter": "CY2009Q4",
+          "value": 547000000
+        },
+        {
+          "quarter": "CY2010Q4",
+          "value": 1573000000
+        },
+        {
+          "quarter": "CY2011Q1",
+          "value": 3344501000
+        },
+        {
+          "quarter": "CY2011Q2",
+          "value": 9136000000
+        },
+        {
+          "quarter": "CY2011Q3",
+          "value": 4940256000
+        },
+        {
+          "quarter": "CY2011Q4",
+          "value": 6212000000
+        },
+        {
+          "quarter": "CY2012Q1",
+          "value": 8718000000
+        },
+        {
+          "quarter": "CY2012Q2",
+          "value": 9136000000
+        },
+        {
+          "quarter": "CY2012Q3",
+          "value": 11273000000
+        },
+        {
+          "quarter": "CY2012Q4",
+          "value": 10896000000
+        },
+        {
+          "quarter": "CY2013Q1",
+          "value": 11642000000
+        },
+        {
+          "quarter": "CY2013Q2",
+          "value": 10280000000
+        },
+        {
+          "quarter": "CY2013Q3",
+          "value": 9885000000
+        },
+        {
+          "quarter": "CY2013Q4",
+          "value": 8697000000
+        },
+        {
+          "quarter": "CY2014Q1",
+          "value": 8814000000
+        },
+        {
+          "quarter": "CY2014Q2",
+          "value": 9611000000
+        },
+        {
+          "quarter": "CY2014Q3",
+          "value": 9357000000
+        },
+        {
+          "quarter": "CY2014Q4",
+          "value": 9428000000
+        },
+        {
+          "quarter": "CY2015Q1",
+          "value": 9356000000
+        },
+        {
+          "quarter": "CY2015Q2",
+          "value": 8718000000
+        },
+        {
+          "quarter": "CY2015Q3",
+          "value": 7971000000
+        },
+        {
+          "quarter": "CY2015Q4",
+          "value": 7971000000
+        },
+        {
+          "quarter": "CY2016Q1",
+          "value": 7660000000
+        },
+        {
+          "quarter": "CY2016Q2",
+          "value": 7702000000
+        },
+        {
+          "quarter": "CY2016Q3",
+          "value": 7931000000
+        },
+        {
+          "quarter": "CY2016Q4",
+          "value": 7356000000
+        },
+        {
+          "quarter": "CY2017Q1",
+          "value": 7292000000
+        },
+        {
+          "quarter": "CY2017Q2",
+          "value": 7745000000
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 8791000000
+        },
+        {
+          "quarter": "CY2017Q4",
+          "value": 8754000000
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 8338000000
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 9042000000
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 9627000000
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": 9906000000
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 10501000000
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": 10346000000
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": 10213000000
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 11041000000
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": 9798000000
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 10350000000
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 10720000000
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 11079000000
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 11364000000
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": 10668000000
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 10679000000
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": 10291000000
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": 8930000000
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": 8040000000
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": 7222000000
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 7870000000
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": 7792000000
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": 7878000000
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": 7450000000
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": 8257000000
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": 8578000000
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": 8652000000
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": 9656000000
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 9762000000
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 10042000000
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": 10347000000
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 11444000000
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 12393000000
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": 12181000000
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 12543000000
+        }
+      ]
+    },
+    "debt_to_equity": {
+      "label": "Debt-to-Equity (gross)",
+      "available": true,
+      "unit": "multiple",
+      "quarters": 63,
+      "first": "CY2010Q4",
+      "latest": "CY2026Q2",
+      "latest_value": 8.71,
+      "series": [
+        {
+          "quarter": "CY2010Q4",
+          "value": 8.2
+        },
+        {
+          "quarter": "CY2011Q1",
+          "value": 7.72
+        },
+        {
+          "quarter": "CY2011Q2",
+          "value": 4.25
+        },
+        {
+          "quarter": "CY2011Q3",
+          "value": 8.52
+        },
+        {
+          "quarter": "CY2011Q4",
+          "value": 8.33
+        },
+        {
+          "quarter": "CY2012Q1",
+          "value": 9.14
+        },
+        {
+          "quarter": "CY2012Q2",
+          "value": 8.28
+        },
+        {
+          "quarter": "CY2012Q3",
+          "value": 8.06
+        },
+        {
+          "quarter": "CY2012Q4",
+          "value": 8.22
+        },
+        {
+          "quarter": "CY2013Q1",
+          "value": 7.02
+        },
+        {
+          "quarter": "CY2013Q2",
+          "value": 8.6
+        },
+        {
+          "quarter": "CY2013Q3",
+          "value": 8.84
+        },
+        {
+          "quarter": "CY2013Q4",
+          "value": 7.77
+        },
+        {
+          "quarter": "CY2014Q1",
+          "value": 6.64
+        },
+        {
+          "quarter": "CY2014Q2",
+          "value": 5.96
+        },
+        {
+          "quarter": "CY2014Q3",
+          "value": 5.66
+        },
+        {
+          "quarter": "CY2014Q4",
+          "value": 6.19
+        },
+        {
+          "quarter": "CY2015Q1",
+          "value": 6.81
+        },
+        {
+          "quarter": "CY2015Q2",
+          "value": 6.21
+        },
+        {
+          "quarter": "CY2015Q3",
+          "value": 6.56
+        },
+        {
+          "quarter": "CY2015Q4",
+          "value": 6.15
+        },
+        {
+          "quarter": "CY2016Q1",
+          "value": 7.15
+        },
+        {
+          "quarter": "CY2016Q2",
+          "value": 6.85
+        },
+        {
+          "quarter": "CY2016Q3",
+          "value": 6.05
+        },
+        {
+          "quarter": "CY2016Q4",
+          "value": 6.73
+        },
+        {
+          "quarter": "CY2017Q1",
+          "value": 6.79
+        },
+        {
+          "quarter": "CY2017Q2",
+          "value": 6.32
+        },
+        {
+          "quarter": "CY2017Q3",
+          "value": 6.45
+        },
+        {
+          "quarter": "CY2017Q4",
+          "value": 7.04
+        },
+        {
+          "quarter": "CY2018Q1",
+          "value": 7.3
+        },
+        {
+          "quarter": "CY2018Q2",
+          "value": 7.09
+        },
+        {
+          "quarter": "CY2018Q3",
+          "value": 8.56
+        },
+        {
+          "quarter": "CY2018Q4",
+          "value": 10.03
+        },
+        {
+          "quarter": "CY2019Q1",
+          "value": 10.31
+        },
+        {
+          "quarter": "CY2019Q2",
+          "value": 9.3
+        },
+        {
+          "quarter": "CY2019Q3",
+          "value": 9.75
+        },
+        {
+          "quarter": "CY2019Q4",
+          "value": 9.24
+        },
+        {
+          "quarter": "CY2020Q1",
+          "value": 7.69
+        },
+        {
+          "quarter": "CY2020Q2",
+          "value": 7.68
+        },
+        {
+          "quarter": "CY2020Q3",
+          "value": 6.46
+        },
+        {
+          "quarter": "CY2020Q4",
+          "value": 6.38
+        },
+        {
+          "quarter": "CY2021Q1",
+          "value": 6.53
+        },
+        {
+          "quarter": "CY2021Q2",
+          "value": 6.04
+        },
+        {
+          "quarter": "CY2021Q3",
+          "value": 5.44
+        },
+        {
+          "quarter": "CY2021Q4",
+          "value": 5.62
+        },
+        {
+          "quarter": "CY2022Q1",
+          "value": 6.43
+        },
+        {
+          "quarter": "CY2022Q2",
+          "value": 6.62
+        },
+        {
+          "quarter": "CY2022Q3",
+          "value": 7.1
+        },
+        {
+          "quarter": "CY2022Q4",
+          "value": 5.58
+        },
+        {
+          "quarter": "CY2023Q1",
+          "value": 7.48
+        },
+        {
+          "quarter": "CY2023Q2",
+          "value": 6.68
+        },
+        {
+          "quarter": "CY2023Q3",
+          "value": 8.39
+        },
+        {
+          "quarter": "CY2023Q4",
+          "value": 7.67
+        },
+        {
+          "quarter": "CY2024Q1",
+          "value": 7.38
+        },
+        {
+          "quarter": "CY2024Q2",
+          "value": 8.21
+        },
+        {
+          "quarter": "CY2024Q3",
+          "value": 8.28
+        },
+        {
+          "quarter": "CY2024Q4",
+          "value": 8.02
+        },
+        {
+          "quarter": "CY2025Q1",
+          "value": 8.55
+        },
+        {
+          "quarter": "CY2025Q2",
+          "value": 8.86
+        },
+        {
+          "quarter": "CY2025Q3",
+          "value": 8.52
+        },
+        {
+          "quarter": "CY2025Q4",
+          "value": 8.29
+        },
+        {
+          "quarter": "CY2026Q1",
+          "value": 8.76
+        },
+        {
+          "quarter": "CY2026Q2",
+          "value": 8.71
+        }
+      ],
+      "note": "Total liabilities over stockholders' equity. See caveats."
+    }
+  },
+  "caveats": [
+    {
+      "kpi": "debt_to_equity",
+      "headline": "Leverage may be materially overstated",
+      "detail": "Total liabilities over equity counts consolidated obligations the parent may have no liability for - securitisations, VIEs, non-recourse structures. For companies that consolidate heavily this can overstate real leverage several times over. Establishing the true figure requires reading the filing text.\n"
+    }
+  ],
+  "signals": [
+    {
+      "date": "2026-01-14",
+      "item": "5.02",
+      "meaning": "Director or senior officer change (departure OR appointment)",
+      "severity": "medium",
+      "accession": "0001423689-26-000007",
+      "url": "https://www.sec.gov/Archives/edgar/data/1423689/000142368926000007/agnc-20260114.htm"
+    },
+    {
+      "date": "2025-12-15",
+      "item": "5.02",
+      "meaning": "Director or senior officer change (departure OR appointment)",
+      "severity": "medium",
+      "accession": "0001423689-25-000111",
+      "url": "https://www.sec.gov/Archives/edgar/data/1423689/000142368925000111/agnc-20251215.htm"
+    },
+    {
+      "date": "2025-03-20",
+      "item": "5.02",
+      "meaning": "Director or senior officer change (departure OR appointment)",
+      "severity": "medium",
+      "accession": "0001423689-25-000035",
+      "url": "https://www.sec.gov/Archives/edgar/data/1423689/000142368925000035/agnc-20250320.htm"
+    },
+    {
+      "date": "2024-07-19",
+      "item": "5.02",
+      "meaning": "Director or senior officer change (departure OR appointment)",
+      "severity": "medium",
+      "accession": "0001423689-24-000053",
+      "url": "https://www.sec.gov/Archives/edgar/data/1423689/000142368924000053/agnc-20240719.htm"
+    }
+  ]
+}

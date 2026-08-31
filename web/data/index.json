@@ -1,0 +1,47 @@
+[
+  {
+    "ticker": "RWT",
+    "name": "Redwood Trust, Inc.",
+    "tier": "curated",
+    "latest_quarter": "CY2026Q2",
+    "kpi_count": 10,
+    "signal_count": 4,
+    "caveat_count": 2
+  },
+  {
+    "ticker": "NLY",
+    "name": "ANNALY CAPITAL MANAGEMENT INC",
+    "tier": "generic",
+    "latest_quarter": "CY2026Q2",
+    "kpi_count": 7,
+    "signal_count": 1,
+    "caveat_count": 1
+  },
+  {
+    "ticker": "AGNC",
+    "name": "AGNC Investment Corp.",
+    "tier": "generic",
+    "latest_quarter": "CY2026Q2",
+    "kpi_count": 7,
+    "signal_count": 4,
+    "caveat_count": 1
+  },
+  {
+    "ticker": "PMT",
+    "name": "PennyMac Mortgage Investment Trust",
+    "tier": "generic",
+    "latest_quarter": "CY2026Q2",
+    "kpi_count": 8,
+    "signal_count": 3,
+    "caveat_count": 1
+  },
+  {
+    "ticker": "MFA",
+    "name": "MFA FINANCIAL, INC.",
+    "tier": "generic",
+    "latest_quarter": "CY2026Q2",
+    "kpi_count": 7,
+    "signal_count": 3,
+    "caveat_count": 1
+  }
+]

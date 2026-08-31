@@ -22,6 +22,15 @@ from ingest.edgar import client, facts
 PROFILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "profiles")
 
 
+def _quarter_key(frame):
+    """Chronological sort for CY2026Q2 labels.
+
+    String sorting happens to work for same-length labels but breaks the
+    moment anything else is mixed in, so the ordering is made explicit.
+    """
+    return (int(frame[2:6]), int(frame[-1]))
+
+
 def load(ticker):
     """Return (profile dict, is_curated).
 
@@ -84,7 +93,7 @@ def run(ticker):
             results[key] = {"label": spec["label"], "available": False, "reason": str(error)}
             continue
 
-        quarters = sorted(series)
+        quarters = sorted(series, key=_quarter_key)
         results[key] = {
             "label": spec["label"],
             "available": True,
@@ -94,6 +103,10 @@ def run(ticker):
             "latest": quarters[-1] if quarters else None,
             "latest_value": series[quarters[-1]] if quarters else None,
             "note": spec.get("note"),
+            # Full series, for charting and for the web export. Ordered
+            # chronologically rather than lexically so CY2009Q2 precedes
+            # CY2010Q1 regardless of string comparison.
+            "series": [{"quarter": q, "value": series[q]} for q in quarters],
         }
 
     return {

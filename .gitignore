@@ -69,3 +69,7 @@ rwt_dashboard.html
 
 # Misc
 .env.example  # you CAN commit this (no secrets)
+# Next.js
+web/node_modules/
+web/.next/
+web/out/
