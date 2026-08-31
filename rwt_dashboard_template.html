@@ -1,0 +1,781 @@
+<title>Redwood Trust — Quarterly KPI Ledger</title>
+
+<style>
+  :root {
+    --paper:       #F2F3EF;
+    --paper-2:     #E9EBE4;
+    --ink:         #191C19;
+    --ink-2:       #4A5049;
+    --ink-3:       #767C74;
+    --rule:        #CFD3C9;
+    --rule-strong: #A8AEA2;
+    --green:       #2B5D4F;
+    --red:         #AB3226;
+    --gold:        #8A7433;
+    --gold-wash:   #EFE9D6;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono:  ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:       #121412;
+      --paper-2:     #1A1D19;
+      --ink:         #E6E9E1;
+      --ink-2:       #A8AFA4;
+      --ink-3:       #7B827A;
+      --rule:        #2C312C;
+      --rule-strong: #414740;
+      --green:       #64B096;
+      --red:         #E28376;
+      --gold:        #C9AE5E;
+      --gold-wash:   #23200F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:       #121412;
+    --paper-2:     #1A1D19;
+    --ink:         #E6E9E1;
+    --ink-2:       #A8AFA4;
+    --ink-3:       #7B827A;
+    --rule:        #2C312C;
+    --rule-strong: #414740;
+    --green:       #64B096;
+    --red:         #E28376;
+    --gold:        #C9AE5E;
+    --gold-wash:   #23200F;
+  }
+
+  :root[data-theme="light"] {
+    --paper:       #F2F3EF;
+    --paper-2:     #E9EBE4;
+    --ink:         #191C19;
+    --ink-2:       #4A5049;
+    --ink-3:       #767C74;
+    --rule:        #CFD3C9;
+    --rule-strong: #A8AEA2;
+    --green:       #2B5D4F;
+    --red:         #AB3226;
+    --gold:        #8A7433;
+    --gold-wash:   #EFE9D6;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(28px, 6vw, 76px) clamp(20px, 5vw, 52px) 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 68px;
+  }
+
+  .measure { max-width: var(--measure); }
+
+  p { margin: 0 0 1em; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 26px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .masthead h1 {
+    font-size: clamp(38px, 7vw, 62px);
+    line-height: 1.02;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .masthead h1 em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .standfirst {
+    font-size: 19px;
+    color: var(--ink-2);
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  .filing-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 6px;
+  }
+
+  .filing-meta div {
+    background: var(--paper);
+    padding: 11px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .filing-meta dt {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .filing-meta dd {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- section furniture ---------- */
+
+  section { display: flex; flex-direction: column; gap: 24px; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid var(--rule-strong);
+    padding-bottom: 9px;
+  }
+
+  .sec-head h2 {
+    font-size: 27px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .sec-head .rule-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  /* ---------- ledger table ---------- */
+
+  .scroller { overflow-x: auto; }
+
+  table.ledger {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    min-width: 760px;
+  }
+
+  table.ledger th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: right;
+    font-weight: 400;
+    padding: 0 14px 9px;
+    border-bottom: 1px solid var(--rule-strong);
+    white-space: nowrap;
+  }
+
+  table.ledger th:first-child,
+  table.ledger th:last-child { text-align: left; }
+
+  table.ledger td {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: baseline;
+    text-align: right;
+  }
+
+  table.ledger td:first-child { text-align: left; }
+  table.ledger td:last-child  { text-align: left; }
+
+  table.ledger tr:last-child td { border-bottom: none; }
+
+  .kpi-name {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .num {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .num.now { font-weight: 600; font-size: 15px; }
+  .neg { color: var(--red); }
+  .pos { color: var(--green); }
+
+  .gloss {
+    font-size: 14.5px;
+    color: var(--ink-2);
+    min-width: 27ch;
+    line-height: 1.5;
+  }
+
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    padding: 2px 7px 3px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    margin-bottom: 5px;
+  }
+
+  .chip.watch    { color: var(--red); }
+  .chip.improve  { color: var(--green); }
+  .chip.context  { color: var(--gold); }
+  .chip.steady   { color: var(--ink-3); }
+
+  /* ---------- watchlist ---------- */
+
+  .trigger {
+    font-weight: 600;
+    max-width: 34ch;
+    line-height: 1.45;
+  }
+
+  .segment-math {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.85;
+    background: var(--paper-2);
+    border-left: 3px solid var(--green);
+    padding: 18px 22px;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink-2);
+    max-width: 46ch;
+  }
+
+  .segment-math b { color: var(--ink); font-weight: 600; }
+  .segment-math .drag { color: var(--red); }
+  .segment-math .rule-row { color: var(--ink-3); }
+
+  /* ---------- caveats ---------- */
+
+  .caveats { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); }
+
+  .caveat {
+    background: var(--gold-wash);
+    border-left: 3px solid var(--gold);
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .caveat h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .caveat .swing {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+    color: var(--gold);
+    letter-spacing: -0.01em;
+  }
+
+  .caveat p { font-size: 15px; color: var(--ink-2); margin: 0; }
+  .caveat p strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- exhibits ---------- */
+
+  .exhibits { display: flex; flex-direction: column; gap: 52px; }
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: 13px; }
+
+  .ex-label {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 7px;
+  }
+
+  .ex-num {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  .ex-title {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .ex-value {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-3);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  figure img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--rule);
+    background: #fff;
+  }
+
+  figcaption {
+    font-size: 15px;
+    color: var(--ink-2);
+    max-width: var(--measure);
+    text-wrap: pretty;
+  }
+
+  /* ---------- footer ---------- */
+
+  footer {
+    border-top: 2px solid var(--ink);
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  footer .colophon { max-width: var(--measure); }
+
+  footer code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+
+  .disclaimer {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.62;
+    letter-spacing: 0.01em;
+    border-top: 1px solid var(--rule);
+    padding-top: 15px;
+    color: var(--ink-3);
+    max-width: 78ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Independent analysis · Public SEC XBRL data</div>
+    <h1>Redwood Trust<br><em>Quarterly KPI Ledger</em></h1>
+    <p class="standfirst">Twelve metrics pulled from SEC CompanyFacts and traced back to filing text where the raw ratio misleads. Current through the second quarter of 2026.</p>
+
+    <dl class="filing-meta">
+      <div><dt>Ticker</dt><dd>NYSE: RWT</dd></div>
+      <div><dt>CIK</dt><dd>0000930236</dd></div>
+      <div><dt>Period</dt><dd>CY2026Q2</dd></div>
+      <div><dt>Source form</dt><dd>10-Q</dd></div>
+      <div><dt>Filed</dt><dd>2026-08-05</dd></div>
+      <div><dt>Accession</dt><dd>0000930236-26-000027</dd></div>
+    </dl>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <h2>The quarter in one table</h2>
+      <span class="rule-note">Q1 2026 → Q2 2026</span>
+    </div>
+
+    <div class="scroller">
+      <table class="ledger">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>CY2026Q1</th>
+            <th>CY2026Q2</th>
+            <th>Change</th>
+            <th>What it actually means</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="kpi-name">Diluted EPS</td>
+            <td class="num neg">−$0.07</td>
+            <td class="num now neg">−$0.03</td>
+            <td class="num pos">loss halved</td>
+            <td class="gloss"><span class="chip improve">Improving</span><br>Profit per share of stock. Still negative, but the shortfall per share is less than half what it was.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Net income</td>
+            <td class="num neg">−$5.5M</td>
+            <td class="num now neg">−$1.1M</td>
+            <td class="num pos">+$4.4M</td>
+            <td class="gloss"><span class="chip improve">Improving</span><br>The bottom line — all revenue minus all costs. Close to breakeven, largely because Q1's severance charge did not repeat.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Book value / share</td>
+            <td class="num">$7.12</td>
+            <td class="num now neg">$6.90</td>
+            <td class="num neg">−3.1%</td>
+            <td class="gloss"><span class="chip watch">Watch</span><br>What each share would be worth if everything were sold and every debt repaid. An all-time low, and the fifth straight quarterly decline.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Net interest income</td>
+            <td class="num">$34.7M</td>
+            <td class="num now">$32.1M</td>
+            <td class="num neg">−7.6%</td>
+            <td class="gloss"><span class="chip steady">Softening</span><br>Interest earned on mortgages minus interest paid to borrow. The core spread a lender lives on.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Interest expense</td>
+            <td class="num">$322.2M</td>
+            <td class="num now">$353.2M</td>
+            <td class="num neg">+9.6%</td>
+            <td class="gloss"><span class="chip watch">Watch</span><br>What Redwood pays to borrow, before any offsetting income. Up <strong>76% in two years</strong> — the cost of running a much larger balance sheet.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Operating expenses</td>
+            <td class="num">$71.9M</td>
+            <td class="num now">$56.0M</td>
+            <td class="num pos">−22.2%</td>
+            <td class="gloss"><span class="chip improve">Improving</span><br>Running costs — salaries, premises, loan acquisition. The fall is mostly Q1's one-off severance charge not repeating.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Dividend / share</td>
+            <td class="num">$0.18</td>
+            <td class="num now">n/a</td>
+            <td class="num">—</td>
+            <td class="gloss"><span class="chip steady">Not yet framed</span><br>Held flat at $0.18 for the last several quarters. The SEC has not yet tagged a standalone Q2 value, so none can be derived.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Total assets</td>
+            <td class="num">$26.8B</td>
+            <td class="num now">$28.8B</td>
+            <td class="num">+7.5%</td>
+            <td class="gloss"><span class="chip steady">Growing</span><br>Everything the company owns — overwhelmingly mortgage loans and securities.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Total liabilities</td>
+            <td class="num">$25.9B</td>
+            <td class="num now">$27.9B</td>
+            <td class="num">+7.8%</td>
+            <td class="gloss"><span class="chip steady">Growing</span><br>Everything the company owes. Mostly non-recourse securitisation debt, not parent-company obligations.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Equity</td>
+            <td class="num">$956.7M</td>
+            <td class="num now neg">$933.8M</td>
+            <td class="num neg">−2.4%</td>
+            <td class="gloss"><span class="chip watch">Watch</span><br>Assets minus liabilities — the shareholders' actual stake. Assets grew 7.5% while this shrank.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Debt-to-equity</td>
+            <td class="num">27.03×</td>
+            <td class="num now">29.86×</td>
+            <td class="num">+2.83×</td>
+            <td class="gloss"><span class="chip context">Context needed</span><br>Dollars owed per dollar of shareholder stake. A record high — and materially misleading on its own. See below.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Recourse leverage</td>
+            <td class="num">4.89×</td>
+            <td class="num now">4.84×</td>
+            <td class="num">−0.05×</td>
+            <td class="gloss"><span class="chip steady">The honest version</span><br>The same ratio counting only debt Redwood can actually be pursued for. An ordinary number for a mortgage REIT — though it has nearly doubled since 2024.</td>
+          </tr>
+          <tr>
+            <td class="kpi-name">Credit loss allowance</td>
+            <td class="num">$4.36M</td>
+            <td class="num now">$11.0M</td>
+            <td class="num neg">+152%</td>
+            <td class="gloss"><span class="chip context">Context needed</span><br>Money set aside for expected credit losses. The sharpest move in the dataset, but it traces to a single asset. See below.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Two figures that need their filing</h2>
+      <span class="rule-note">Not visible in XBRL alone</span>
+    </div>
+
+    <p class="measure">The two most alarming numbers above both soften considerably once you read the 10-Q text behind them. Neither correction is available in the XBRL company-facts feed — both required parsing the filing itself.</p>
+
+    <div class="caveats">
+      <article class="caveat">
+        <h3>Leverage is 4.84×, not 29.86×</h3>
+        <div class="swing">29.86× gross  →  4.84× recourse</div>
+        <p>Redwood bundles mortgages into securitisations that sit on the balance sheet under consolidation rules but are <strong>not the parent company's obligation</strong> — if those loans sour, the bondholders absorb it, not Redwood.</p>
+        <p>Counting only debt Redwood can actually be pursued for — <strong>$3.62B secured recourse plus $0.90B corporate</strong>, against $934M of equity — gives an ordinary number for a mortgage REIT. This is now tracked as its own series; see Exhibit 9.</p>
+        <p>The honest caveat on the caveat: recourse leverage <strong>has still nearly doubled since 2024</strong>, from 2.77×. The gross figure overstates the level dramatically, but it is not inventing the direction — and part of the rise is equity shrinking rather than borrowing growing.</p>
+      </article>
+
+      <article class="caveat">
+        <h3>The credit build is one run-off asset</h3>
+        <div class="swing">$1.07M → $4.36M → $11.0M in two quarters</div>
+        <p>Effectively the entire $9.9M half-year build is a re-mark of a <strong>single Level 3 security</strong>: the subordinate interest Redwood retained when it sold $484M of legacy bridge loans into a wind-down vehicle during 2025.</p>
+        <p>The rollforward is explicit that no new securities entered an allowance position. Management cited <strong>worse-than-modelled workout outcomes</strong> on those legacy loans. Capital in that segment fell 19% in the quarter and is targeted below $100M by year-end — the exposure is ring-fenced and shrinking by design.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>What to watch</h2>
+      <span class="rule-note">Checkable each quarter</span>
+    </div>
+
+    <p class="measure">The consolidated loss is small and it is concentrated in one place. Segment results for CY2026Q2 break down like this:</p>
+
+    <div class="segment-math">Sequoia              <b>+32.1M</b>
+Aspire                <b>+7.5M</b>
+CoreVest              <b>+1.3M</b>
+Redwood Investments   <b>+1.5M</b>
+Corporate            <b>-20.4M</b>
+Legacy Investments   <span class="drag">-23.1M</span>  ← winding down
+<span class="rule-row">                     ──────</span>
+Consolidated          <b>-1.1M</b></div>
+
+    <p class="measure">Strip Legacy and the operating businesses earn roughly <strong>+$22M a quarter</strong>. This is not a failing business — it is a working one carrying a drag it is actively removing. Legacy capital fell 19% in the quarter and is now under 10% of total capital, against a stated target of below $100M by the end of 2026.</p>
+
+    <p class="measure">That makes the outlook testable rather than a matter of opinion. Each signal below can be checked against this same data as new filings land.</p>
+
+    <div class="scroller">
+      <table class="ledger">
+        <thead>
+          <tr>
+            <th>Watch for</th>
+            <th style="text-align:left">What it would mean</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="trigger">Legacy Investments misses the sub-$100M target at end-2026</td>
+            <td class="gloss"><span class="chip watch">Adverse</span><br>The wind-down is slipping. Legacy is the whole gap between a loss and a profit, so a delay pushes breakeven out and makes further restructuring more likely.</td>
+          </tr>
+          <tr>
+            <td class="trigger">The $0.18 dividend is cut</td>
+            <td class="gloss"><span class="chip watch">Adverse</span><br>The first genuine distress signal. Everything else on this page is consistent with a difficult but managed transition; a dividend cut would not be.</td>
+          </tr>
+          <tr>
+            <td class="trigger">Sequoia or Aspire production volumes fall materially</td>
+            <td class="gloss"><span class="chip watch">Adverse</span><br>These two platforms are the growth engine and have posted consecutive record quarters. A sustained fall — most likely rate-driven — removes what currently offsets the drag.</td>
+          </tr>
+          <tr>
+            <td class="trigger">Severance appears outside Legacy and CoreVest</td>
+            <td class="gloss"><span class="chip watch">Adverse</span><br>Restructuring so far has been targeted at non-core and shrinking areas. Charges landing in the growth platforms or corporate functions would mean broad cost-cutting instead.</td>
+          </tr>
+          <tr>
+            <td class="trigger">Equity stabilises and quarterly losses cross into profit</td>
+            <td class="gloss"><span class="chip improve">Confirming</span><br>The repositioning working as intended. Book value per share has fallen for five straight quarters; arresting that is the clearest evidence the strategy is paying.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="measure">One limit worth stating plainly: segment results are a proxy for exposure, not a measure of it. A profitable segment can still reorganise, and a shrinking one can protect a function it depends on.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Exhibits</h2>
+      <span class="rule-note">Thirteen charts · CY2009Q1 – CY2026Q2</span>
+    </div>
+
+    <div class="exhibits">
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 1</span>
+          <span class="ex-title">Diluted earnings per share</span>
+          <span class="ex-value">CY2026Q2 · −$0.03</span>
+        </figcaption>
+        <img src="%%IMG:rwt_eps_chart.png%%" alt="Bar chart of Redwood Trust quarterly diluted EPS from 2009 to 2026, green for positive quarters and red for negative, with the CY2020Q1 COVID write-down annotated as a clipped outlier.">
+        <figcaption>Green bars are profitable quarters, red are losses; hatched bars are Q4 figures derived from the annual total, since the SEC frames no standalone Q4. The CY2020Q1 write-down of −$8.28 is clipped so it does not flatten every other quarter.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 2</span>
+          <span class="ex-title">Net income</span>
+          <span class="ex-value">CY2026Q2 · −$1.1M</span>
+        </figcaption>
+        <img src="%%IMG:rwt_net_income_chart.png%%" alt="Bar chart of Redwood Trust quarterly net income in millions of dollars, 2009 to 2026, with negative quarters in red.">
+        <figcaption>The dollar figure EPS is derived from. Losses have run for several quarters but are narrowing sharply — Q2's −$1.1M is the smallest shortfall in over a year.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 3</span>
+          <span class="ex-title">Net interest income</span>
+          <span class="ex-value">CY2026Q2 · $32.1M</span>
+        </figcaption>
+        <img src="%%IMG:rwt_nii_chart.png%%" alt="Bar chart of Redwood Trust quarterly net interest income in millions of dollars from 2009 to 2026.">
+        <figcaption>Interest earned minus interest paid. Never negative in Redwood's history, so it takes a single hue rather than the profit-and-loss split used for earnings.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 4</span>
+          <span class="ex-title">Dividends declared per share</span>
+          <span class="ex-value">CY2026Q1 · $0.18</span>
+        </figcaption>
+        <img src="%%IMG:rwt_dividends_chart.png%%" alt="Bar chart of Redwood Trust quarterly dividends declared per common share from 2010 to 2026.">
+        <figcaption>Held flat at $0.18 across recent quarters. The SEC tagged Q4 directly through 2019; from 2020 onward those bars are derived from the annual figure and shown hatched. Q2 2026 is not yet framed.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 5</span>
+          <span class="ex-title">Book value per common share</span>
+          <span class="ex-value">CY2026Q2 · $6.90</span>
+        </figcaption>
+        <img src="%%IMG:rwt_bvps_chart.png%%" alt="Line chart of Redwood Trust book value per common share from 2009 to 2026, declining to an all-time low of 6.90 dollars.">
+        <figcaption>Computed as common equity — total equity less preferred stock — divided by shares outstanding, since preferred holders do not share in common book value. The clearest uncontested signal in the set: a steady multi-year erosion to an all-time low.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 6</span>
+          <span class="ex-title">Total assets</span>
+          <span class="ex-value">CY2026Q2 · $28.8B</span>
+        </figcaption>
+        <img src="%%IMG:rwt_assets_chart.png%%" alt="Line chart of Redwood Trust total assets in billions of dollars from 2009 to 2026, rising steeply after 2023.">
+        <figcaption>A balance-sheet snapshot tagged every quarter, so nothing here is derived. Assets have climbed steeply since the CY2023Q2 trough of $12.8B.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 7</span>
+          <span class="ex-title">Total liabilities</span>
+          <span class="ex-value">CY2026Q2 · $27.9B</span>
+        </figcaption>
+        <img src="%%IMG:rwt_liabilities_chart.png%%" alt="Line chart of Redwood Trust total liabilities in billions of dollars from 2009 to 2026, tracking assets closely and rising steeply after 2023.">
+        <figcaption>Tracks assets almost exactly — which is the point. The gap between these two lines is equity, and it has been narrowing as a share of the balance sheet for years.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 8</span>
+          <span class="ex-title">Debt-to-equity ratio</span>
+          <span class="ex-value">CY2026Q2 · 29.86×</span>
+        </figcaption>
+        <img src="%%IMG:rwt_debt_to_equity_chart.png%%" alt="Line chart of Redwood Trust debt-to-equity ratio from 2009 to 2026, holding in a 3 to 11 times band before breaking out sharply after 2024 to nearly 30 times.">
+        <figcaption>Derived entirely from figures already extracted — no additional SEC concept. Held in a 3–11× band from 2009 through 2023, then broke out. Never read this one on its own; Exhibit 9 is the corrective.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 9</span>
+          <span class="ex-title">Gross vs. recourse leverage</span>
+          <span class="ex-value">CY2026Q2 · 4.84× vs 29.86×</span>
+        </figcaption>
+        <img src="%%IMG:rwt_recourse_leverage_chart.png%%" alt="Two lines on one axis from CY2024Q2 to CY2026Q2: gross debt-to-equity rising from 12.5 to 29.9 times, and recourse leverage rising from 2.8 to 4.8 times, with the wide gap between them shaded to represent consolidated non-recourse debt.">
+        <figcaption>The shaded band is consolidated non-recourse debt — liabilities GAAP places on the balance sheet that Redwood Trust, Inc. cannot be pursued for. Both lines share one axis because both are multiples of the same equity, so the gap is directly readable. The recourse figure is not available from XBRL alone: secured recourse debt is stated only in the MD&A narrative, and is combined here with corporate debt read from the filing's tagged facts. The series starts at CY2024Q2 because Redwood changed how it discloses these components — earlier quarters would mix measurement bases rather than extend the trend.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 10</span>
+          <span class="ex-title">Leverage dashboard</span>
+          <span class="ex-value">Combined view</span>
+        </figcaption>
+        <img src="%%IMG:rwt_leverage_dashboard.png%%" alt="Two-panel chart: the upper panel shows Redwood Trust total assets and total liabilities with the implied equity gap shaded, the lower panel shows the debt-to-equity ratio over the same period.">
+        <figcaption>Two stacked panels rather than a dual-axis chart, because dollars and a dimensionless multiple do not belong on one scale. The shaded band in the upper panel is implied equity. Gaps in the lower line are quarters where equity was never framed by the SEC — the break is deliberate, not missing data.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 11</span>
+          <span class="ex-title">Credit loss allowance</span>
+          <span class="ex-value">CY2026Q2 · $11.0M</span>
+        </figcaption>
+        <img src="%%IMG:rwt_credit_loss_allowance_chart.png%%" alt="Line chart of Redwood Trust credit loss allowance on available-for-sale debt securities in millions of dollars, spiking sharply in 2026.">
+        <figcaption>Allowance on available-for-sale debt securities — the CECL-era concept that replaced the loan-loss provision tag retired after 2018. The 2026 spike dwarfs a previous series high of $2.6M, but traces to the single retained interest described above.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 12</span>
+          <span class="ex-title">Interest expense</span>
+          <span class="ex-value">CY2026Q2 · $353.2M</span>
+        </figcaption>
+        <img src="%%IMG:rwt_interest_expense_chart.png%%" alt="Bar chart of Redwood Trust quarterly interest expense in millions of dollars from 2009 to 2026, flat near 20 million through 2017 then climbing steeply to 353 million.">
+        <figcaption>The cost side of the spread shown in Exhibit 3 — read the two together. Interest expense has risen 76% in two years while net interest income moved far less, which is the mechanism behind the earnings weakness elsewhere on this page: the balance sheet grew faster than the margin it earns. The series spans a concept rename in 2024; the two tags agree to the dollar on every overlapping quarter, so the join is seamless rather than a step.</figcaption>
+      </figure>
+
+      <figure>
+        <figcaption class="ex-label">
+          <span class="ex-num">Exhibit 13</span>
+          <span class="ex-title">Operating expenses</span>
+          <span class="ex-value">CY2026Q2 · $56.0M</span>
+        </figcaption>
+        <img src="%%IMG:rwt_operating_expenses_chart.png%%" alt="Bar chart of Redwood Trust quarterly operating expenses in millions of dollars from 2009 to 2026, mostly between 10 and 50 million with a single spike above 120 million in the first quarter of 2020.">
+        <figcaption>Running costs — salaries, premises, portfolio management and loan acquisition. Far steadier than interest expense, up 19% over the same two years against interest expense's 76%. The CY2020Q1 spike to $124.1M is genuine: that is the COVID quarter that also produced the −$943M net loss. From CY2024Q3 this series is summed from four component tags, because the filings stopped tagging a total; the sum reconciles exactly against the last quarters where both were reported.</figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <footer>
+    <p class="colophon">Built from a single call to the SEC CompanyFacts API (<code>data.sec.gov/api/xbrl/companyfacts</code>) via <code>get_company_facts.py</code>, with matching plotting scripts. Duration measures — earnings, dividends, interest and net income — carry no standalone Q4 frame, so those quarters are backed out as <code>Annual − Q1 − Q2 − Q3</code> and tagged as derived wherever shown. Balance-sheet measures are tagged every quarter and need no such treatment.</p>
+
+    <p class="colophon">Recourse leverage (Exhibit 9) comes from a second pipeline, <code>get_recourse_leverage.py</code>, because the figure is absent from CompanyFacts entirely: secured recourse debt is stated only in MD&A prose, and is combined with corporate debt read from each filing's own XBRL instance. The two components reconcile against an independently tagged total debt figure to within 0.1%. Narrative context throughout was parsed from the Q2 2026 10-Q primary document, <code>rwt-20260630.htm</code>.</p>
+
+    <p class="colophon">The two expense series (Exhibits 12 and 13) each cross a break in how Redwood tags its filings. Interest expense spans a straight concept rename, accepted only after confirming the old and new tags agree to the dollar on every overlapping quarter. Operating expenses lost its total tag altogether and is summed from four components for recent quarters, including two of Redwood's own custom tags that the API does not serve; the splice is likewise verified against the periods where both were reported. Four quarters of 2013 were tagged with inverted signs in a 2015 filing and are corrected here, flagged in the underlying data; one unverifiable negative was dropped rather than guessed at.</p>
+
+    <p class="disclaimer">Independent analysis prepared from public SEC filings. Not affiliated with, authored by, endorsed by, or reviewed by Redwood Trust, Inc. Not investment advice. Figures are as reported to the SEC and may be restated in later filings; the extraction keeps the most recently filed value for each period. Generated 2026-08-30.</p>
+  </footer>
+
+</div>

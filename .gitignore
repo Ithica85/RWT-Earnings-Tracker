@@ -62,5 +62,10 @@ npm-debug.log
 # so there's no reason to put them in git.
 sec_cache/
 
+# Assembled dashboard page — a build product of build_dashboard.py, ~0.7 MB
+# of base64-embedded images that would bloat history on every refresh.
+# The template and the build script are tracked; the output is not.
+rwt_dashboard.html
+
 # Misc
 .env.example  # you CAN commit this (no secrets)

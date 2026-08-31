@@ -23,6 +23,8 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | File | Description |
 |------|-------------|
 | `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, total liabilities, debt-to-equity ratio, and credit loss allowance (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
+| `rwt_dashboard_template.html` | Source of the published dashboard page — a self-contained HTML document with `%%IMG:<chart>.png%%` placeholders where the charts go |
+| `build_dashboard.py` | Substitutes each placeholder with a downscaled base64 WEBP data URI and writes `rwt_dashboard.html` (gitignored build product). Publishing needs an interactive Claude session, so it is deliberately not automated |
 | `get_operating_expenses.py` | Builds the operating expenses series by splicing two sources — the tagged `OperatingExpenses` total (API, through CY2024Q2) and the four expense components summed from filing instances (CY2024Q3 onward). Verifies the two agree on overlapping periods before splicing, and repairs sign errors in the SEC data |
 | `plot_interest_expense.py` | Reads `rwt_quarterly_interest_expense_complete.csv` and renders a bar chart to `rwt_interest_expense_chart.png` (no API call) |
 | `plot_operating_expenses.py` | Reads `rwt_quarterly_operating_expenses.csv` and renders a bar chart to `rwt_operating_expenses_chart.png` (no API call) |
@@ -416,6 +418,24 @@ Each record returned by the SEC API looks like:
 |--------|-------------|
 | `quarter` | Calendar period (e.g. `CY2026Q2`) |
 | *one column per segment* | Segment net income (contribution) or allocated assets, in USD |
+
+## The published dashboard
+
+The dashboard is an Artifact — a private page on claude.ai assembled from `rwt_dashboard_template.html` and the chart PNGs.
+
+```
+python3 build_dashboard.py      # writes rwt_dashboard.html
+```
+
+Then ask Claude to publish `rwt_dashboard.html`, passing the existing artifact URL so it updates in place rather than minting a new one. **The current URL is https://claude.ai/code/artifact/554825df-0449-4932-83a7-6dd1904b4925** — an earlier artifact from 2026-07-08 no longer exists, so don't go looking for it.
+
+Design notes, so a refresh doesn't drift from the established look:
+
+- **SEC-filing vernacular**: cover-page masthead with a CIK/accession meta grid, hairline rules, numbered exhibits (filings genuinely number their exhibits), tabular figures throughout
+- **Type**: Iowan/Palatino serif for prose, system mono for every figure and label with `font-variant-numeric: tabular-nums`
+- **Color**: cool bone paper `#F2F3EF`, ink `#191C19`, ledger green `#2B5D4F` for structure, filing red `#AB3226` for negatives, muted gold `#8A7433` for the caveat cards. Both themes are defined as token sets — light, `prefers-color-scheme: dark`, and explicit `[data-theme]` overrides so the viewer's toggle wins
+- **Everything is inlined.** A strict CSP blocks all external hosts, so no CDN fonts, stylesheets or images will load
+- **Sections**: the masthead, a KPI ledger table with a plain-English gloss column, two gold "needs its filing" caveat cards, a watchlist with adverse/confirming chips, then the exhibits, then a provenance footer carrying a not-affiliated-with-Redwood disclaimer
 
 ## Next steps (not yet built)
 
