@@ -1,0 +1,72 @@
+# Generic fallback profile.
+#
+# Applied to any company nobody has curated. It uses the most common US-GAAP
+# concepts and makes no company-specific claims, because none have been
+# checked.
+#
+# Output from this profile is tier "generic" and must be labelled as such
+# wherever it is shown. The RWT work is the cautionary tale: reading only the
+# obvious concepts produced a 29.86x leverage figure that looked like distress
+# and was off by roughly 6x, an operating-expense series that stopped dead in
+# 2024, and four quarters of negative expenses nobody had noticed. Every one
+# of those needed a human reading filings to catch.
+#
+# So treat generic output as a starting point for investigation, never as an
+# answer. Concepts that are missing for a given filer are skipped rather than
+# guessed at.
+
+tier: generic
+
+kpis:
+  - key: eps
+    label: Diluted EPS
+    concept: EarningsPerShareDiluted
+    kind: duration
+    unit: usd_per_share
+
+  - key: net_income
+    label: Net Income
+    concept: NetIncomeLoss
+    kind: duration
+    unit: usd
+
+  - key: revenues
+    label: Revenues
+    concept: Revenues
+    kind: duration
+    unit: usd
+
+  - key: net_interest_income
+    label: Net Interest Income
+    concept: InterestIncomeExpenseNet
+    kind: duration
+    unit: usd
+
+  - key: total_assets
+    label: Total Assets
+    concept: Assets
+    kind: instant
+    unit: usd
+
+  - key: total_liabilities
+    label: Total Liabilities
+    concept: Liabilities
+    kind: instant
+    unit: usd
+
+  - key: stockholders_equity
+    label: Stockholders' Equity
+    concept: StockholdersEquity
+    kind: instant
+    unit: usd
+
+# Applies to every generic company until someone curates it.
+caveats:
+  - kpi: debt_to_equity
+    headline: Leverage may be materially overstated
+    detail: >
+      Total liabilities over equity counts consolidated obligations the parent
+      may have no liability for - securitisations, VIEs, non-recourse
+      structures. For companies that consolidate heavily this can overstate
+      real leverage several times over. Establishing the true figure requires
+      reading the filing text.

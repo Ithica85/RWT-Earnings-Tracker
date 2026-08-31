@@ -1,0 +1,167 @@
+# Redwood Trust - curated profile
+#
+# A profile is the per-company judgment layer. The engine in ingest/edgar/ is
+# deliberately generic; everything a human had to work out by reading filings
+# lives here. That separation is the whole architecture: generic plumbing,
+# company-specific truth.
+#
+# Every non-obvious choice below cost real investigation. The notes are not
+# decoration - they are why the numbers can be trusted, and the reason this
+# company is tier "curated" rather than "generic".
+
+ticker: RWT
+cik: "0000930236"
+name: Redwood Trust, Inc.
+sector: Mortgage REIT
+
+# curated = concepts checked against the filings, splices verified, traps
+#           documented. generic = default concept set, nobody has looked.
+tier: curated
+
+kpis:
+  - key: eps
+    label: Diluted EPS
+    concept: EarningsPerShareDiluted
+    kind: duration
+    unit: usd_per_share
+
+  - key: net_income
+    label: Net Income
+    concept: NetIncomeLoss
+    kind: duration
+    unit: usd
+
+  - key: net_interest_income
+    label: Net Interest Income
+    concept: InterestIncomeExpenseNet
+    kind: duration
+    unit: usd
+
+  - key: interest_expense
+    label: Interest Expense
+    concept: InterestExpense
+    successors: [InterestExpenseOperating]
+    kind: duration
+    unit: usd
+    note: >
+      InterestExpense stops dead at CY2024Q2 and InterestExpenseOperating
+      carries on from CY2023Q2. Same measure - all four overlapping quarters
+      agree to the dollar (CY2023Q2 152,885,000 / CY2023Q3 156,723,000 /
+      CY2024Q1 180,530,000 / CY2024Q2 200,124,000). Never pool a successor
+      without checking the overlap; disagreement means different measures and
+      splicing them invents a step that never happened.
+
+  - key: dividends_per_share
+    label: Dividends Declared per Share
+    concept: CommonStockDividendsPerShareDeclared
+    kind: duration
+    unit: usd_per_share
+    note: >
+      SEC tagged Q4 directly 2010-2019, then stopped. Q4 is derived from the
+      annual figure from 2020 onward. Coincidental match with the EPS gap,
+      not a related cause.
+
+  - key: total_assets
+    label: Total Assets
+    concept: Assets
+    kind: instant
+    unit: usd
+
+  - key: total_liabilities
+    label: Total Liabilities
+    concept: Liabilities
+    kind: instant
+    unit: usd
+
+  - key: stockholders_equity
+    label: Stockholders' Equity
+    concept: StockholdersEquity
+    kind: instant
+    unit: usd
+
+  - key: credit_loss_allowance
+    label: Credit Loss Allowance (AFS securities)
+    concept: DebtSecuritiesAvailableForSaleAllowanceForCreditLoss
+    kind: instant
+    unit: usd
+    note: >
+      The originally-obvious ProvisionForLoanLeaseAndOtherLosses was retired
+      when CECL changed credit-loss reporting and stops after 2018. Building
+      on it would have produced a chart with no current data.
+
+# Measures the CompanyFacts API cannot produce for this company at all.
+# Each needs its own pipeline; see the named script.
+derived_elsewhere:
+  - key: book_value_per_share
+    script: get_company_facts.py
+    note: >
+      (StockholdersEquity - PreferredStockValue) / CommonStockSharesOutstanding.
+      Uses COMMON equity, not total - RWT carries ~$66.9M of preferred and
+      preferred holders do not share in common book value.
+
+  - key: operating_expenses
+    script: get_operating_expenses.py
+    note: >
+      The OperatingExpenses total stops at CY2024Q2 with no successor. Recent
+      quarters are summed from four component tags, two of which
+      (PortfolioManagementCosts, LoanAcquisitionCosts) are Redwood's own
+      custom tags that CompanyFacts never serves. Splice verified against
+      every overlapping period.
+
+  - key: recourse_leverage
+    script: get_recourse_leverage.py
+    note: >
+      Secured recourse debt appears only in MD&A prose and is tagged nowhere;
+      combined with corporate debt from the filing instance. Series starts
+      CY2024Q2 because of a disclosure change, not a data gap.
+
+# Traps. A KPI listed here must never be displayed without its companion -
+# the naive reading is actively misleading, not merely incomplete.
+caveats:
+  - kpi: debt_to_equity
+    companion: recourse_leverage
+    headline: Gross leverage overstates what Redwood is liable for
+    detail: >
+      GAAP consolidates securitisation entities whose creditors have no claim
+      on Redwood Trust, Inc. Gross debt-to-equity reached 29.86x in CY2026Q2;
+      recourse leverage - counting only debt the parent can be pursued for -
+      was 4.84x. The honest caveat on the caveat: recourse leverage has still
+      nearly doubled since 2024, and part of that is equity shrinking rather
+      than borrowing growing.
+
+  - kpi: credit_loss_allowance
+    headline: The 2026 build is one asset, not a portfolio
+    detail: >
+      Effectively the entire $9.9M half-year build is a re-mark of a single
+      retained interest in the Legacy Trust, a wind-down vehicle. The
+      rollforward is explicit that no new securities entered an allowance
+      position. Ring-fenced and shrinking by design.
+
+# Known data-quality defects in what the SEC serves for this company.
+known_data_issues:
+  - period: CY2013Q1-Q4
+    kpi: operating_expenses
+    issue: >
+      The 10-K filed 2015-02-25 tagged all four quarters negative. They sum to
+      exactly minus the annual figure, so magnitudes are right and only the
+      sign is inverted. Corrected and flagged.
+  - period: CY2009Q3
+    kpi: operating_expenses
+    issue: >
+      Isolated negative in a year whose other quarters are positive; the sum
+      test cannot run, so there is no evidence for the intended value.
+      Dropped rather than guessed at.
+
+# Segment reporting is unusually unstable here and constrains what can be shown.
+segments:
+  current:
+    [SequoiaMortgageBanking, AspireMortgageBanking, CoreVestMortgageBanking,
+     RedwoodInvestments, LegacyInvestments, Corporate]
+  earliest_comparable: CY2025Q1
+  note: >
+    Redwood redrew its segments three times in four years, so there is no long
+    segment history. Income-statement figures were materially restated across
+    the 2025/2026 boundary (a net-interest-income reallocation touching every
+    segment); assets were not, beyond Aspire being carved out of Sequoia.
+    Q4 must never be derived across a restructure - doing so buried Aspire's
+    entire result inside another segment's Q4.
