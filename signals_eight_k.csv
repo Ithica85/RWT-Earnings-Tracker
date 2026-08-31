@@ -1,0 +1,16 @@
+ticker,company,date,item,meaning,severity,accession,url
+RWT,REDWOOD TRUST INC,2026-05-19,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-26-063849,https://www.sec.gov/Archives/edgar/data/930236/000110465926063849/tm2615120d1_8k.htm
+RWT,REDWOOD TRUST INC,2025-12-12,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-25-120663,https://www.sec.gov/Archives/edgar/data/930236/000110465925120663/tm2533313d1_8k.htm
+RWT,REDWOOD TRUST INC,2024-12-13,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-24-128502,https://www.sec.gov/Archives/edgar/data/930236/000110465924128502/tm2430678d1_8k.htm
+RWT,REDWOOD TRUST INC,2024-05-24,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-24-065184,https://www.sec.gov/Archives/edgar/data/930236/000110465924065184/tm2415566d1_8k.htm
+NLY,ANNALY CAPITAL MANAGEMENT INC,2025-12-29,5.02,Director or senior officer change (departure OR appointment),medium,0001193125-25-335363,https://www.sec.gov/Archives/edgar/data/1043219/000119312525335363/d15017d8k.htm
+AGNC,AGNC Investment Corp.,2026-01-14,5.02,Director or senior officer change (departure OR appointment),medium,0001423689-26-000007,https://www.sec.gov/Archives/edgar/data/1423689/000142368926000007/agnc-20260114.htm
+AGNC,AGNC Investment Corp.,2025-12-15,5.02,Director or senior officer change (departure OR appointment),medium,0001423689-25-000111,https://www.sec.gov/Archives/edgar/data/1423689/000142368925000111/agnc-20251215.htm
+AGNC,AGNC Investment Corp.,2025-03-20,5.02,Director or senior officer change (departure OR appointment),medium,0001423689-25-000035,https://www.sec.gov/Archives/edgar/data/1423689/000142368925000035/agnc-20250320.htm
+AGNC,AGNC Investment Corp.,2024-07-19,5.02,Director or senior officer change (departure OR appointment),medium,0001423689-24-000053,https://www.sec.gov/Archives/edgar/data/1423689/000142368924000053/agnc-20240719.htm
+PMT,PennyMac Mortgage Investment Trust,2026-06-16,5.02,Director or senior officer change (departure OR appointment),medium,0001193125-26-272861,https://www.sec.gov/Archives/edgar/data/1464423/000119312526272861/d92511d8k.htm
+PMT,PennyMac Mortgage Investment Trust,2024-10-03,5.02,Director or senior officer change (departure OR appointment),medium,0001193125-24-232282,https://www.sec.gov/Archives/edgar/data/1464423/000119312524232282/d841663d8k.htm
+PMT,PennyMac Mortgage Investment Trust,2024-06-13,5.02,Director or senior officer change (departure OR appointment),medium,0001193125-24-160261,https://www.sec.gov/Archives/edgar/data/1464423/000119312524160261/d817850d8k.htm
+MFA,"MFA FINANCIAL, INC.",2025-06-05,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-25-056839,https://www.sec.gov/Archives/edgar/data/1055160/000110465925056839/tm2517176d1_8k.htm
+MFA,"MFA FINANCIAL, INC.",2025-03-04,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-25-020402,https://www.sec.gov/Archives/edgar/data/1055160/000110465925020402/tm258111d1_8k.htm
+MFA,"MFA FINANCIAL, INC.",2024-08-22,5.02,Director or senior officer change (departure OR appointment),medium,0001104659-24-091997,https://www.sec.gov/Archives/edgar/data/1055160/000110465924091997/tm2422405d1_8k.htm
