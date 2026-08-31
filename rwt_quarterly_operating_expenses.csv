@@ -1,0 +1,68 @@
+quarter,operating_expenses,source,filed,form
+CY2009Q2,10769000,reported (OperatingExpenses),2010-08-06,10-Q/A
+CY2010Q1,17306000,reported (OperatingExpenses),2011-05-05,10-Q
+CY2010Q2,11227000,reported (OperatingExpenses),2011-08-04,10-Q
+CY2010Q3,12245000,reported (OperatingExpenses),2011-11-03,10-Q
+CY2010Q4,12937000,derived (Annual - Q1 - Q2 - Q3),2013-02-26,10-K
+CY2011Q1,11514000,reported (OperatingExpenses),2012-05-08,10-Q
+CY2011Q2,12087000,reported (OperatingExpenses),2012-08-07,10-Q
+CY2011Q3,11507000,reported (OperatingExpenses),2012-11-05,10-Q
+CY2011Q4,12633000,derived (Annual - Q1 - Q2 - Q3),2014-02-26,10-K
+CY2012Q1,14634000,reported (OperatingExpenses),2013-05-06,10-Q
+CY2012Q2,15165000,reported (OperatingExpenses),2013-08-08,10-Q
+CY2012Q3,17102000,reported (OperatingExpenses),2013-11-07,10-Q
+CY2012Q4,18732000,derived (Annual - Q1 - Q2 - Q3),2015-02-25,10-K
+CY2013Q1,20187000,"reported (OperatingExpenses, sign corrected)",2015-02-25,10-K
+CY2013Q2,24430000,"reported (OperatingExpenses, sign corrected)",2015-02-25,10-K
+CY2013Q3,22320000,"reported (OperatingExpenses, sign corrected)",2015-02-25,10-K
+CY2013Q4,19670000,"reported (OperatingExpenses, sign corrected)",2015-02-25,10-K
+CY2014Q1,19973000,reported (OperatingExpenses),2016-02-26,10-K
+CY2014Q2,22282000,reported (OperatingExpenses),2016-02-26,10-K
+CY2014Q3,21406000,reported (OperatingExpenses),2016-02-26,10-K
+CY2014Q4,26462000,reported (OperatingExpenses),2016-02-26,10-K
+CY2015Q1,25063000,reported (OperatingExpenses),2017-02-24,10-K
+CY2015Q2,25218000,reported (OperatingExpenses),2017-02-24,10-K
+CY2015Q3,24497000,reported (OperatingExpenses),2017-02-24,10-K
+CY2015Q4,22638000,reported (OperatingExpenses),2017-02-24,10-K
+CY2016Q1,30452000,reported (OperatingExpenses),2018-02-28,10-K
+CY2016Q2,20155000,reported (OperatingExpenses),2018-02-28,10-K
+CY2016Q3,20355000,reported (OperatingExpenses),2018-02-28,10-K
+CY2016Q4,17824000,reported (OperatingExpenses),2018-02-28,10-K
+CY2017Q1,18226000,reported (OperatingExpenses),2019-03-01,10-K
+CY2017Q2,18641000,reported (OperatingExpenses),2019-03-01,10-K
+CY2017Q3,19922000,reported (OperatingExpenses),2019-03-01,10-K
+CY2017Q4,20367000,reported (OperatingExpenses),2019-03-01,10-K
+CY2018Q1,23030000,reported (OperatingExpenses),2020-03-02,10-K
+CY2018Q2,19009000,reported (OperatingExpenses),2020-03-02,10-K
+CY2018Q3,21561000,reported (OperatingExpenses),2020-03-02,10-K
+CY2018Q4,19378000,reported (OperatingExpenses),2020-03-02,10-K
+CY2019Q1,24197000,reported (OperatingExpenses),2020-05-15,10-Q
+CY2019Q2,28707000,reported (OperatingExpenses),2020-08-07,10-Q
+CY2019Q3,29346000,reported (OperatingExpenses),2020-11-06,10-Q
+CY2019Q4,49444000,reported (OperatingExpenses),2020-03-02,10-K
+CY2020Q1,124083000,reported (OperatingExpenses),2021-05-07,10-Q
+CY2020Q2,35175000,reported (OperatingExpenses),2021-08-04,10-Q
+CY2020Q3,37576000,reported (OperatingExpenses),2021-11-04,10-Q
+CY2020Q4,38178000,derived (Annual - Q1 - Q2 - Q3),2023-03-01,10-K
+CY2021Q1,51206000,reported (OperatingExpenses),2022-05-06,10-Q
+CY2021Q2,48327000,reported (OperatingExpenses),2022-08-05,10-Q
+CY2021Q3,56336000,reported (OperatingExpenses),2022-11-07,10-Q
+CY2021Q4,48021000,derived (Annual - Q1 - Q2 - Q3),2024-02-29,10-K
+CY2022Q1,43404000,reported (OperatingExpenses),2023-05-05,10-Q
+CY2022Q2,38914000,reported (OperatingExpenses),2023-08-07,10-Q
+CY2022Q3,46794000,reported (OperatingExpenses),2023-11-07,10-Q
+CY2022Q4,47103000,derived (Annual - Q1 - Q2 - Q3),2024-02-29,10-K
+CY2023Q1,44038000,reported (OperatingExpenses),2024-05-08,10-Q
+CY2023Q2,40324000,reported (OperatingExpenses),2024-08-07,10-Q
+CY2023Q3,39871000,reported (OperatingExpenses),2023-11-07,10-Q
+CY2023Q4,42037000,derived (Annual - Q1 - Q2 - Q3),2024-02-29,10-K
+CY2024Q1,43764000,reported (OperatingExpenses),2024-05-08,10-Q
+CY2024Q2,46989000,reported (OperatingExpenses),2024-08-07,10-Q
+CY2024Q3,47768000,components (G&A + portfolio + acquisition + other),2025-11-07,10-Q
+CY2024Q4,45550000,derived (Annual - Q1 - Q2 - Q3),2026-02-27,10-K
+CY2025Q1,51439000,components (G&A + portfolio + acquisition + other),2026-05-07,10-Q
+CY2025Q2,55827000,components (G&A + portfolio + acquisition + other),2026-08-05,10-Q
+CY2025Q3,55724000,components (G&A + portfolio + acquisition + other),2025-11-07,10-Q
+CY2025Q4,59221000,derived (Annual - Q1 - Q2 - Q3),2026-02-27,10-K
+CY2026Q1,71941000,components (G&A + portfolio + acquisition + other),2026-05-07,10-Q
+CY2026Q2,55965000,components (G&A + portfolio + acquisition + other),2026-08-05,10-Q

@@ -93,19 +93,33 @@ for record in records[-10:]:  # [-10:] means "start from 10 from the end", givin
 # always; dividends: from 2020 onward). Every year where Q1, Q2, Q3, and the
 # annual figure are all present gets Q4 backed out as Annual - Q1 - Q2 - Q3.
 
-def extract_quarterly_duration_kpi(concept_name, value_key, label, csv_stem, print_qoq_change=False):
+def extract_quarterly_duration_kpi(concept_name, value_key, label, csv_stem,
+                                   print_qoq_change=False, successor_concepts=()):
     """Dedupes by latest-filed value per frame, exports reported-only quarters
     to '{csv_stem}.csv', derives missing Q4 values, and exports the merged
     (reported + derived) result to '{csv_stem}_complete.csv' with a `source`
     column. Returns (quarterly, sorted_all_quarters) for any extra
-    metric-specific analysis (e.g. EPS's quarter-over-quarter change)."""
+    metric-specific analysis (e.g. EPS's quarter-over-quarter change).
+
+    `successor_concepts` handles a concept being renamed mid-history: SEC
+    filers sometimes retag the same measure, leaving the original concept
+    frozen at the changeover date. Records from the successors are pooled with
+    the original before deduping, so the series continues across the rename.
+    Only pass a successor after checking the two agree on overlapping frames -
+    if they disagree they are different measures, and splicing them would
+    invent a step in the series. See the interest expense note in CLAUDE.md."""
 
     if concept_name not in us_gaap_facts:
         raise SystemExit(f"'{concept_name}' not found in us-gaap facts. Check available concepts and update the name.")
 
     concept = us_gaap_facts[concept_name]
     unit_name = list(concept["units"].keys())[0]  # grab the unit type automatically, e.g. "USD/shares" or "USD"
-    records = concept["units"][unit_name]
+    records = list(concept["units"][unit_name])
+
+    for successor in successor_concepts:
+        if successor not in us_gaap_facts:
+            raise SystemExit(f"Successor concept '{successor}' not found in us-gaap facts.")
+        records += us_gaap_facts[successor]["units"][unit_name]
 
     # Dedup by latest-filed value per frame. We keep every framed record
     # (quarterly AND annual), not just quarterly ones, because the annual
@@ -325,6 +339,26 @@ quarterly_nii, sorted_all_nii = extract_quarterly_duration_kpi(
 
 quarterly_net_income, sorted_all_net_income = extract_quarterly_duration_kpi(
     "NetIncomeLoss", "net_income", "Net Income", "rwt_quarterly_net_income")
+
+# ---------------------------------------------------------------------------
+# Interest Expense
+# ---------------------------------------------------------------------------
+# Gross interest paid on borrowings - the cost side of net interest income.
+# Rising interest expense against flat interest income is what compresses the
+# lending spread, so this pairs with rwt_quarterly_nii_complete.csv.
+#
+# The concept was renamed partway through: `InterestExpense` runs CY2009Q2 to
+# CY2024Q2 and then stops dead, while `InterestExpenseOperating` starts at
+# CY2023Q2 and continues to the present. They are the same measure - the four
+# overlapping quarters agree to the dollar (CY2023Q2 152,885,000; CY2023Q3
+# 156,723,000; CY2024Q1 180,530,000; CY2024Q2 200,124,000) - so the successor
+# is pooled in to carry the series across the rename rather than leaving a
+# chart that flatlines after mid-2024.
+
+quarterly_interest_expense, sorted_all_interest_expense = extract_quarterly_duration_kpi(
+    "InterestExpense", "interest_expense", "Interest Expense",
+    "rwt_quarterly_interest_expense",
+    successor_concepts=("InterestExpenseOperating",))
 
 # ---------------------------------------------------------------------------
 # Total Assets

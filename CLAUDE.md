@@ -23,6 +23,9 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | File | Description |
 |------|-------------|
 | `get_company_facts.py` | Main script — single SEC API fetch, extracts EPS, book value per share, dividends per share, net interest income, net income, total assets, total liabilities, debt-to-equity ratio, and credit loss allowance (deriving missing Q4 values via a shared helper for the four duration-measure KPIs), exports CSVs |
+| `get_operating_expenses.py` | Builds the operating expenses series by splicing two sources — the tagged `OperatingExpenses` total (API, through CY2024Q2) and the four expense components summed from filing instances (CY2024Q3 onward). Verifies the two agree on overlapping periods before splicing, and repairs sign errors in the SEC data |
+| `plot_interest_expense.py` | Reads `rwt_quarterly_interest_expense_complete.csv` and renders a bar chart to `rwt_interest_expense_chart.png` (no API call) |
+| `plot_operating_expenses.py` | Reads `rwt_quarterly_operating_expenses.csv` and renders a bar chart to `rwt_operating_expenses_chart.png` (no API call) |
 | `get_recourse_leverage.py` | Builds the recourse leverage ratio — the honest companion to gross debt-to-equity. Combines the secured recourse debt figure (MD&A narrative, regex-extracted) with corporate debt (XBRL, `CorporateDebtSecuritiesMember`), divided by stockholders' equity |
 | `plot_recourse_leverage.py` | Reads `rwt_quarterly_recourse_leverage.csv` and renders gross vs. recourse leverage as two lines with the non-recourse gap shaded, to `rwt_recourse_leverage_chart.png` (no API call) |
 | `get_segment_facts.py` | **Per-segment** extraction — a different pipeline to `get_company_facts.py`, because CompanyFacts returns consolidated figures only. Discovers every 10-Q/10-K, downloads and caches each filing's XBRL instance document, and reads dimensional facts tagged against `us-gaap:StatementBusinessSegmentsAxis`. Exports one long CSV plus two chart-ready wide CSVs |
@@ -49,6 +52,11 @@ Extract financial KPIs for Redwood Trust (NYSE: RWT) from the SEC EDGAR API and 
 | `rwt_quarterly_liabilities.csv` | One row per quarter of total liabilities, a balance-sheet "instant" measure (tagged every quarter, no derivation needed) |
 | `rwt_quarterly_debt_to_equity.csv` | One row per quarter of debt-to-equity ratio (Total Liabilities / Stockholders' Equity), purely derived from data already extracted — no new SEC concept |
 | `rwt_quarterly_credit_loss_allowance.csv` | One row per quarter of the credit loss allowance on available-for-sale debt securities, a balance-sheet "instant" measure (tagged every quarter from CY2019Q4 onward, no derivation needed) |
+| `rwt_quarterly_interest_expense.csv` | One row per reported quarter of gross interest expense (the cost side of net interest income) |
+| `rwt_quarterly_interest_expense_complete.csv` | Same plus derived Q4, with a `source` column. 68 quarters, CY2009Q2 → CY2026Q2 |
+| `rwt_quarterly_operating_expenses.csv` | One row per quarter of total operating expenses, 67 quarters CY2009Q2 → CY2026Q2, with a `source` column distinguishing four provenances |
+| `rwt_interest_expense_chart.png` | Output of `plot_interest_expense.py` |
+| `rwt_operating_expenses_chart.png` | Output of `plot_operating_expenses.py` |
 | `rwt_quarterly_recourse_leverage.csv` | One row per quarter of recourse leverage alongside gross debt-to-equity, CY2024Q2 onward (9 quarters — see the disclosure-window note in design decisions) |
 | `rwt_recourse_leverage_chart.png` | Output of `plot_recourse_leverage.py` — gross vs. recourse leverage with the non-recourse band shaded |
 | `rwt_segment_quarterly.csv` | Long/tidy format — one row per segment × quarter × line item, across **all** segment structures, with full provenance (`filed`, `segment_structure`) so a reader can tell which rows are comparable |
@@ -187,6 +195,7 @@ Reads `rwt_quarterly_credit_loss_allowance.csv` (does not call the SEC API) and 
 ```
 python3 get_company_facts.py
 python3 get_segment_facts.py
+python3 get_operating_expenses.py
 python3 get_recourse_leverage.py
 python3 plot_eps.py
 python3 plot_bvps.py
@@ -199,6 +208,8 @@ python3 plot_debt_to_equity.py
 python3 plot_leverage_dashboard.py
 python3 plot_credit_loss_allowance.py
 python3 plot_recourse_leverage.py
+python3 plot_interest_expense.py
+python3 plot_operating_expenses.py
 ```
 
 Requires the `requests`, `matplotlib` and `lxml` libraries. Install them with:
@@ -242,6 +253,10 @@ Each record returned by the SEC API looks like:
 - **Total Assets reuses the BVPS instant-measure pattern, not the duration helper:** `Assets` is tagged every quarter (frames end in `I`, same as `StockholdersEquity`), so it's extracted with the existing `latest_instant_by_frame()` helper rather than `extract_quarterly_duration_kpi()` — no Q4 derivation needed. `plot_assets.py` mirrors `plot_bvps.py`'s single-hue line-chart style rather than a bar chart.
 - **Total Liabilities pairs with Total Assets to reveal a leverage trend BVPS alone doesn't show as starkly:** both are instant measures extracted the same way. From CY2019Q4 to CY2026Q1, total assets grew 49% ($18.0B → $26.8B, roughly doubling only if measured from the CY2023Q2 trough of $12.8B instead) but implied equity (Assets − Liabilities) *shrank* in dollar terms ($1.83B → $0.96B) as the liabilities/assets ratio climbed from 89.8% to 96.4% — the balance sheet grew mostly on borrowed money, corroborating BVPS's decline from the balance-sheet side rather than the per-share side.
 - **Debt-to-equity is purely derived, no new API data:** computed as Total Liabilities / Stockholders' Equity by reusing `equity_by_frame` (already built in the BVPS section) and `liabilities_by_frame` — no new SEC concept, no extra API call. Uses total GAAP equity (not common-only, unlike BVPS) since that's the conventional denominator for this ratio. This is the sharpest trend of any KPI so far: the ratio held in a roughly 3–11x band from 2009 through 2023 (aside from a 16x COVID spike in CY2020Q1), then broke out — climbing from 12.5x (CY2024Q2) to 27.0x (CY2026Q1) in just six quarters, nearly double its prior all-time high.
+- **Interest expense needed a concept-rename splice, and the rename was verified before splicing:** `InterestExpense` runs CY2009Q2 → CY2024Q2 then stops dead; `InterestExpenseOperating` starts CY2023Q2 and continues. They are the same measure — **all four overlapping quarters agree to the dollar** (CY2023Q2 152,885,000 · CY2023Q3 156,723,000 · CY2024Q1 180,530,000 · CY2024Q2 200,124,000) — so `extract_quarterly_duration_kpi()` gained a `successor_concepts` parameter that pools their records before deduping. Only ever pass a successor after checking the overlap agrees; if the two disagree they measure different things and splicing invents a step.
+- **Operating expenses cannot come from the API at all for recent quarters:** the `OperatingExpenses` total stops at CY2024Q2 with no successor concept — filings now tag only the four components, and two of them (`PortfolioManagementCosts`, `LoanAcquisitionCosts`) are Redwood's own custom tags. CompanyFacts serves only standard taxonomies (`dei`, `invest`, `srt`, `us-gaap`, `ffd`), so the recent total must be summed from filing instances. `get_operating_expenses.py` splices API totals (through CY2024Q2) with component sums (CY2024Q3 onward) and **fails loudly if any overlapping period disagrees** — all 4 currently agree to the dollar, and the CY2026Q1/Q2 component sums ($71.9M, $56.0M) match the "$72 million"/"$56 million" stated in that quarter's MD&A.
+- **The SEC data contains sign errors, and they need different treatment depending on whether the intended value is provable:** RWT's 10-K filed 2015-02-25 tagged all four quarters of 2013 as *negative* operating expenses. `repair_negatives()` distinguishes two cases. **Provable** — every quarter of the year is negative and they sum to exactly minus the annual figure (CY2013: −86,607,000 vs annual +86,607,000), so magnitudes are right and only the sign is inverted; signs are flipped and rows marked `sign corrected`. **Unprovable** — an isolated negative like CY2009Q3, where the year's other quarters are positive and the sum test cannot run; the quarter is dropped rather than guessed at. Never take absolute values indiscriminately, which would hide genuine problems.
+- **CY2020Q1 operating expenses of $124.1M is real, not an artifact** — roughly 2.5× neighbouring quarters ($49.4M and $35.2M), and it is the COVID quarter that also produced the −$943M net loss and −8.28 EPS. Left unclipped; the bar is legible and does not flatten the rest of the series.
 - **Recourse leverage is the honest version of debt-to-equity, and it needs two sources:** gross debt-to-equity hit 29.9x in CY2026Q2, which read literally implies distress. Most of those liabilities belong to consolidated securitisation entities whose creditors have no claim on Redwood Trust, Inc. The recourse figure comes from `secured recourse debt` (stated only in the MD&A narrative, extracted by regex — **not XBRL-tagged anywhere**) plus corporate debt (XBRL `DebtInstrumentFaceAmount` under `DebtInstrumentAxis = CorporateDebtSecuritiesMember`, which avoids double-counting instruments that are also tagged under their own axis). Result: **4.84x, not 29.86x.**
 - **Two independent paths reconcile the recourse figure:** secured recourse 3.620B + corporate 0.902B + secured non-recourse 0.450B = 4.972B, against an undimensioned total debt face amount of 4.978B tagged in the same filing. Re-run this check if the extraction changes.
 - **The recourse series starts at CY2024Q2 because of a disclosure change, not a data gap.** Before the 2024-08-07 filing, corporate debt is not tagged under `CorporateDebtSecuritiesMember` — it appears only as fair-value disclosures (`ConvertibleDebtFairValueDisclosures` and friends), a different measurement basis to the face amounts used later. Separately, the three 2023 10-Qs say "recourse debt" rather than "**secured** recourse debt", and that unqualified figure appears to already include corporate debt, so adding corporate debt to it would double-count. Splicing either would produce a step reflecting accounting presentation rather than borrowing. `get_recourse_leverage.py` never treats a missing corporate figure as zero — that would understate recourse debt by ~$0.9B and flatter the ratio.
@@ -370,6 +385,16 @@ Each record returned by the SEC API looks like:
 |--------|-------------|
 | `quarter` | Calendar period (e.g. `CY2025Q4`) |
 | `credit_loss_allowance` | Credit loss allowance on AFS debt securities in USD, as of quarter-end |
+| `filed` | Date the source filing was submitted to SEC |
+| `form` | Form type (`10-Q` or `10-K`) |
+
+`rwt_quarterly_operating_expenses.csv`:
+
+| Column | Description |
+|--------|-------------|
+| `quarter` | Calendar period (e.g. `CY2026Q2`) |
+| `operating_expenses` | Total operating expenses in USD |
+| `source` | `reported (OperatingExpenses)`, `reported (OperatingExpenses, sign corrected)`, `components (G&A + portfolio + acquisition + other)`, or `derived (Annual - Q1 - Q2 - Q3)` |
 | `filed` | Date the source filing was submitted to SEC |
 | `form` | Form type (`10-Q` or `10-K`) |
 
