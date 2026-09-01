@@ -67,6 +67,11 @@ sec_cache/
 # The template and the build script are tracked; the output is not.
 rwt_dashboard.html
 
+# Seeded design canvas — a build product of design/build_*.py plus the Claude
+# Design payload, ~2.5 MB of embedded editor code. The artboard sources,
+# canvas.json and the build scripts are tracked; the output is not.
+design/employer-filings-design-review.html
+
 # Misc
 .env.example  # you CAN commit this (no secrets)
 # Next.js

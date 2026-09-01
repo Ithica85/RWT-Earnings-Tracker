@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+  :root {
+    --paper:#f2f3ef; --paper-2:#e9ebe4; --ink:#191c19; --ink-2:#4a5049;
+    --ink-3:#767c74; --rule:#cfd3c9; --rule-strong:#a8aea2;
+    --green:#2b5d4f; --red:#ab3226; --gold:#8a7433; --gold-wash:#efe9d6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#121412; --paper-2:#1a1d19; --ink:#e6e9e1; --ink-2:#a8afa4;
+      --ink-3:#7b827a; --rule:#2c312c; --rule-strong:#414740;
+      --green:#64b096; --red:#e28376; --gold:#c9ae5e; --gold-wash:#23200f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:inherit; text-decoration:none; }
+  a:hover { color:var(--green); }
+  .wrap {
+    max-width:1080px; margin:0 auto;
+    padding:44px 44px 60px;
+    display:flex; flex-direction:column; gap:52px;
+  }
+  .eyebrow {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  h1 { font-size:50px; line-height:1.05; font-weight:400; letter-spacing:-0.02em; margin:0; text-wrap:balance; }
+  h2 { font-size:25px; font-weight:400; margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:22px; }
+  .standfirst { font-size:18px; color:var(--ink-2); max-width:62ch; margin:0; text-wrap:pretty; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--rule-strong); padding-bottom:8px; margin-bottom:20px; }
+  .sec-head .note { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-left:auto; }
+  .tier {
+    display:inline-block; font-family:var(--mono); font-size:9.5px;
+    letter-spacing:0.12em; text-transform:uppercase; padding:3px 8px;
+    border:1px solid currentColor; border-radius:2px;
+  }
+  .tier-curated { color:var(--green); }
+  .tier-generic { color:var(--gold); }
+  .scroller { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:400;
+    text-align:right; padding:0 14px 9px; border-bottom:1px solid var(--rule-strong);
+    white-space:nowrap;
+  }
+  th:first-child, th.left { text-align:left; }
+  td { padding:13px 14px; border-bottom:1px solid var(--rule); text-align:right; vertical-align:baseline; }
+  td:first-child, td.left { text-align:left; }
+  tr:last-child td { border-bottom:none; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:14px; white-space:nowrap; }
+  .num.now { font-weight:600; font-size:15px; }
+  .neg { color:var(--red); }
+  .pos { color:var(--green); }
+  .muted { color:var(--ink-3); }
+  .kpi-name { font-weight:600; }
+  .caveat {
+    background:var(--gold-wash); border-left:3px solid var(--gold);
+    padding:14px 18px; margin-top:10px; font-size:14.5px;
+    color:var(--ink-2); max-width:78ch;
+  }
+  .caveat strong { color:var(--ink); display:block; margin-bottom:4px; font-size:15px; }
+  .signal { display:flex; gap:16px; align-items:baseline; padding:12px 0; border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+  .signal:last-child { border-bottom:none; }
+  .signal-date { font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap; }
+  .signal-item { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; padding:2px 7px; border:1px solid currentColor; border-radius:2px; white-space:nowrap; }
+  .sev-high { color:var(--red); }
+  .sev-medium { color:var(--ink-3); }
+  .quiet { color:var(--ink-2); background:var(--paper-2); border-left:3px solid var(--rule-strong); padding:14px 18px; font-size:15px; max-width:78ch; }
+  .company-grid { display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule); grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+  .company-card { background:var(--paper); padding:20px 22px; display:flex; flex-direction:column; gap:8px; text-decoration:none; }
+  .company-card .ticker { font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:-0.01em; }
+  .company-card .name { font-size:15px; color:var(--ink-2); }
+  .company-card .meta { font-family:var(--mono); font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+  footer { border-top:2px solid var(--ink); padding-top:20px; font-size:13.5px; color:var(--ink-3); max-width:76ch; }
+
+  /* ---- added for the review, not in the shipped stylesheet ---- */
+  .spark { display:block; }
+  .chart { display:block; overflow:visible; }
+  .ax { font-family:var(--mono); font-size:9.5px; fill:var(--ink-3); }
+  .lbl { font-family:var(--mono); font-size:11.5px; font-weight:600; }
+  .mark {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:19px; height:19px; border-radius:50%;
+    background:var(--red); color:var(--paper);
+    font-family:var(--mono); font-size:11px; font-weight:600;
+    line-height:1; flex:none; vertical-align:middle;
+  }
+  .mark-row { position:relative; }
+  .mark-abs { position:absolute; left:-30px; top:12px; }
+  .board-tag {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--ink-3);
+    border:1px solid var(--rule-strong); border-radius:2px;
+    padding:4px 9px; align-self:flex-start;
+  }
+  .board-tag.fix { color:var(--green); border-color:var(--green); }
+</style>
+</helmet>
+
+<div class="wrap">
+  <div class="board-tag">Shipped today &middot; app/company/[ticker]/page.tsx</div>
+
+  <header class="masthead">
+    <div class="eyebrow">&larr; All companies &middot; CIK 0000930236</div>
+    <h1>Redwood Trust, Inc.</h1>
+    <p class="standfirst">
+      <span class="tier tier-curated">curated</span>
+      Concept choices checked against the filings; series crossing a renaming or
+      restatement verified against overlapping periods.
+    </p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <h2>Financial position <span class="mark">1</span></h2>
+      <span class="note">latest reported quarter</span>
+    </div>
+    <div style="font-family:var(--mono);font-size:12px;color:var(--red);margin:-10px 0 16px">
+      <span class="mark">1</span> 662 points of quarterly history sit in rwt.json. Ten of them render.
+      There is no chart in the app and no chart library in package.json.
+    </div>
+    <div class="scroller">
+      <table>
+        <thead><tr><th class="left">Metric</th><th>Latest</th><th>QoQ</th><th>Coverage</th></tr></thead>
+        <tbody><tr><td class="kpi-name">Diluted EPS</td><td class="num now neg">−$0.03</td><td class="num muted">+57.1% <span class="mark">6</span></td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Net Income</td><td class="num now neg">−$1.1M</td><td class="num muted">+80.0%</td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Net Interest Income</td><td class="num now ">$32.1M</td><td class="num muted">−7.6%</td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Interest Expense</td><td class="num now ">$353.2M</td><td class="num muted">+9.6%</td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Dividends Declared per Share</td><td class="num now ">$0.18</td><td class="num muted">0.0%</td><td class="num muted">67q from CY2009Q2</td></tr><tr><td class="kpi-name">Total Assets</td><td class="num now ">$28.82B</td><td class="num muted">+7.5%</td><td class="num muted">66q from CY2009Q4</td></tr><tr><td class="kpi-name">Total Liabilities</td><td class="num now ">$27.88B</td><td class="num muted">+7.8%</td><td class="num muted">66q from CY2009Q4</td></tr><tr><td class="kpi-name">Stockholders' Equity</td><td class="num now ">$933.8M</td><td class="num muted">−2.4%</td><td class="num muted">57q from CY2009Q4</td></tr><tr><td class="kpi-name">Credit Loss Allowance (AFS securities)</td><td class="num now ">$11.0M</td><td class="num muted">+152.5%</td><td class="num muted">27q from CY2019Q4</td></tr><tr><td colspan="4" style="padding-top:0"><div class="caveat"><strong>The 2026 build is one asset, not a portfolio</strong>Effectively the entire $9.9M half-year build is a re-mark of a single retained interest in the Legacy Trust, a wind-down vehicle. The rollforward is explicit that no new securities entered an allowance position. Ring-fenced and shrinking by design.
+</div></td></tr><tr><td class="kpi-name">Debt-to-Equity (gross)</td><td class="num now ">29.86×</td><td class="num muted">+10.5%</td><td class="num muted">57q from CY2009Q4</td></tr><tr><td colspan="4" style="padding-top:0"><div class="caveat"><strong><span class="mark">2</span> Gross leverage overstates what Redwood is liable for</strong>GAAP consolidates securitisation entities whose creditors have no claim on Redwood Trust, Inc. Gross debt-to-equity reached 29.86x in CY2026Q2; recourse leverage - counting only debt the parent can be pursued for - was 4.84x. The honest caveat on the caveat: recourse leverage has still nearly doubled since 2024, and part of that is equity shrinking rather than borrowing growing.
+<div style="margin-top:9px;font-family:var(--mono);font-size:12px;color:var(--red)"><span class="mark">3</span> the only figure that corrects the headline — 4.84× — is prose inside this box. <code>companion: "recourse_leverage"</code> is declared in the data and never exported as a KPI.</div></div></td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Restructuring signals <span class="mark">5</span></h2>
+      <span class="note">8-K disclosures since 2024</span>
+    </div>
+    <div class="quiet"><strong>No item 2.05 filed.</strong> A company must file one when it commits to an exit or disposal plan &mdash; a restructuring, in the SEC&rsquo;s language. Its absence means no such plan has been disclosed. It does not mean no job cuts have happened: targeted severance expensed through normal operations does not trigger the requirement.</div>
+    <div style="margin-top:18px"><div class="signal"><span class="signal-date">2026-05-19</span><span class="signal-item sev-medium">5.02</span><span style="flex:1;min-width:18ch">Director or senior officer change (departure OR appointment)</span><a class="signal-date" href="#">filing ↗</a></div><div class="signal"><span class="signal-date">2025-12-12</span><span class="signal-item sev-medium">5.02</span><span style="flex:1;min-width:18ch">Director or senior officer change (departure OR appointment)</span><a class="signal-date" href="#">filing ↗</a></div><div class="signal"><span class="signal-date">2024-12-13</span><span class="signal-item sev-medium">5.02</span><span style="flex:1;min-width:18ch">Director or senior officer change (departure OR appointment)</span><a class="signal-date" href="#">filing ↗</a></div><div class="signal"><span class="signal-date">2024-05-24</span><span class="signal-item sev-medium">5.02</span><span style="flex:1;min-width:18ch">Director or senior officer change (departure OR appointment)</span><a class="signal-date" href="#">filing ↗</a></div></div>
+    <p class="standfirst" style="margin-top:16px">All 4 are medium severity. Item 5.02 covers both a senior officer resigning and a routine board election &mdash; the code alone cannot separate them, so none is treated as a warning.</p>
+  </section>
+
+  <footer>
+    Sourced from SEC EDGAR &mdash; CompanyFacts, filing instance documents, and
+    8-K item codes. Independent analysis, not affiliated with or endorsed by
+    Redwood Trust, Inc.. Not investment advice. Figures are as reported and may be restated
+    in later filings.
+  </footer>
+</div>
+
+</x-dc>
+</body>
+</html>

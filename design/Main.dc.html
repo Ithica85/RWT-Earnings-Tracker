@@ -1,0 +1,282 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+  :root {
+    --paper:#f2f3ef; --paper-2:#e9ebe4; --ink:#191c19; --ink-2:#4a5049;
+    --ink-3:#767c74; --rule:#cfd3c9; --rule-strong:#a8aea2;
+    --green:#2b5d4f; --red:#ab3226; --gold:#8a7433; --gold-wash:#efe9d6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#121412; --paper-2:#1a1d19; --ink:#e6e9e1; --ink-2:#a8afa4;
+      --ink-3:#7b827a; --rule:#2c312c; --rule-strong:#414740;
+      --green:#64b096; --red:#e28376; --gold:#c9ae5e; --gold-wash:#23200f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:inherit; text-decoration:none; }
+  a:hover { color:var(--green); }
+  .wrap {
+    max-width:1080px; margin:0 auto;
+    padding:44px 44px 60px;
+    display:flex; flex-direction:column; gap:52px;
+  }
+  .eyebrow {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  h1 { font-size:50px; line-height:1.05; font-weight:400; letter-spacing:-0.02em; margin:0; text-wrap:balance; }
+  h2 { font-size:25px; font-weight:400; margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:22px; }
+  .standfirst { font-size:18px; color:var(--ink-2); max-width:62ch; margin:0; text-wrap:pretty; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--rule-strong); padding-bottom:8px; margin-bottom:20px; }
+  .sec-head .note { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-left:auto; }
+  .tier {
+    display:inline-block; font-family:var(--mono); font-size:9.5px;
+    letter-spacing:0.12em; text-transform:uppercase; padding:3px 8px;
+    border:1px solid currentColor; border-radius:2px;
+  }
+  .tier-curated { color:var(--green); }
+  .tier-generic { color:var(--gold); }
+  .scroller { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:400;
+    text-align:right; padding:0 14px 9px; border-bottom:1px solid var(--rule-strong);
+    white-space:nowrap;
+  }
+  th:first-child, th.left { text-align:left; }
+  td { padding:13px 14px; border-bottom:1px solid var(--rule); text-align:right; vertical-align:baseline; }
+  td:first-child, td.left { text-align:left; }
+  tr:last-child td { border-bottom:none; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:14px; white-space:nowrap; }
+  .num.now { font-weight:600; font-size:15px; }
+  .neg { color:var(--red); }
+  .pos { color:var(--green); }
+  .muted { color:var(--ink-3); }
+  .kpi-name { font-weight:600; }
+  .caveat {
+    background:var(--gold-wash); border-left:3px solid var(--gold);
+    padding:14px 18px; margin-top:10px; font-size:14.5px;
+    color:var(--ink-2); max-width:78ch;
+  }
+  .caveat strong { color:var(--ink); display:block; margin-bottom:4px; font-size:15px; }
+  .signal { display:flex; gap:16px; align-items:baseline; padding:12px 0; border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+  .signal:last-child { border-bottom:none; }
+  .signal-date { font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap; }
+  .signal-item { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; padding:2px 7px; border:1px solid currentColor; border-radius:2px; white-space:nowrap; }
+  .sev-high { color:var(--red); }
+  .sev-medium { color:var(--ink-3); }
+  .quiet { color:var(--ink-2); background:var(--paper-2); border-left:3px solid var(--rule-strong); padding:14px 18px; font-size:15px; max-width:78ch; }
+  .company-grid { display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule); grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+  .company-card { background:var(--paper); padding:20px 22px; display:flex; flex-direction:column; gap:8px; text-decoration:none; }
+  .company-card .ticker { font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:-0.01em; }
+  .company-card .name { font-size:15px; color:var(--ink-2); }
+  .company-card .meta { font-family:var(--mono); font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+  footer { border-top:2px solid var(--ink); padding-top:20px; font-size:13.5px; color:var(--ink-3); max-width:76ch; }
+
+  /* ---- added for the review, not in the shipped stylesheet ---- */
+  .spark { display:block; }
+  .chart { display:block; overflow:visible; }
+  .ax { font-family:var(--mono); font-size:9.5px; fill:var(--ink-3); }
+  .lbl { font-family:var(--mono); font-size:11.5px; font-weight:600; }
+  .mark {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:19px; height:19px; border-radius:50%;
+    background:var(--red); color:var(--paper);
+    font-family:var(--mono); font-size:11px; font-weight:600;
+    line-height:1; flex:none; vertical-align:middle;
+  }
+  .mark-row { position:relative; }
+  .mark-abs { position:absolute; left:-30px; top:12px; }
+  .board-tag {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--ink-3);
+    border:1px solid var(--rule-strong); border-radius:2px;
+    padding:4px 9px; align-self:flex-start;
+  }
+  .board-tag.fix { color:var(--green); border-color:var(--green); }
+
+  .tier-banner {
+    display:flex; gap:14px; align-items:flex-start;
+    border-left:3px solid var(--green); background:var(--paper-2);
+    padding:14px 18px;
+  }
+  .tier-banner .lede {
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--green); font-weight:600;
+    white-space:nowrap; padding-top:2px;
+  }
+  .tier-banner .body { font-size:15px; color:var(--ink-2); margin:0; }
+  .tier-banner.generic { border-left-color:var(--gold); }
+  .tier-banner.generic .lede { color:var(--gold); }
+
+  .correct-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px;
+                  background:var(--rule); border:1px solid var(--rule); }
+  .correct { background:var(--gold-wash); padding:20px 22px; display:flex;
+             flex-direction:column; gap:10px; }
+  .correct .kpi { font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+                  text-transform:uppercase; color:var(--ink-2); }
+  .correct .pair { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .correct .filed { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                    font-size:19px; color:var(--ink-3); text-decoration:line-through;
+                    text-decoration-thickness:1px; }
+  .correct .arrow { color:var(--ink-3); font-size:14px; }
+  .correct .true { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                   font-size:31px; font-weight:600; color:var(--green); line-height:1; }
+  .correct .true.flag { font-size:19px; color:var(--gold); }
+  .correct .why { font-size:14px; color:var(--ink-2); margin:0; }
+  .correct .limit { font-size:13px; color:var(--ink-2); border-top:1px solid var(--gold);
+                    padding-top:9px; margin:0; }
+  .correct .limit b { color:var(--ink); font-weight:600; }
+
+  .lede-figs { display:flex; gap:34px; flex-wrap:wrap; }
+  .lede-fig { display:flex; flex-direction:column; gap:3px; }
+  .lede-fig .v { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                 font-size:25px; font-weight:600; }
+  .lede-fig .k { font-family:var(--mono); font-size:10px; letter-spacing:0.12em;
+                 text-transform:uppercase; color:var(--ink-3); }
+
+  td.trend { width:150px; padding-top:9px; padding-bottom:9px; }
+  .qual { font-family:var(--mono); font-size:10.5px; color:var(--ink-3);
+          letter-spacing:0.04em; display:block; }
+  .row-flag { font-family:var(--mono); font-size:9.5px; letter-spacing:0.1em;
+              text-transform:uppercase; color:var(--gold); border:1px solid var(--gold);
+              border-radius:2px; padding:1px 5px; margin-left:8px; white-space:nowrap; }
+
+  .sig-strip { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .sig-chip { display:flex; gap:8px; align-items:baseline; border:1px solid var(--rule);
+              border-radius:2px; padding:6px 10px; font-family:var(--mono); font-size:11.5px;
+              color:var(--ink-2); }
+  .sig-chip .d { color:var(--ink-3); font-variant-numeric:tabular-nums; }
+
+  .cmp-tier { font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+              text-transform:uppercase; display:block; margin-top:3px; }
+</style>
+</helmet>
+
+<div class="wrap">
+  <div class="board-tag fix">Proposed &middot; company page</div>
+
+  <header class="masthead">
+    <div class="eyebrow">&larr; All companies &middot; CIK 0000930236 &middot; through CY2026Q2</div>
+    <h1>Redwood Trust, Inc.</h1>
+    <div class="lede-figs">
+      <div class="lede-fig"><span class="v">4.84×</span><span class="k">Recourse leverage</span></div>
+      <div class="lede-fig"><span class="v">$933.8M</span><span class="k">Equity</span></div>
+      <div class="lede-fig"><span class="v">$0.18</span><span class="k">Dividend / share</span></div>
+      <div class="lede-fig"><span class="v">0</span><span class="k">Restructuring filings</span></div>
+    </div>
+  </header>
+
+  <div class="tier-banner">
+    <span class="lede">Curated</span>
+    <p class="body">Someone read the filings. Concept choices are checked against the
+    source, series crossing a renaming or a restatement are verified on overlapping
+    periods, and two figures below would mislead without the correction attached to them.</p>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <h2>What the headline figures get wrong</h2>
+      <span class="note">2 corrections</span>
+    </div>
+    <div class="correct-grid">
+      <div class="correct">
+        <span class="kpi">Debt-to-equity</span>
+        <div class="pair">
+          <span class="filed">29.86×</span>
+          <span class="arrow">&rarr;</span>
+          <span class="true">4.84×</span>
+        </div>
+        <p class="why">GAAP consolidates securitisation entities whose creditors have no
+        claim on Redwood Trust, Inc. Recourse leverage counts only debt the parent can
+        actually be pursued for.</p>
+        <p class="limit"><b>And the honest limit:</b> recourse leverage has still nearly
+        doubled since 2024, and part of that is equity shrinking rather than borrowing
+        growing.</p>
+      </div>
+      <div class="correct">
+        <span class="kpi">Credit loss allowance</span>
+        <div class="pair">
+          <span class="filed">$11.0M &middot; +152.5%</span>
+          <span class="arrow">&rarr;</span>
+          <span class="true flag">One asset, ring-fenced</span>
+        </div>
+        <p class="why">Effectively the entire $9.9M half-year build is a re-mark of a single
+        retained interest in the Legacy Trust, a wind-down vehicle. The rollforward is
+        explicit that no new securities entered an allowance position.</p>
+        <p class="limit"><b>Read it as:</b> a shrinking legacy position being marked, not
+        credit deteriorating across the book.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Leverage, gross against recourse</h2>
+      <span class="note">57 quarters &middot; CY2009Q4 &ndash; CY2026Q2</span>
+    </div>
+    <svg viewBox="0 0 1000 280" width="100%" height="280" class="chart" role="img" aria-label="Gross debt-to-equity against recourse leverage, 2009 to 2026"><line x1="46.0" y1="250.0" x2="922.0" y2="250.0" stroke="var(--rule)" stroke-width="1"/><text x="38.0" y="253.5" class="ax" text-anchor="end">0×</text><line x1="46.0" y1="177.5" x2="922.0" y2="177.5" stroke="var(--rule)" stroke-width="1"/><text x="38.0" y="181.0" class="ax" text-anchor="end">10×</text><line x1="46.0" y1="105.0" x2="922.0" y2="105.0" stroke="var(--rule)" stroke-width="1"/><text x="38.0" y="108.5" class="ax" text-anchor="end">20×</text><line x1="46.0" y1="32.5" x2="922.0" y2="32.5" stroke="var(--rule)" stroke-width="1"/><text x="38.0" y="36.0" class="ax" text-anchor="end">30×</text><polygon points="796.9,159.3 812.5,148.0 828.1,145.8 843.8,135.5 859.4,110.4 875.1,93.3 890.7,82.4 906.4,54.0 922.0,33.5 922.0,214.9 906.4,214.5 890.7,215.4 875.1,220.4 859.4,225.6 843.8,231.0 828.1,231.6 812.5,232.8 796.9,229.9" fill="var(--rule)" opacity="0.55"/><polyline points="46.0,218.2 61.6,219.1 77.3,220.5 92.9,222.3 108.6,221.7 124.2,220.7 139.9,215.3 155.5,210.6 171.1,216.8 186.8,217.2 202.4,220.6 218.1,229.0 233.7,228.0 249.4,223.3 265.0,217.9 280.6,219.0 296.3,218.1 311.9,219.6 327.6,222.7 343.2,224.8 358.9,222.4 374.5,220.5 390.1,215.1 405.8,215.6 421.4,213.0 437.1,208.6 452.7,193.1 468.4,200.2 484.0,193.0 499.6,194.4 515.3,185.8 530.9,134.3 546.6,177.1 562.2,185.7 577.9,189.7 593.5,192.3 609.1,190.1 624.8,188.4 640.4,180.3 656.1,185.8 671.7,177.3 687.4,174.7 703.0,170.1 718.6,173.7 734.3,174.7 749.9,171.8 765.6,169.8 781.2,168.1 796.9,159.3 812.5,148.0 828.1,145.8 843.8,135.5 859.4,110.4 875.1,93.3 890.7,82.4 906.4,54.0 922.0,33.5" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linejoin="round"/><polyline points="796.9,229.9 812.5,232.8 828.1,231.6 843.8,231.0 859.4,225.6 875.1,220.4 890.7,215.4 906.4,214.5 922.0,214.9" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linejoin="round"/><text x="930.0" y="37.5" class="lbl" fill="var(--red)">29.86× gross</text><text x="930.0" y="218.9" class="lbl" fill="var(--green)">4.84× recourse</text><text x="46.0" y="270.0" class="ax" text-anchor="middle">2009Q4</text><text x="265.0" y="270.0" class="ax" text-anchor="middle">2015Q4</text><text x="530.9" y="270.0" class="ax" text-anchor="middle">2020Q1</text><text x="796.9" y="270.0" class="ax" text-anchor="middle">2024Q2</text><text x="922.0" y="270.0" class="ax" text-anchor="middle">2026Q2</text></svg>
+    <p class="standfirst" style="font-size:15px;margin-top:14px">
+      The shaded band is debt sitting on Redwood&rsquo;s balance sheet that its creditors
+      cannot pursue Redwood for. The gap is the whole reason the gross line is not the
+      answer &mdash; and the reason the green line, not the red one, is the number to watch.
+    </p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Financial position</h2>
+      <span class="note">latest reported quarter &middot; QoQ vs CY2026Q1</span>
+    </div>
+    <div class="scroller">
+      <table>
+        <thead><tr>
+          <th class="left">Metric</th><th class="left">Trend</th>
+          <th>Latest</th><th>QoQ</th><th>Coverage</th>
+        </tr></thead>
+        <tbody><tr><td class="kpi-name">Leverage &mdash; recourse<span class="row-flag">corrected</span></td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,23.2 18.8,27.0 34.5,25.4 50.2,24.6 66.0,17.6 81.8,10.7 97.5,4.1 113.2,3.0 129.0,3.5" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="3.5" r="2.1" fill="var(--green)"/></svg></td><td class="num now">4.84×</td><td class="num muted">−1.0%<span class="qual">vs CY2026Q1</span></td><td class="num muted">9q from CY2024Q2</td></tr><tr><td class="kpi-name">Debt-to-Equity (gross)<span class="row-flag">see note</span></td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,25.7 5.2,25.8 7.5,26.0 9.8,26.2 12.0,26.1 14.2,26.0 16.5,25.3 18.8,24.7 21.0,25.5 23.2,25.6 25.5,26.0 27.8,27.0 30.0,26.9 32.2,26.3 34.5,25.6 36.8,25.8 39.0,25.7 41.2,25.8 43.5,26.2 45.8,26.5 48.0,26.2 50.2,26.0 52.5,25.3 54.8,25.4 57.0,25.0 59.2,24.5 61.5,22.6 63.8,23.5 66.0,22.6 68.2,22.8 70.5,21.7 72.8,15.4 75.0,20.6 77.2,21.7 79.5,22.2 81.8,22.5 84.0,22.2 86.2,22.0 88.5,21.0 90.8,21.7 93.0,20.7 95.2,20.3 97.5,19.8 99.8,20.2 102.0,20.3 104.2,20.0 106.5,19.7 108.8,19.5 111.0,18.4 113.2,17.1 115.5,16.8 117.8,15.5 120.0,12.4 122.2,10.3 124.5,9.0 126.8,5.5 129.0,3.0" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="3.0" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">29.86×</td><td class="num muted">+10.5%</td><td class="num muted">57q from CY2009Q4</td></tr><tr><td class="kpi-name">Stockholders' Equity</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,21.6 5.2,21.2 7.5,20.7 9.8,19.6 12.0,19.4 14.2,20.5 16.5,21.9 18.8,23.4 21.0,21.8 23.2,22.1 25.5,19.9 27.8,18.0 30.0,16.9 32.2,15.2 34.5,17.8 36.8,19.1 39.0,19.0 41.2,18.2 43.5,17.8 45.8,17.4 48.0,17.1 50.2,16.5 52.5,16.4 54.8,16.2 57.0,16.0 59.2,13.1 61.5,13.4 63.8,9.0 66.0,8.7 68.2,3.9 70.5,3.0 72.8,27.0 75.0,22.4 77.2,19.9 79.5,18.6 81.8,16.3 84.0,14.6 86.2,12.8 88.5,12.6 90.8,11.3 93.0,15.4 95.2,17.7 97.5,19.2 99.8,18.0 102.0,18.3 104.2,18.7 106.5,16.6 108.8,16.1 111.0,16.2 113.2,16.2 115.5,16.9 117.8,17.0 120.0,19.9 122.2,21.0 124.5,21.4 126.8,22.0 129.0,22.5" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="22.5" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$933.8M</td><td class="num muted">−2.4%</td><td class="num muted">57q from CY2009Q4</td></tr><tr><td class="kpi-name">Total Assets</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,26.2 4.9,26.2 6.9,26.3 8.8,26.3 10.8,26.2 12.7,26.3 14.6,25.9 16.6,25.7 18.5,26.1 20.4,26.2 22.4,26.2 24.3,27.0 26.3,26.7 28.2,26.0 30.1,26.8 32.1,26.8 34.0,26.4 36.0,26.1 37.9,25.9 39.8,25.5 41.8,25.6 43.7,25.9 45.6,25.2 47.6,25.3 49.5,25.7 51.5,25.6 53.4,25.6 55.3,26.0 57.3,26.2 59.2,25.8 61.2,25.3 63.1,24.4 65.0,24.5 67.0,24.0 68.9,22.4 70.8,19.6 72.8,19.4 74.7,17.7 76.7,16.1 78.6,13.7 80.5,19.3 82.5,21.2 84.4,21.1 86.4,21.2 88.3,20.6 90.2,19.6 92.2,18.5 94.1,16.9 96.0,17.3 98.0,17.7 99.9,18.4 101.9,18.5 103.8,18.5 105.7,18.8 107.7,18.6 109.6,17.1 111.6,16.5 113.5,15.1 115.4,13.2 117.4,13.4 119.3,11.8 121.2,10.4 123.2,9.1 125.1,8.0 127.1,5.0 129.0,3.0" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="3.0" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$28.82B</td><td class="num muted">+7.5%</td><td class="num muted">66q from CY2009Q4</td></tr><tr><td class="kpi-name">Total Liabilities</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,26.1 4.9,26.1 6.9,26.2 8.8,26.3 10.8,26.1 12.7,26.2 14.6,25.7 16.6,25.5 18.5,25.9 20.4,26.0 22.4,26.1 24.3,27.0 26.3,26.7 28.2,26.1 30.1,26.9 32.1,26.9 34.0,26.6 36.0,26.2 37.9,26.0 39.8,25.7 41.8,25.8 43.7,26.0 45.6,25.3 47.6,25.3 49.5,25.7 51.5,25.5 53.4,25.6 55.3,26.0 57.3,26.3 59.2,25.9 61.2,25.4 63.1,24.5 65.0,24.6 67.0,24.1 68.9,22.6 70.8,19.9 72.8,19.8 74.7,18.2 76.7,16.9 78.6,14.4 80.5,18.9 82.5,21.0 84.4,21.1 86.4,21.2 88.3,20.8 90.2,19.8 92.2,18.8 94.1,17.2 96.0,17.7 98.0,17.9 99.9,18.5 101.9,18.6 103.8,18.5 105.7,18.8 107.7,18.6 109.6,17.2 111.6,16.7 113.5,15.3 115.4,13.4 117.4,13.6 119.3,12.0 121.2,10.4 123.2,9.1 125.1,8.0 127.1,5.0 129.0,3.0" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="3.0" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$27.88B</td><td class="num muted">+7.8%</td><td class="num muted">66q from CY2009Q4</td></tr><tr><td class="kpi-name">Net Income</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><line x1="3.0" y1="6.6" x2="129.0" y2="6.6" stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="2 2"/><polyline points="3.0,6.4 4.9,6.0 6.8,5.6 8.6,6.0 10.5,6.2 12.4,6.3 14.3,6.2 16.2,6.4 18.0,6.6 19.9,6.6 21.8,5.9 23.7,6.2 25.6,5.7 27.4,5.7 29.3,5.3 31.2,5.2 33.1,6.1 35.0,6.0 36.9,6.3 38.7,6.2 40.6,5.6 42.5,6.0 44.4,6.3 46.3,6.0 48.1,6.2 50.0,5.7 51.9,6.3 53.8,5.7 55.7,5.4 57.5,6.0 59.4,5.8 61.3,5.8 63.2,5.8 65.1,5.9 66.9,5.6 68.8,5.9 70.7,5.7 72.6,6.6 74.5,5.4 76.3,5.9 78.2,5.8 80.1,5.5 82.0,27.0 83.9,3.0 85.7,3.5 87.6,5.4 89.5,4.5 91.4,4.6 93.3,4.7 95.1,5.6 97.0,5.9 98.9,8.7 100.8,7.7 102.7,7.5 104.6,6.5 106.4,6.5 108.3,7.2 110.2,6.1 112.1,5.9 114.0,6.2 115.8,6.3 117.7,6.7 119.6,6.2 121.5,8.7 123.4,6.7 125.2,6.1 127.1,6.7 129.0,6.6" fill="none" stroke="var(--red)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="6.6" r="2.1" fill="var(--red)"/></svg></td><td class="num now neg">−$1.1M</td><td class="num muted">+80.0%<span class="qual">narrower loss</span></td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Diluted EPS</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><line x1="3.0" y1="5.9" x2="129.0" y2="5.9" stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="2 2"/><polyline points="3.0,5.6 4.9,5.0 6.8,4.4 8.6,5.0 10.5,5.3 12.4,5.4 14.3,5.3 16.2,5.6 18.0,5.9 19.9,6.0 21.8,5.0 23.7,5.3 25.6,4.7 27.4,4.6 29.3,4.1 31.2,4.1 33.1,5.3 35.0,5.2 36.9,5.5 38.7,5.4 40.6,4.6 42.5,5.1 44.4,5.5 46.3,5.1 48.1,5.3 50.0,4.7 51.9,5.5 53.8,4.7 55.7,4.4 57.5,5.1 59.4,4.8 61.3,4.8 63.2,4.9 65.1,5.0 66.9,4.6 68.8,4.9 70.7,4.8 72.6,6.0 74.5,4.7 76.3,5.1 78.2,5.1 80.1,4.9 82.0,27.0 83.9,3.4 85.7,3.3 87.6,3.0 89.5,4.1 91.4,4.2 93.3,4.2 95.1,5.0 97.0,5.3 98.9,8.1 100.8,7.0 102.7,6.9 104.6,5.9 106.4,5.9 108.3,6.6 110.2,5.5 112.1,5.4 114.0,5.6 115.8,5.7 117.7,6.1 119.6,5.6 121.5,7.8 123.4,6.1 125.2,5.6 127.1,6.1 129.0,6.0" fill="none" stroke="var(--red)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="6.0" r="2.1" fill="var(--red)"/></svg></td><td class="num now neg">−$0.03</td><td class="num muted">+57.1%<span class="qual">narrower loss</span></td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Net Interest Income</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,13.9 4.9,7.6 6.8,10.7 8.6,13.8 10.5,13.9 12.4,14.6 14.3,15.7 16.2,17.5 18.0,17.7 19.9,18.7 21.8,18.3 23.7,16.7 25.6,16.2 27.4,23.0 29.3,13.9 31.2,13.3 33.1,13.6 35.0,12.3 36.9,13.2 38.7,12.9 40.6,11.0 42.5,10.2 44.4,11.1 46.3,10.8 48.1,11.2 50.0,8.7 51.9,12.0 53.8,8.4 55.7,11.4 57.5,13.6 59.4,14.9 61.3,14.1 63.2,13.9 65.1,13.8 66.9,14.0 68.8,14.2 70.7,14.0 72.6,14.2 74.5,16.0 76.3,15.7 78.2,15.0 80.1,8.0 82.0,4.0 83.9,18.8 85.7,22.3 87.6,21.0 89.5,19.7 91.4,16.7 93.3,9.8 95.1,5.0 97.0,3.0 98.9,10.7 100.8,14.1 102.7,19.0 104.6,19.3 106.4,19.5 108.3,23.0 110.2,23.2 112.1,20.7 114.0,20.0 115.8,19.9 117.7,18.6 119.6,18.4 121.5,27.0 123.4,26.3 125.2,19.6 127.1,14.2 129.0,15.9" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="15.9" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$32.1M</td><td class="num muted">−7.6%</td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Interest Expense</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,25.5 4.9,26.5 6.8,27.0 8.6,26.8 10.5,26.6 12.4,26.8 14.3,26.7 16.2,26.6 18.0,26.6 19.9,26.2 21.8,26.1 23.7,26.2 25.6,26.3 27.4,25.9 29.3,27.0 31.2,26.8 33.1,26.7 35.0,26.9 36.9,26.9 38.7,26.8 40.6,26.6 42.5,26.6 44.4,26.6 46.3,26.7 48.1,26.6 50.0,26.5 51.9,26.6 53.8,26.7 55.7,26.8 57.5,26.8 59.4,26.8 61.3,26.6 63.2,26.3 65.1,25.7 66.9,25.3 68.8,24.8 70.7,23.7 72.6,22.2 74.5,21.2 76.3,20.0 78.2,19.9 80.1,17.7 82.0,17.8 83.9,20.9 85.7,21.1 87.6,21.3 89.5,21.0 91.4,20.6 93.3,20.9 95.1,20.3 97.0,18.5 98.9,19.2 100.8,18.1 102.7,17.8 104.6,17.4 106.4,17.3 108.3,17.1 110.2,16.1 112.1,15.4 114.0,14.0 115.8,12.3 117.7,11.2 119.6,10.8 121.5,8.9 123.4,7.9 125.2,6.7 127.1,5.2 129.0,3.0" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="3.0" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$353.2M</td><td class="num muted">+9.6%</td><td class="num muted">68q from CY2009Q2</td></tr><tr><td class="kpi-name">Dividends Declared per Share</td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,11.6 4.9,11.6 6.8,11.6 8.7,11.6 10.6,11.6 12.5,11.6 14.5,11.6 16.4,11.6 18.3,11.6 20.2,11.6 22.1,11.6 24.0,11.6 25.9,11.6 27.8,11.6 29.7,7.9 31.6,7.9 33.5,7.9 35.5,7.9 37.4,7.9 39.3,7.9 41.2,7.9 43.1,7.9 45.0,7.9 46.9,7.9 48.8,7.9 50.7,7.9 52.6,7.9 54.5,7.9 56.5,7.9 58.4,7.9 60.3,7.9 62.2,7.9 64.1,7.9 66.0,7.9 67.9,7.9 69.8,5.5 71.7,5.5 73.6,5.5 75.5,5.5 77.5,5.5 79.4,5.5 81.3,5.5 83.2,3.0 85.1,27.0 87.0,25.2 88.9,25.2 90.8,22.7 92.7,20.2 94.6,16.5 96.5,14.1 98.5,14.1 100.4,14.1 102.3,14.1 104.2,14.1 106.1,14.1 108.0,22.7 109.9,22.7 111.8,22.7 113.7,22.7 115.6,22.7 117.5,21.5 119.5,20.2 121.4,20.2 123.3,20.2 125.2,20.2 127.1,20.2 129.0,20.2" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="20.2" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$0.18</td><td class="num muted">0.0%</td><td class="num muted">67q from CY2009Q2</td></tr><tr><td class="kpi-name">Credit Loss Allowance (AFS securities)<span class="row-flag">see note</span></td><td class="trend"><svg class="spark" viewBox="0 0 132 30" width="132" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,27.0 7.8,23.7 12.7,23.8 17.5,24.8 22.4,26.2 27.2,27.0 32.1,27.0 36.9,27.0 41.8,27.0 46.6,25.5 51.5,23.1 56.3,22.0 61.2,21.5 66.0,21.4 70.8,21.2 75.7,21.4 80.5,21.6 85.4,23.0 90.2,24.1 95.1,25.1 99.9,25.0 104.8,25.1 109.6,25.2 114.5,25.3 119.3,24.7 124.2,17.5 129.0,3.0" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="129.0" cy="3.0" r="2.1" fill="var(--ink-2)"/></svg></td><td class="num now ">$11.0M</td><td class="num muted">+152.5%</td><td class="num muted">27q from CY2019Q4</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>Restructuring signals</h2>
+      <span class="note">none filed</span>
+    </div>
+    <div class="quiet"><strong>No item 2.05 since 2024.</strong> A company files one when it
+    commits to an exit or disposal plan. Its absence means no such plan has been disclosed
+    &mdash; not that no job cuts have happened, since targeted severance expensed through
+    normal operations does not trigger the requirement. The 4 filings below are all
+    item 5.02, which covers a senior officer resigning and a routine board election alike;
+    the code cannot separate them, so none is treated as a warning.</div>
+    <div class="sig-strip" style="margin-top:14px"><span class="sig-chip"><span class="d">2026-05-19</span>5.02 &middot; Director or senior officer change (departure</span><span class="sig-chip"><span class="d">2025-12-12</span>5.02 &middot; Director or senior officer change (departure</span><span class="sig-chip"><span class="d">2024-12-13</span>5.02 &middot; Director or senior officer change (departure</span><span class="sig-chip"><span class="d">2024-05-24</span>5.02 &middot; Director or senior officer change (departure</span></div>
+  </section>
+
+  <footer>
+    Sourced from SEC EDGAR &mdash; CompanyFacts, filing instance documents, and 8-K item
+    codes. Independent analysis, not affiliated with or endorsed by Redwood Trust, Inc.. Not investment
+    advice. Figures are as reported and may be restated in later filings.
+  </footer>
+</div>
+
+</x-dc>
+</body>
+</html>

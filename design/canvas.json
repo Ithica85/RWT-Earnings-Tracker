@@ -1,0 +1,186 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Diagnosis"
+    },
+    {
+      "id": "page-2",
+      "name": "Redesign"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "CurrentIndex.dc.html",
+      "page": "page-1",
+      "x": 0,
+      "y": 0,
+      "w": 1120,
+      "h": 1600,
+      "title": "Index \u2014 as shipped"
+    },
+    {
+      "file": "CurrentCompany.dc.html",
+      "page": "page-1",
+      "x": 1240,
+      "y": 0,
+      "w": 1120,
+      "h": 2350,
+      "title": "Company \u2014 as shipped"
+    },
+    {
+      "file": "Main.dc.html",
+      "page": "page-2",
+      "x": 0,
+      "y": 0,
+      "w": 1120,
+      "h": 2900,
+      "title": "Company \u2014 proposed"
+    },
+    {
+      "file": "Index.dc.html",
+      "page": "page-2",
+      "x": 1240,
+      "y": 0,
+      "w": 1120,
+      "h": 1750,
+      "title": "Index \u2014 proposed"
+    },
+    {
+      "file": "Compare.dc.html",
+      "page": "page-2",
+      "x": 1240,
+      "y": 1870,
+      "w": 1120,
+      "h": 1320,
+      "title": "Comparison \u2014 new"
+    },
+    {
+      "file": "Mobile.dc.html",
+      "page": "page-2",
+      "x": 2480,
+      "y": 0,
+      "w": 390,
+      "h": 1300,
+      "title": "Company \u2014 390px"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "page": "page-1",
+      "x": -700,
+      "y": -150,
+      "w": 600,
+      "text": "DESIGN REVIEW \u2014 the site argues against its own thesis.\n\nThe homepage promises 'the figures that are misleading until someone reads the footnotes.' Then it gives the misleading figure all the visual authority and sets the correction as small print. Eight findings, marked on the two screens to the right."
+    },
+    {
+      "id": "finding-1",
+      "page": "page-1",
+      "x": -700,
+      "y": 110,
+      "w": 600,
+      "text": "1 \u00b7 662 data points render as 10 numbers.\n\nEvery KPI in rwt.json carries its full history \u2014 EPS 68 quarters, debt-to-equity 57. web/lib/data.ts:123 touches `series` only to compute one QoQ percentage. There is no chart in the app and no chart library in package.json, while 13 matplotlib PNGs sit unused in the repo root."
+    },
+    {
+      "id": "finding-2",
+      "page": "page-1",
+      "x": -700,
+      "y": 400,
+      "w": 600,
+      "text": "2 \u00b7 The caveat hierarchy is inverted.\n\n29.86\u00d7 renders as .num.now \u2014 600 weight, filing red, 15px. 4.84\u00d7, the figure that is actually true, is prose inside a gold box underneath it. attachCaveats() guarantees the correction appears; the styling guarantees it loses."
+    },
+    {
+      "id": "finding-3",
+      "page": "page-1",
+      "x": -700,
+      "y": 660,
+      "w": 600,
+      "text": "3 \u00b7 The corrected figure isn't in the data model.\n\nrwt.json declares companion: \"recourse_leverage\" on the debt-to-equity caveat. ingest/export_web.py never exports a KPI by that name. The slot exists, points nowhere, and 4.84\u00d7 survives only as a sentence."
+    },
+    {
+      "id": "finding-4",
+      "page": "page-1",
+      "x": -700,
+      "y": 900,
+      "w": 600,
+      "text": "4 \u00b7 The tier badge is 9.5px \u2014 the smallest type on the site \u2014 and carries the largest error.\n\nFour of five companies are generic. The one company that was curated had its leverage wrong by roughly six times before anyone read the filings."
+    },
+    {
+      "id": "finding-5",
+      "page": "page-1",
+      "x": -700,
+      "y": 1140,
+      "w": 600,
+      "text": "5 \u00b7 Restructuring signals get equal billing and are empty by design.\n\nNo item 2.05 has been filed sector-wide since 2024, so the section with the same weight as Financial position is usually a shrug plus four item 5.02s that mean nothing on their own."
+    },
+    {
+      "id": "finding-6",
+      "page": "page-1",
+      "x": -700,
+      "y": 1390,
+      "w": 600,
+      "text": "6 \u00b7 The QoQ column doesn't say which direction is good.\n\nEPS reads \u2212$0.03 in red beside +57.1% in grey. The loss narrowed \u2014 that is genuinely good news \u2014 but nothing on the row says so, and the two signals appear to contradict each other."
+    },
+    {
+      "id": "finding-7",
+      "page": "page-1",
+      "x": -700,
+      "y": 1640,
+      "w": 600,
+      "text": "7 \u00b7 Five companies, no way to see two at once.\n\nEvery card links away. And a naive comparison would be worse than none: RWT's gross 29.86\u00d7 against peers at 6.69\u201312.54\u00d7 ranks it worst on the exact metric where, corrected, it is best."
+    },
+    {
+      "id": "finding-8",
+      "page": "page-1",
+      "x": -700,
+      "y": 1890,
+      "w": 600,
+      "text": "8 \u00b7 The KPI table is min-width 640px and scrolls sideways on a phone.\n\nWhich is the likeliest device for the actual question \u2014 someone checking an employer before an interview."
+    },
+    {
+      "id": "fix-top",
+      "page": "page-2",
+      "x": -700,
+      "y": -150,
+      "w": 600,
+      "text": "THE FIX \u2014 put the true number where the eye lands.\n\nSame tokens throughout: bone paper, ledger green, filing red, Iowan/mono, hairline rules, tabular figures. Nothing here changes the visual direction. What changes is which figure the page is built around."
+    },
+    {
+      "id": "fix-lede",
+      "page": "page-2",
+      "x": -700,
+      "y": 150,
+      "w": 600,
+      "text": "Masthead carries four figures, led by 4.84\u00d7 recourse \u2014 not 29.86\u00d7 gross.\n\nBelow it, the corrections get their own band before the ledger: as-filed struck through, corrected figure at 31px in ledger green, the reason, and the limit of the correction. Redwood's recourse leverage has still nearly doubled since 2024 and that line stays on the card \u2014 the redesign must not over-reassure either."
+    },
+    {
+      "id": "fix-chart",
+      "page": "page-2",
+      "x": -700,
+      "y": 530,
+      "w": 600,
+      "text": "The leverage chart is the single highest-value thing missing.\n\n57 quarters of real series, gross in filing red against recourse in ledger green, the non-recourse gap shaded between them \u2014 the same construction as plot_recourse_leverage.py, which already exists and never reached the web app. Every ledger row gains a sparkline from its own series."
+    },
+    {
+      "id": "fix-compare",
+      "page": "page-2",
+      "x": -700,
+      "y": 880,
+      "w": 600,
+      "text": "The comparison refuses to rank.\n\nTier rides in every column header, nothing sorts, and the banner states plainly that RWT's corrected 4.84\u00d7 is lower than every peer while the peers' own figures carry the same uncorrected error. A sortable table here would manufacture exactly the wrong conclusion."
+    },
+    {
+      "id": "fix-code",
+      "page": "page-2",
+      "x": -700,
+      "y": 1200,
+      "w": 600,
+      "text": "Two changes in the pipeline, not the CSS:\n\n1. export_web.py should emit recourse_leverage as a KPI \u2014 the caveat's companion field already names it, so the data model is waiting for it.\n\n2. Sparklines and the leverage chart need no library. They are inline SVG generated from series that are already in the JSON \u2014 the artboards here are drawn that way."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
+}
