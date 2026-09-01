@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+  :root {
+    --paper:#f2f3ef; --paper-2:#e9ebe4; --ink:#191c19; --ink-2:#4a5049;
+    --ink-3:#767c74; --rule:#cfd3c9; --rule-strong:#a8aea2;
+    --green:#2b5d4f; --red:#ab3226; --gold:#8a7433; --gold-wash:#efe9d6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#121412; --paper-2:#1a1d19; --ink:#e6e9e1; --ink-2:#a8afa4;
+      --ink-3:#7b827a; --rule:#2c312c; --rule-strong:#414740;
+      --green:#64b096; --red:#e28376; --gold:#c9ae5e; --gold-wash:#23200f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:inherit; text-decoration:none; }
+  a:hover { color:var(--green); }
+  .wrap {
+    max-width:1080px; margin:0 auto;
+    padding:44px 44px 60px;
+    display:flex; flex-direction:column; gap:52px;
+  }
+  .eyebrow {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  h1 { font-size:50px; line-height:1.05; font-weight:400; letter-spacing:-0.02em; margin:0; text-wrap:balance; }
+  h2 { font-size:25px; font-weight:400; margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:22px; }
+  .standfirst { font-size:18px; color:var(--ink-2); max-width:62ch; margin:0; text-wrap:pretty; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--rule-strong); padding-bottom:8px; margin-bottom:20px; }
+  .sec-head .note { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-left:auto; }
+  .tier {
+    display:inline-block; font-family:var(--mono); font-size:9.5px;
+    letter-spacing:0.12em; text-transform:uppercase; padding:3px 8px;
+    border:1px solid currentColor; border-radius:2px;
+  }
+  .tier-curated { color:var(--green); }
+  .tier-generic { color:var(--gold); }
+  .scroller { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:400;
+    text-align:right; padding:0 14px 9px; border-bottom:1px solid var(--rule-strong);
+    white-space:nowrap;
+  }
+  th:first-child, th.left { text-align:left; }
+  td { padding:13px 14px; border-bottom:1px solid var(--rule); text-align:right; vertical-align:baseline; }
+  td:first-child, td.left { text-align:left; }
+  tr:last-child td { border-bottom:none; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:14px; white-space:nowrap; }
+  .num.now { font-weight:600; font-size:15px; }
+  .neg { color:var(--red); }
+  .pos { color:var(--green); }
+  .muted { color:var(--ink-3); }
+  .kpi-name { font-weight:600; }
+  .caveat {
+    background:var(--gold-wash); border-left:3px solid var(--gold);
+    padding:14px 18px; margin-top:10px; font-size:14.5px;
+    color:var(--ink-2); max-width:78ch;
+  }
+  .caveat strong { color:var(--ink); display:block; margin-bottom:4px; font-size:15px; }
+  .signal { display:flex; gap:16px; align-items:baseline; padding:12px 0; border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+  .signal:last-child { border-bottom:none; }
+  .signal-date { font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap; }
+  .signal-item { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; padding:2px 7px; border:1px solid currentColor; border-radius:2px; white-space:nowrap; }
+  .sev-high { color:var(--red); }
+  .sev-medium { color:var(--ink-3); }
+  .quiet { color:var(--ink-2); background:var(--paper-2); border-left:3px solid var(--rule-strong); padding:14px 18px; font-size:15px; max-width:78ch; }
+  .company-grid { display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule); grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+  .company-card { background:var(--paper); padding:20px 22px; display:flex; flex-direction:column; gap:8px; text-decoration:none; }
+  .company-card .ticker { font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:-0.01em; }
+  .company-card .name { font-size:15px; color:var(--ink-2); }
+  .company-card .meta { font-family:var(--mono); font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+  footer { border-top:2px solid var(--ink); padding-top:20px; font-size:13.5px; color:var(--ink-3); max-width:76ch; }
+
+  /* ---- added for the review, not in the shipped stylesheet ---- */
+  .spark { display:block; }
+  .chart { display:block; overflow:visible; }
+  .ax { font-family:var(--mono); font-size:9.5px; fill:var(--ink-3); }
+  .lbl { font-family:var(--mono); font-size:11.5px; font-weight:600; }
+  .mark {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:19px; height:19px; border-radius:50%;
+    background:var(--red); color:var(--paper);
+    font-family:var(--mono); font-size:11px; font-weight:600;
+    line-height:1; flex:none; vertical-align:middle;
+  }
+  .mark-row { position:relative; }
+  .mark-abs { position:absolute; left:-30px; top:12px; }
+  .board-tag {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--ink-3);
+    border:1px solid var(--rule-strong); border-radius:2px;
+    padding:4px 9px; align-self:flex-start;
+  }
+  .board-tag.fix { color:var(--green); border-color:var(--green); }
+
+  .tier-banner {
+    display:flex; gap:14px; align-items:flex-start;
+    border-left:3px solid var(--green); background:var(--paper-2);
+    padding:14px 18px;
+  }
+  .tier-banner .lede {
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--green); font-weight:600;
+    white-space:nowrap; padding-top:2px;
+  }
+  .tier-banner .body { font-size:15px; color:var(--ink-2); margin:0; }
+  .tier-banner.generic { border-left-color:var(--gold); }
+  .tier-banner.generic .lede { color:var(--gold); }
+
+  .correct-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px;
+                  background:var(--rule); border:1px solid var(--rule); }
+  .correct { background:var(--gold-wash); padding:20px 22px; display:flex;
+             flex-direction:column; gap:10px; }
+  .correct .kpi { font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+                  text-transform:uppercase; color:var(--ink-2); }
+  .correct .pair { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .correct .filed { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                    font-size:19px; color:var(--ink-3); text-decoration:line-through;
+                    text-decoration-thickness:1px; }
+  .correct .arrow { color:var(--ink-3); font-size:14px; }
+  .correct .true { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                   font-size:31px; font-weight:600; color:var(--green); line-height:1; }
+  .correct .true.flag { font-size:19px; color:var(--gold); }
+  .correct .why { font-size:14px; color:var(--ink-2); margin:0; }
+  .correct .limit { font-size:13px; color:var(--ink-2); border-top:1px solid var(--gold);
+                    padding-top:9px; margin:0; }
+  .correct .limit b { color:var(--ink); font-weight:600; }
+
+  .lede-figs { display:flex; gap:34px; flex-wrap:wrap; }
+  .lede-fig { display:flex; flex-direction:column; gap:3px; }
+  .lede-fig .v { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                 font-size:25px; font-weight:600; }
+  .lede-fig .k { font-family:var(--mono); font-size:10px; letter-spacing:0.12em;
+                 text-transform:uppercase; color:var(--ink-3); }
+
+  td.trend { width:150px; padding-top:9px; padding-bottom:9px; }
+  .qual { font-family:var(--mono); font-size:10.5px; color:var(--ink-3);
+          letter-spacing:0.04em; display:block; }
+  .row-flag { font-family:var(--mono); font-size:9.5px; letter-spacing:0.1em;
+              text-transform:uppercase; color:var(--gold); border:1px solid var(--gold);
+              border-radius:2px; padding:1px 5px; margin-left:8px; white-space:nowrap; }
+
+  .sig-strip { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .sig-chip { display:flex; gap:8px; align-items:baseline; border:1px solid var(--rule);
+              border-radius:2px; padding:6px 10px; font-family:var(--mono); font-size:11.5px;
+              color:var(--ink-2); }
+  .sig-chip .d { color:var(--ink-3); font-variant-numeric:tabular-nums; }
+
+  .cmp-tier { font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+              text-transform:uppercase; display:block; margin-top:3px; }
+
+  .co-grid { display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule);
+             grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+  .co { background:var(--paper); padding:22px 24px; display:flex; flex-direction:column;
+        gap:14px; text-decoration:none; }
+  .co:hover { background:var(--paper-2); }
+  .co-top { display:flex; align-items:baseline; gap:12px; }
+  .co-tk { font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:-0.01em; }
+  .co-nm { font-size:14px; color:var(--ink-2); flex:1; }
+  .co-tier { font-family:var(--mono); font-size:11px; letter-spacing:0.12em;
+             text-transform:uppercase; padding:4px 9px; border:1px solid currentColor;
+             border-radius:2px; font-weight:600; white-space:nowrap; }
+  .co-mid { display:flex; align-items:flex-end; gap:16px; justify-content:space-between; }
+  .co-fig { display:flex; flex-direction:column; gap:2px; }
+  .co-fig .v { font-family:var(--mono); font-variant-numeric:tabular-nums;
+               font-size:21px; font-weight:600; }
+  .co-fig .k { font-family:var(--mono); font-size:9.5px; letter-spacing:0.11em;
+               text-transform:uppercase; color:var(--ink-3); }
+  .co-note { font-size:13.5px; color:var(--ink-2); border-top:1px solid var(--rule);
+             padding-top:11px; margin:0; }
+  .co-note.gold { color:var(--gold); }
+  .cmp-cta { display:flex; align-items:center; gap:12px; border:1px solid var(--rule-strong);
+             padding:14px 18px; font-size:15px; color:var(--ink-2); }
+  .cmp-cta .k { font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+                text-transform:uppercase; color:var(--green); white-space:nowrap; }
+
+  .m-wrap { max-width:390px; margin:0 auto; padding:22px 18px 40px;
+            display:flex; flex-direction:column; gap:30px; }
+  .m-wrap h1 { font-size:31px; }
+  .m-card { border:1px solid var(--rule); padding:14px 15px; display:flex;
+            flex-direction:column; gap:9px; }
+  .m-top { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .m-lab { font-size:14.5px; font-weight:600; }
+  .m-val { font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:17px;
+           font-weight:600; white-space:nowrap; }
+  .m-bot { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .m-meta { font-family:var(--mono); font-size:10.5px; color:var(--ink-3); }
+</style>
+</helmet>
+
+<div class="m-wrap">
+  <div class="board-tag fix">Proposed &middot; 390px</div>
+  <header class="masthead" style="gap:12px;padding-bottom:16px">
+    <div class="eyebrow">&larr; All &middot; CIK 0000930236</div>
+    <h1>Redwood Trust</h1>
+  </header>
+
+  <div class="correct" style="border:1px solid var(--gold)">
+    <span class="kpi">Debt-to-equity</span>
+    <div class="pair">
+      <span class="filed" style="font-size:16px">29.86×</span>
+      <span class="arrow">&rarr;</span>
+      <span class="true" style="font-size:27px">4.84×</span>
+    </div>
+    <p class="why" style="font-size:13.5px">GAAP consolidates securitisation entities whose
+    creditors have no claim on Redwood. Recourse leverage counts only what the parent can be
+    pursued for &mdash; though it has still nearly doubled since 2024.</p>
+  </div>
+
+  <section>
+    <div class="sec-head" style="margin-bottom:14px">
+      <h2 style="font-size:20px">Financial position</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px"><div class="m-card"><div class="m-top"><span class="m-lab">Stockholders' equity</span><span class="m-val ">$933.8M</span></div><div class="m-bot"><svg class="spark" viewBox="0 0 120 26" width="120" height="26" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,18.5 5.0,18.2 7.1,17.7 9.1,16.8 11.1,16.7 13.2,17.6 15.2,18.8 17.2,20.0 19.3,18.7 21.3,18.9 23.4,17.1 25.4,15.5 27.4,14.6 29.5,13.2 31.5,15.4 33.5,16.5 35.6,16.3 37.6,15.7 39.6,15.3 41.7,15.0 43.7,14.8 45.8,14.2 47.8,14.2 49.8,14.0 51.9,13.9 53.9,11.5 55.9,11.7 58.0,8.0 60.0,7.8 62.0,3.8 64.1,3.0 66.1,23.0 68.1,19.2 70.2,17.0 72.2,16.0 74.2,14.1 76.3,12.7 78.3,11.2 80.4,11.0 82.4,9.9 84.4,13.3 86.5,15.2 88.5,16.5 90.5,15.5 92.6,15.8 94.6,16.1 96.6,14.3 98.7,13.9 100.7,14.0 102.8,14.0 104.8,14.6 106.8,14.7 108.9,17.0 110.9,18.0 112.9,18.3 115.0,18.8 117.0,19.2" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="117.0" cy="19.2" r="2.1" fill="var(--ink-2)"/></svg><span class="m-meta">−2.4% &middot; 57q</span></div></div><div class="m-card"><div class="m-top"><span class="m-lab">Net income</span><span class="m-val neg">−$1.1M</span></div><div class="m-bot"><svg class="spark" viewBox="0 0 120 26" width="120" height="26" preserveAspectRatio="none" aria-hidden="true"><line x1="3.0" y1="6.0" x2="117.0" y2="6.0" stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="2 2"/><polyline points="3.0,5.9 4.7,5.5 6.4,5.1 8.1,5.5 9.8,5.6 11.5,5.7 13.2,5.7 14.9,5.8 16.6,6.0 18.3,6.0 20.0,5.4 21.7,5.6 23.4,5.3 25.1,5.2 26.8,4.9 28.5,4.8 30.2,5.6 31.9,5.5 33.6,5.8 35.3,5.7 37.0,5.2 38.7,5.5 40.4,5.7 42.1,5.5 43.8,5.6 45.5,5.2 47.2,5.8 48.9,5.2 50.6,5.0 52.3,5.5 54.0,5.3 55.7,5.3 57.4,5.3 59.1,5.4 60.9,5.1 62.6,5.4 64.3,5.2 66.0,6.0 67.7,5.0 69.4,5.4 71.1,5.4 72.8,5.1 74.5,23.0 76.2,3.0 77.9,3.4 79.6,5.0 81.3,4.2 83.0,4.4 84.7,4.4 86.4,5.2 88.1,5.4 89.8,7.8 91.5,6.9 93.2,6.8 94.9,5.9 96.6,5.9 98.3,6.5 100.0,5.6 101.7,5.4 103.4,5.7 105.1,5.7 106.8,6.1 108.5,5.7 110.2,7.8 111.9,6.1 113.6,5.6 115.3,6.1 117.0,6.0" fill="none" stroke="var(--red)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="117.0" cy="6.0" r="2.1" fill="var(--red)"/></svg><span class="m-meta">+80.0% &middot; 68q</span></div></div><div class="m-card"><div class="m-top"><span class="m-lab">Diluted EPS</span><span class="m-val neg">−$0.03</span></div><div class="m-bot"><svg class="spark" viewBox="0 0 120 26" width="120" height="26" preserveAspectRatio="none" aria-hidden="true"><line x1="3.0" y1="5.4" x2="117.0" y2="5.4" stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="2 2"/><polyline points="3.0,5.2 4.7,4.7 6.4,4.2 8.1,4.7 9.8,4.9 11.5,5.0 13.2,5.0 14.9,5.2 16.6,5.4 18.3,5.5 20.0,4.6 21.7,4.9 23.4,4.4 25.1,4.4 26.8,4.0 28.5,3.9 30.2,4.9 31.9,4.8 33.6,5.1 35.3,5.0 37.0,4.4 38.7,4.8 40.4,5.1 42.1,4.8 43.8,5.0 45.5,4.4 47.2,5.1 48.9,4.4 50.6,4.2 52.3,4.8 54.0,4.5 55.7,4.5 57.4,4.5 59.1,4.7 60.9,4.4 62.6,4.6 64.3,4.5 66.0,5.5 67.7,4.4 69.4,4.8 71.1,4.8 72.8,4.6 74.5,23.0 76.2,3.3 77.9,3.3 79.6,3.0 81.3,3.9 83.0,4.0 84.7,4.0 86.4,4.7 88.1,4.9 89.8,7.2 91.5,6.4 93.2,6.2 94.9,5.4 96.6,5.4 98.3,6.0 100.0,5.1 101.7,5.0 103.4,5.2 105.1,5.2 106.8,5.6 108.5,5.2 110.2,7.0 111.9,5.6 113.6,5.2 115.3,5.6 117.0,5.5" fill="none" stroke="var(--red)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="117.0" cy="5.5" r="2.1" fill="var(--red)"/></svg><span class="m-meta">+57.1% &middot; 68q</span></div></div><div class="m-card"><div class="m-top"><span class="m-lab">Dividend / share</span><span class="m-val ">$0.18</span></div><div class="m-bot"><svg class="spark" viewBox="0 0 120 26" width="120" height="26" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,10.2 4.7,10.2 6.5,10.2 8.2,10.2 9.9,10.2 11.6,10.2 13.4,10.2 15.1,10.2 16.8,10.2 18.5,10.2 20.3,10.2 22.0,10.2 23.7,10.2 25.5,10.2 27.2,7.1 28.9,7.1 30.6,7.1 32.4,7.1 34.1,7.1 35.8,7.1 37.5,7.1 39.3,7.1 41.0,7.1 42.7,7.1 44.5,7.1 46.2,7.1 47.9,7.1 49.6,7.1 51.4,7.1 53.1,7.1 54.8,7.1 56.5,7.1 58.3,7.1 60.0,7.1 61.7,7.1 63.5,5.1 65.2,5.1 66.9,5.1 68.6,5.1 70.4,5.1 72.1,5.1 73.8,5.1 75.5,3.0 77.3,23.0 79.0,21.5 80.7,21.5 82.5,19.4 84.2,17.4 85.9,14.3 87.6,12.2 89.4,12.2 91.1,12.2 92.8,12.2 94.5,12.2 96.3,12.2 98.0,19.4 99.7,19.4 101.5,19.4 103.2,19.4 104.9,19.4 106.6,18.4 108.4,17.4 110.1,17.4 111.8,17.4 113.5,17.4 115.3,17.4 117.0,17.4" fill="none" stroke="var(--ink-2)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="117.0" cy="17.4" r="2.1" fill="var(--ink-2)"/></svg><span class="m-meta">0.0% &middot; 67q</span></div></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head" style="margin-bottom:14px">
+      <h2 style="font-size:20px">Restructuring</h2>
+    </div>
+    <div class="quiet" style="font-size:14px">
+      <strong>No item 2.05 since 2024.</strong> No exit or disposal plan has been disclosed.
+      That is not the same as no job cuts.
+    </div>
+  </section>
+
+  <footer style="font-size:12.5px">
+    SEC EDGAR. Independent analysis, not affiliated with Redwood Trust. Not investment advice.
+  </footer>
+</div>
+
+</x-dc>
+</body>
+</html>

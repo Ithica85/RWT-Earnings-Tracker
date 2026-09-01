@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+  :root {
+    --paper:#f2f3ef; --paper-2:#e9ebe4; --ink:#191c19; --ink-2:#4a5049;
+    --ink-3:#767c74; --rule:#cfd3c9; --rule-strong:#a8aea2;
+    --green:#2b5d4f; --red:#ab3226; --gold:#8a7433; --gold-wash:#efe9d6;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#121412; --paper-2:#1a1d19; --ink:#e6e9e1; --ink-2:#a8afa4;
+      --ink-3:#7b827a; --rule:#2c312c; --rule-strong:#414740;
+      --green:#64b096; --red:#e28376; --gold:#c9ae5e; --gold-wash:#23200f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a { color:inherit; text-decoration:none; }
+  a:hover { color:var(--green); }
+  .wrap {
+    max-width:1080px; margin:0 auto;
+    padding:44px 44px 60px;
+    display:flex; flex-direction:column; gap:52px;
+  }
+  .eyebrow {
+    font-family:var(--mono); font-size:11px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  h1 { font-size:50px; line-height:1.05; font-weight:400; letter-spacing:-0.02em; margin:0; text-wrap:balance; }
+  h2 { font-size:25px; font-weight:400; margin:0; }
+  .masthead { display:flex; flex-direction:column; gap:16px; border-bottom:2px solid var(--ink); padding-bottom:22px; }
+  .standfirst { font-size:18px; color:var(--ink-2); max-width:62ch; margin:0; text-wrap:pretty; }
+  .sec-head { display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--rule-strong); padding-bottom:8px; margin-bottom:20px; }
+  .sec-head .note { font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-left:auto; }
+  .tier {
+    display:inline-block; font-family:var(--mono); font-size:9.5px;
+    letter-spacing:0.12em; text-transform:uppercase; padding:3px 8px;
+    border:1px solid currentColor; border-radius:2px;
+  }
+  .tier-curated { color:var(--green); }
+  .tier-generic { color:var(--gold); }
+  .scroller { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+    text-transform:uppercase; color:var(--ink-3); font-weight:400;
+    text-align:right; padding:0 14px 9px; border-bottom:1px solid var(--rule-strong);
+    white-space:nowrap;
+  }
+  th:first-child, th.left { text-align:left; }
+  td { padding:13px 14px; border-bottom:1px solid var(--rule); text-align:right; vertical-align:baseline; }
+  td:first-child, td.left { text-align:left; }
+  tr:last-child td { border-bottom:none; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:14px; white-space:nowrap; }
+  .num.now { font-weight:600; font-size:15px; }
+  .neg { color:var(--red); }
+  .pos { color:var(--green); }
+  .muted { color:var(--ink-3); }
+  .kpi-name { font-weight:600; }
+  .caveat {
+    background:var(--gold-wash); border-left:3px solid var(--gold);
+    padding:14px 18px; margin-top:10px; font-size:14.5px;
+    color:var(--ink-2); max-width:78ch;
+  }
+  .caveat strong { color:var(--ink); display:block; margin-bottom:4px; font-size:15px; }
+  .signal { display:flex; gap:16px; align-items:baseline; padding:12px 0; border-bottom:1px solid var(--rule); flex-wrap:wrap; }
+  .signal:last-child { border-bottom:none; }
+  .signal-date { font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-3); white-space:nowrap; }
+  .signal-item { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; padding:2px 7px; border:1px solid currentColor; border-radius:2px; white-space:nowrap; }
+  .sev-high { color:var(--red); }
+  .sev-medium { color:var(--ink-3); }
+  .quiet { color:var(--ink-2); background:var(--paper-2); border-left:3px solid var(--rule-strong); padding:14px 18px; font-size:15px; max-width:78ch; }
+  .company-grid { display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule); grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+  .company-card { background:var(--paper); padding:20px 22px; display:flex; flex-direction:column; gap:8px; text-decoration:none; }
+  .company-card .ticker { font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:-0.01em; }
+  .company-card .name { font-size:15px; color:var(--ink-2); }
+  .company-card .meta { font-family:var(--mono); font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; }
+  footer { border-top:2px solid var(--ink); padding-top:20px; font-size:13.5px; color:var(--ink-3); max-width:76ch; }
+
+  /* ---- added for the review, not in the shipped stylesheet ---- */
+  .spark { display:block; }
+  .chart { display:block; overflow:visible; }
+  .ax { font-family:var(--mono); font-size:9.5px; fill:var(--ink-3); }
+  .lbl { font-family:var(--mono); font-size:11.5px; font-weight:600; }
+  .mark {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:19px; height:19px; border-radius:50%;
+    background:var(--red); color:var(--paper);
+    font-family:var(--mono); font-size:11px; font-weight:600;
+    line-height:1; flex:none; vertical-align:middle;
+  }
+  .mark-row { position:relative; }
+  .mark-abs { position:absolute; left:-30px; top:12px; }
+  .board-tag {
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--ink-3);
+    border:1px solid var(--rule-strong); border-radius:2px;
+    padding:4px 9px; align-self:flex-start;
+  }
+  .board-tag.fix { color:var(--green); border-color:var(--green); }
+
+  .tier-banner {
+    display:flex; gap:14px; align-items:flex-start;
+    border-left:3px solid var(--green); background:var(--paper-2);
+    padding:14px 18px;
+  }
+  .tier-banner .lede {
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--green); font-weight:600;
+    white-space:nowrap; padding-top:2px;
+  }
+  .tier-banner .body { font-size:15px; color:var(--ink-2); margin:0; }
+  .tier-banner.generic { border-left-color:var(--gold); }
+  .tier-banner.generic .lede { color:var(--gold); }
+
+  .correct-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px;
+                  background:var(--rule); border:1px solid var(--rule); }
+  .correct { background:var(--gold-wash); padding:20px 22px; display:flex;
+             flex-direction:column; gap:10px; }
+  .correct .kpi { font-family:var(--mono); font-size:10px; letter-spacing:0.13em;
+                  text-transform:uppercase; color:var(--ink-2); }
+  .correct .pair { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .correct .filed { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                    font-size:19px; color:var(--ink-3); text-decoration:line-through;
+                    text-decoration-thickness:1px; }
+  .correct .arrow { color:var(--ink-3); font-size:14px; }
+  .correct .true { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                   font-size:31px; font-weight:600; color:var(--green); line-height:1; }
+  .correct .true.flag { font-size:19px; color:var(--gold); }
+  .correct .why { font-size:14px; color:var(--ink-2); margin:0; }
+  .correct .limit { font-size:13px; color:var(--ink-2); border-top:1px solid var(--gold);
+                    padding-top:9px; margin:0; }
+  .correct .limit b { color:var(--ink); font-weight:600; }
+
+  .lede-figs { display:flex; gap:34px; flex-wrap:wrap; }
+  .lede-fig { display:flex; flex-direction:column; gap:3px; }
+  .lede-fig .v { font-family:var(--mono); font-variant-numeric:tabular-nums;
+                 font-size:25px; font-weight:600; }
+  .lede-fig .k { font-family:var(--mono); font-size:10px; letter-spacing:0.12em;
+                 text-transform:uppercase; color:var(--ink-3); }
+
+  td.trend { width:150px; padding-top:9px; padding-bottom:9px; }
+  .qual { font-family:var(--mono); font-size:10.5px; color:var(--ink-3);
+          letter-spacing:0.04em; display:block; }
+  .row-flag { font-family:var(--mono); font-size:9.5px; letter-spacing:0.1em;
+              text-transform:uppercase; color:var(--gold); border:1px solid var(--gold);
+              border-radius:2px; padding:1px 5px; margin-left:8px; white-space:nowrap; }
+
+  .sig-strip { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .sig-chip { display:flex; gap:8px; align-items:baseline; border:1px solid var(--rule);
+              border-radius:2px; padding:6px 10px; font-family:var(--mono); font-size:11.5px;
+              color:var(--ink-2); }
+  .sig-chip .d { color:var(--ink-3); font-variant-numeric:tabular-nums; }
+
+  .cmp-tier { font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+              text-transform:uppercase; display:block; margin-top:3px; }
+
+  .co-grid { display:grid; gap:1px; background:var(--rule); border:1px solid var(--rule);
+             grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+  .co { background:var(--paper); padding:22px 24px; display:flex; flex-direction:column;
+        gap:14px; text-decoration:none; }
+  .co:hover { background:var(--paper-2); }
+  .co-top { display:flex; align-items:baseline; gap:12px; }
+  .co-tk { font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:-0.01em; }
+  .co-nm { font-size:14px; color:var(--ink-2); flex:1; }
+  .co-tier { font-family:var(--mono); font-size:11px; letter-spacing:0.12em;
+             text-transform:uppercase; padding:4px 9px; border:1px solid currentColor;
+             border-radius:2px; font-weight:600; white-space:nowrap; }
+  .co-mid { display:flex; align-items:flex-end; gap:16px; justify-content:space-between; }
+  .co-fig { display:flex; flex-direction:column; gap:2px; }
+  .co-fig .v { font-family:var(--mono); font-variant-numeric:tabular-nums;
+               font-size:21px; font-weight:600; }
+  .co-fig .k { font-family:var(--mono); font-size:9.5px; letter-spacing:0.11em;
+               text-transform:uppercase; color:var(--ink-3); }
+  .co-note { font-size:13.5px; color:var(--ink-2); border-top:1px solid var(--rule);
+             padding-top:11px; margin:0; }
+  .co-note.gold { color:var(--gold); }
+  .cmp-cta { display:flex; align-items:center; gap:12px; border:1px solid var(--rule-strong);
+             padding:14px 18px; font-size:15px; color:var(--ink-2); }
+  .cmp-cta .k { font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+                text-transform:uppercase; color:var(--green); white-space:nowrap; }
+</style>
+</helmet>
+
+<div class="wrap">
+  <div class="board-tag fix">Proposed &middot; index</div>
+  <header class="masthead">
+    <div class="eyebrow">Independent analysis &middot; Public SEC filings</div>
+    <h1>Can this employer afford you?</h1>
+    <p class="standfirst">
+      Glassdoor tells you what people say about working somewhere. This reads the
+      company&rsquo;s own filings and tells you whether it can pay for them &mdash;
+      including the figures that are misleading until someone reads the footnotes.
+    </p>
+  </header>
+  <section>
+    <div class="sec-head">
+      <h2>Companies</h2>
+      <span class="note">1 curated &middot; 4 uncorrected</span>
+    </div>
+    <div class="co-grid"><a class="co" href="#"><div class="co-top"><span class="co-tk">RWT</span><span class="co-nm">Redwood Trust, Inc.</span><span class="co-tier tier-curated">curated</span></div><div class="co-mid"><div class="co-fig"><span class="v">4.84×</span><span class="k">Recourse leverage</span></div><svg class="spark" viewBox="0 0 150 30" width="150" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,23.2 21.0,27.0 39.0,25.4 57.0,24.6 75.0,17.6 93.0,10.7 111.0,4.1 129.0,3.0 147.0,3.5" fill="none" stroke="var(--green)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="147.0" cy="3.5" r="2.1" fill="var(--green)"/></svg></div><p class="co-note">Gross reads 29.86×. Two figures here carry a correction because they mislead alone.</p></a><a class="co" href="#"><div class="co-top"><span class="co-tk">NLY</span><span class="co-nm">Annaly Capital Management Inc</span><span class="co-tier tier-generic">generic</span></div><div class="co-mid"><div class="co-fig"><span class="v">7.49×</span><span class="k">Debt-to-equity (gross)</span></div><svg class="spark" viewBox="0 0 150 30" width="150" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,7.9 5.1,8.9 7.2,11.6 9.3,13.8 11.3,11.2 13.4,10.9 15.5,3.0 17.6,4.6 19.7,10.7 21.8,14.1 23.9,14.7 26.0,16.2 28.0,11.5 30.1,8.8 32.2,5.6 34.3,4.8 36.4,6.3 38.5,10.0 40.6,14.1 42.7,19.0 44.7,19.3 46.8,20.0 48.9,18.5 51.0,18.8 53.1,23.8 55.2,23.8 57.3,22.7 59.3,21.3 61.4,18.6 63.5,18.0 65.6,19.3 67.7,15.9 69.8,18.2 71.9,17.9 74.0,16.6 76.0,17.1 78.1,14.2 80.2,14.4 82.3,15.1 84.4,11.9 86.5,11.5 88.6,4.8 90.7,4.1 92.7,5.9 94.8,10.8 96.9,17.6 99.0,21.5 101.1,21.3 103.2,23.3 105.3,23.4 107.3,27.0 109.4,25.2 111.5,18.5 113.6,18.5 115.7,9.1 117.8,13.8 119.9,13.0 122.0,11.2 124.0,4.0 126.1,5.7 128.2,7.8 130.3,4.9 132.4,6.7 134.5,6.2 136.6,7.2 138.7,4.9 140.7,4.4 142.8,4.5 144.9,3.8 147.0,4.0" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="147.0" cy="4.0" r="2.1" fill="var(--gold)"/></svg></div><p class="co-note gold">Uncorrected. Nobody has read these filings &mdash; gross leverage is the figure most likely to be wrong.</p></a><a class="co" href="#"><div class="co-top"><span class="co-tk">AGNC</span><span class="co-nm">AGNC Investment Corp.</span><span class="co-tier tier-generic">generic</span></div><div class="co-mid"><div class="co-fig"><span class="v">8.71×</span><span class="k">Debt-to-equity (gross)</span></div><svg class="spark" viewBox="0 0 150 30" width="150" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,11.4 5.3,13.3 7.6,27.0 10.0,10.1 12.3,10.8 14.6,7.6 16.9,11.0 19.3,11.9 21.6,11.3 23.9,16.0 26.2,9.8 28.5,8.8 30.9,13.1 33.2,17.5 35.5,20.2 37.8,21.4 40.2,19.3 42.5,16.9 44.8,19.2 47.1,17.9 49.5,19.5 51.8,15.5 54.1,16.7 56.4,19.9 58.7,17.2 61.1,16.9 63.4,18.8 65.7,18.3 68.0,16.0 70.4,14.9 72.7,15.8 75.0,9.9 77.3,4.1 79.6,3.0 82.0,7.0 84.3,5.2 86.6,7.2 88.9,13.4 91.3,13.4 93.6,18.2 95.9,18.6 98.2,18.0 100.5,19.9 102.9,22.3 105.2,21.6 107.5,18.4 109.8,17.6 112.2,15.7 114.5,21.7 116.8,14.2 119.1,17.4 121.5,10.6 123.8,13.5 126.1,14.6 128.4,11.3 130.7,11.0 133.1,12.1 135.4,10.0 137.7,8.7 140.0,10.1 142.4,11.0 144.7,9.1 147.0,9.3" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="147.0" cy="9.3" r="2.1" fill="var(--gold)"/></svg></div><p class="co-note gold">Uncorrected. Nobody has read these filings &mdash; gross leverage is the figure most likely to be wrong.</p></a><a class="co" href="#"><div class="co-top"><span class="co-tk">PMT</span><span class="co-nm">PennyMac Mortgage Investment Trust</span><span class="co-tier tier-generic">generic</span></div><div class="co-mid"><div class="co-fig"><span class="v">12.54×</span><span class="k">Debt-to-equity (gross)</span></div><svg class="spark" viewBox="0 0 150 30" width="150" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,26.6 5.3,27.0 7.6,26.9 10.0,25.9 12.3,25.2 14.6,25.6 16.9,25.5 19.3,26.3 21.6,26.0 23.9,25.5 26.2,24.7 28.5,24.6 30.9,24.4 33.2,24.8 35.5,24.1 37.8,24.4 40.2,24.0 42.5,22.8 44.8,21.5 47.1,22.8 49.5,22.4 51.8,22.0 54.1,21.7 56.4,20.4 58.7,20.8 61.1,22.0 63.4,22.0 65.7,23.1 68.0,23.0 70.4,22.7 72.7,21.6 75.0,20.9 77.3,20.2 79.6,21.5 82.0,20.5 84.3,20.5 86.6,20.6 88.9,17.1 91.3,22.1 93.6,21.1 95.9,20.2 98.2,19.6 100.5,18.6 102.9,19.0 105.2,18.6 107.5,19.0 109.8,17.4 112.2,16.4 114.5,16.0 116.8,14.6 119.1,16.3 121.5,16.6 123.8,16.8 126.1,17.6 128.4,17.7 130.7,16.7 133.1,15.3 135.4,14.5 137.7,12.1 140.0,10.4 142.4,7.5 144.7,6.0 147.0,3.0" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="147.0" cy="3.0" r="2.1" fill="var(--gold)"/></svg></div><p class="co-note gold">Uncorrected. Nobody has read these filings &mdash; gross leverage is the figure most likely to be wrong.</p></a><a class="co" href="#"><div class="co-top"><span class="co-tk">MFA</span><span class="co-nm">Mfa Financial, Inc.</span><span class="co-tier tier-generic">generic</span></div><div class="co-mid"><div class="co-fig"><span class="v">6.69×</span><span class="k">Debt-to-equity (gross)</span></div><svg class="spark" viewBox="0 0 150 30" width="150" height="30" preserveAspectRatio="none" aria-hidden="true"><polyline points="3.0,18.4 5.4,21.2 7.7,18.0 10.1,17.2 12.4,18.2 14.8,17.3 17.2,19.4 19.5,20.2 21.9,19.7 24.2,19.7 26.6,20.1 29.0,20.7 31.3,20.6 33.7,21.2 36.0,21.7 38.4,21.2 40.8,19.0 43.1,18.9 45.5,18.7 47.9,18.4 50.2,18.2 52.6,18.9 54.9,19.6 57.3,20.0 59.7,21.1 62.0,22.8 64.4,23.3 66.7,23.6 69.1,24.0 71.5,23.8 73.8,23.8 76.2,22.2 78.5,21.7 80.9,21.1 83.3,21.2 85.6,20.5 88.0,17.9 90.3,25.3 92.7,25.7 95.1,26.5 97.4,27.0 99.8,26.0 102.1,24.1 104.5,22.5 106.9,19.4 109.2,18.5 111.6,17.3 114.0,17.8 116.3,17.6 118.7,15.7 121.0,13.6 123.4,12.6 125.8,12.1 128.1,11.6 130.5,11.4 132.8,10.1 135.2,9.7 137.6,9.1 139.9,8.0 142.3,5.6 144.6,4.2 147.0,3.0" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="147.0" cy="3.0" r="2.1" fill="var(--gold)"/></svg></div><p class="co-note gold">Uncorrected. Nobody has read these filings &mdash; gross leverage is the figure most likely to be wrong.</p></a></div>
+    <div class="cmp-cta" style="margin-top:20px">
+      <span class="k">Compare &rarr;</span>
+      <span>Put any two side by side &mdash; with the tier carried into every column, so a
+      checked figure is never silently ranked against an unchecked one.</span>
+    </div>
+  </section>
+  <section>
+    <div class="sec-head"><h2>What the two tiers mean</h2></div>
+    <div class="tier-banner" style="margin-bottom:14px">
+      <span class="lede">Curated</span>
+      <p class="body">Someone read the filings. Concept choices are checked, series that
+      cross a renaming or a restatement are verified against overlapping periods, and the
+      figures that mislead carry a correction.</p>
+    </div>
+    <div class="tier-banner generic">
+      <span class="lede">Uncorrected</span>
+      <p class="body">The obvious concepts, pulled automatically, with nobody having looked.
+      A starting point, not an answer. On the one company that has been curated, the
+      automatic reading of leverage was wrong by roughly six times &mdash; 29.86× against
+      4.84×. Assume the same error is present here and unfound.</p>
+    </div>
+  </section>
+  <footer>
+    Built from SEC EDGAR: the CompanyFacts API, filing instance documents, and 8-K item
+    codes. Independent analysis, not affiliated with or endorsed by any company covered.
+    Not investment advice. Figures are as reported and may be restated in later filings.
+  </footer>
+</div>
+
+</x-dc>
+</body>
+</html>

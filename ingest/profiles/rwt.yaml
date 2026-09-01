@@ -91,16 +91,29 @@ kpis:
 
 # Measures the CompanyFacts API cannot produce for this company at all.
 # Each needs its own pipeline; see the named script.
+#
+# The script writes a CSV and the loader reads the series back out of it, so
+# the judgment stays in the script that earned it rather than being
+# reimplemented in the engine. `csv` and `column` are required: a declared
+# measure with nowhere to read from is an error, not an absent KPI.
 derived_elsewhere:
   - key: book_value_per_share
+    label: Book Value per Share
+    unit: usd_per_share
     script: get_company_facts.py
+    csv: rwt_quarterly_bvps.csv
+    column: book_value_per_share
     note: >
       (StockholdersEquity - PreferredStockValue) / CommonStockSharesOutstanding.
       Uses COMMON equity, not total - RWT carries ~$66.9M of preferred and
       preferred holders do not share in common book value.
 
   - key: operating_expenses
+    label: Operating Expenses
+    unit: usd
     script: get_operating_expenses.py
+    csv: rwt_quarterly_operating_expenses.csv
+    column: operating_expenses
     note: >
       The OperatingExpenses total stops at CY2024Q2 with no successor. Recent
       quarters are summed from four component tags, two of which
@@ -109,11 +122,17 @@ derived_elsewhere:
       every overlapping period.
 
   - key: recourse_leverage
+    label: Recourse Leverage
+    unit: multiple
     script: get_recourse_leverage.py
+    csv: rwt_quarterly_recourse_leverage.csv
+    column: recourse_leverage
     note: >
       Secured recourse debt appears only in MD&A prose and is tagged nowhere;
       combined with corporate debt from the filing instance. Series starts
-      CY2024Q2 because of a disclosure change, not a data gap.
+      CY2024Q2 because of a disclosure change, not a data gap. This is the
+      companion the debt_to_equity caveat names - without it that caveat
+      corrects a figure with prose and no number.
 
 # Traps. A KPI listed here must never be displayed without its companion -
 # the naive reading is actively misleading, not merely incomplete.

@@ -13,6 +13,7 @@ in 2024, and four quarters of negative operating expenses. Anything shown to
 a user must display which tier it came from.
 """
 
+import csv
 import os
 
 import yaml
@@ -20,6 +21,10 @@ import yaml
 from ingest.edgar import client, facts
 
 PROFILE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "profiles")
+
+# The standalone extraction scripts predate the ingest package and still write
+# their CSVs to the repo root, which is where derived_elsewhere resolves paths.
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _quarter_key(frame):
@@ -60,12 +65,81 @@ def company_facts(cik):
         return json.load(handle)
 
 
+def _summarise(spec, series):
+    """Shape one KPI for export, given a {quarter: value} mapping.
+
+    Both extraction paths end here - concepts pulled from CompanyFacts and
+    series read back from a script's CSV - so a derived measure is
+    indistinguishable from a tagged one everywhere downstream.
+    """
+    quarters = sorted(series, key=_quarter_key)
+    return {
+        "label": spec["label"],
+        "available": True,
+        "unit": spec.get("unit"),
+        "quarters": len(quarters),
+        "first": quarters[0] if quarters else None,
+        "latest": quarters[-1] if quarters else None,
+        "latest_value": series[quarters[-1]] if quarters else None,
+        "note": spec.get("note"),
+        # Full series, for charting and for the web export. Ordered
+        # chronologically rather than lexically so CY2009Q2 precedes
+        # CY2010Q1 regardless of string comparison.
+        "series": [{"quarter": q, "value": series[q]} for q in quarters],
+    }
+
+
+def _series_from_csv(spec):
+    """Read a measure CompanyFacts cannot produce, from the CSV its script writes.
+
+    Recourse leverage, book value per share and operating expenses each cost a
+    separate investigation - MD&A prose that is tagged nowhere, a preferred
+    stock subtraction, a four-component splice against custom tags. That work
+    lives in the scripts the profile names, so the series is read back rather
+    than reimplemented here where a second version could drift from the first.
+
+    A missing file raises rather than marking the KPI unavailable. A profile
+    asserting a measure exists while the app quietly ships without it is the
+    exact failure this block was written to fix.
+    """
+    for field in ("csv", "column", "label"):
+        if field not in spec:
+            raise KeyError(
+                f"{spec.get('key')}: derived_elsewhere entry needs a '{field}'"
+            )
+
+    path = os.path.join(REPO_ROOT, spec["csv"])
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            f"{spec['key']}: {spec['csv']} is missing - "
+            f"run {spec.get('script', 'its script')} to build it"
+        )
+
+    series = {}
+    with open(path, newline="") as handle:
+        for row in csv.DictReader(handle):
+            value = (row.get(spec["column"]) or "").strip()
+            if value:
+                series[row["quarter"]] = float(value)
+
+    if not series:
+        raise ValueError(
+            f"{spec['key']}: no values in {spec['csv']} column '{spec['column']}'"
+        )
+    return series
+
+
 def run(ticker):
-    """Extract every KPI the profile declares.
+    """Extract every KPI the profile declares, from both of its sources.
 
     A concept the filer never reported is recorded as unavailable rather than
     skipped silently - for a generic profile that absence is itself the useful
     signal, since it usually means the company tags something else instead.
+
+    Measures under `derived_elsewhere` come from the CSVs the standalone
+    scripts write, because CompanyFacts cannot produce them for this company
+    at all. They are merged into the same result, so nothing downstream needs
+    to know which source a figure came from.
     """
     profile, curated = load(ticker)
     data = company_facts(profile["cik"])
@@ -93,21 +167,10 @@ def run(ticker):
             results[key] = {"label": spec["label"], "available": False, "reason": str(error)}
             continue
 
-        quarters = sorted(series, key=_quarter_key)
-        results[key] = {
-            "label": spec["label"],
-            "available": True,
-            "unit": spec.get("unit"),
-            "quarters": len(quarters),
-            "first": quarters[0] if quarters else None,
-            "latest": quarters[-1] if quarters else None,
-            "latest_value": series[quarters[-1]] if quarters else None,
-            "note": spec.get("note"),
-            # Full series, for charting and for the web export. Ordered
-            # chronologically rather than lexically so CY2009Q2 precedes
-            # CY2010Q1 regardless of string comparison.
-            "series": [{"quarter": q, "value": series[q]} for q in quarters],
-        }
+        results[key] = _summarise(spec, series)
+
+    for spec in profile.get("derived_elsewhere", []):
+        results[spec["key"]] = _summarise(spec, _series_from_csv(spec))
 
     return {
         "ticker": profile["ticker"],
