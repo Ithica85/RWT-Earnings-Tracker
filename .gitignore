@@ -18,8 +18,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Anchored to the repo root: these are virtualenv artifacts, and unanchored
+# they also match web/lib/, which silently kept web/lib/data.ts out of git.
+/lib/
+/lib64/
 parts/
 sdist/
 var/
