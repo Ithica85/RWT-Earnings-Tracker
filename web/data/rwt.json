@@ -1144,9 +1144,9 @@
       "label": "Dividends Declared per Share",
       "available": true,
       "unit": "usd_per_share",
-      "quarters": 67,
+      "quarters": 68,
       "first": "CY2009Q2",
-      "latest": "CY2026Q1",
+      "latest": "CY2026Q2",
       "latest_value": 0.18,
       "note": "SEC tagged Q4 directly 2010-2019, then stopped. Q4 is derived from the annual figure from 2020 onward. Coincidental match with the EPS gap, not a related cause.\n",
       "series": [
@@ -1416,6 +1416,10 @@
         },
         {
           "quarter": "CY2026Q1",
+          "value": 0.18
+        },
+        {
+          "quarter": "CY2026Q2",
           "value": 0.18
         }
       ]

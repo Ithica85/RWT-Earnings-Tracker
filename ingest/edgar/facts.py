@@ -115,15 +115,74 @@ def derive_q4(by_frame, quarterly, value_key):
     return derived
 
 
+YTD_SOURCE = "derived (year-to-date - earlier quarters)"
+_QUARTER_END = {2: "06-30", 3: "09-30"}
+
+
+def derive_from_year_to_date(records, quarterly, value_key):
+    """Back a missing Q2 or Q3 out of the year-to-date figure.
+
+    10-Qs report both the three months and the year to date. Some filings tag
+    only the year-to-date figure - Redwood's Q2 2026 10-Q tags the six-month
+    common dividend ($0.36) with no three-month figure, so CY2026Q2 simply
+    vanished. The SEC assigns no frame to a six- or nine-month span, so
+    dedupe_by_frame never sees these records; they are read from the raw list.
+
+    Q2 = six months - Q1, and Q3 = nine months - Q1 - Q2, only where every
+    earlier quarter was reported. Calendar fiscal years only: a span must
+    start on 1 January, so a non-calendar filer derives nothing rather than
+    something misaligned.
+
+    Returns rows shaped like quarterly_from_frames, tagged with YTD_SOURCE.
+    """
+    reported = {frame: item[value_key] for frame, item in quarterly.items()}
+
+    # Latest-filed year-to-date record per (year, quarter), as in dedupe_by_frame.
+    year_to_date = {}
+    for record in records:
+        start, end = record.get("start"), record.get("end")
+        if not start or not end or record.get("frame"):
+            continue
+        for q, month_day in _QUARTER_END.items():
+            year = start[:4]
+            if start == f"{year}-01-01" and end == f"{year}-{month_day}":
+                key = (int(year), q)
+                existing = year_to_date.get(key)
+                if existing is None or record["filed"] > existing["filed"]:
+                    year_to_date[key] = record
+
+    derived = {}
+    for (year, q), record in year_to_date.items():
+        frame = f"CY{year}Q{q}"
+        if frame in reported:
+            continue
+        earlier = [reported.get(f"CY{year}Q{n}") for n in range(1, q)]
+        if any(value is None for value in earlier):
+            continue
+        derived[frame] = {
+            "quarter": frame,
+            value_key: round(record["val"] - sum(earlier), 2),
+            "filed": record["filed"],
+            "form": record.get("form"),
+            "source": YTD_SOURCE,
+        }
+    return derived
+
+
 def merge_reported_and_derived(quarterly, derived, value_key):
     """Combine both into one series, tagging where each value came from.
 
     A derived figure is an inference, not a disclosure. Tagging the source is
-    what stops the two being confused downstream.
+    what stops the two being confused downstream. A row that arrives already
+    tagged (a year-to-date derivation) keeps its tag.
     """
     merged = {}
     for frame, item in quarterly.items():
-        merged[frame] = {"quarter": frame, value_key: item[value_key], "source": "reported"}
+        merged[frame] = {
+            "quarter": frame,
+            value_key: item[value_key],
+            "source": item.get("source", "reported"),
+        }
     for frame, value in derived.items():
         merged[frame] = {
             "quarter": frame,

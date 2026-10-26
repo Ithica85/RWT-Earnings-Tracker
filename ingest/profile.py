@@ -212,6 +212,11 @@ def run(ticker):
                 )
                 by_frame = facts.dedupe_by_frame(records)
                 quarterly = facts.quarterly_from_frames(by_frame, "value")
+                # Before Q4, so a year whose Q2 was tagged only as six months
+                # can still have its Q4 derived.
+                quarterly.update(
+                    facts.derive_from_year_to_date(records, quarterly, "value")
+                )
                 derived = facts.derive_q4(by_frame, quarterly, "value")
                 merged = facts.merge_reported_and_derived(quarterly, derived, "value")
                 series = {frame: row["value"] for frame, row in merged.items()}

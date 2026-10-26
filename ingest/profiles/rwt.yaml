@@ -170,6 +170,14 @@ known_data_issues:
       Isolated negative in a year whose other quarters are positive; the sum
       test cannot run, so there is no evidence for the intended value.
       Dropped rather than guessed at.
+  - period: CY2026Q2
+    kpi: dividends_per_share
+    issue: >
+      The Q2 2026 10-Q (0000930236-26-000027) tags the common dividend only
+      for the six months ($0.36), with no three-month figure - while tagging
+      both for the preferred dividend. Derived as six months - Q1 = $0.18,
+      which the September 2026 8-K corroborates ("unchanged from the second
+      quarter"). The root script's CSV, and so its fixture, still lacks it.
 
 # Segment reporting is unusually unstable here and constrains what can be shown.
 segments:

@@ -119,6 +119,10 @@ These apply to any company and any KPI. The instances live in the profiles.
   have no standalone Q4 frame.
 - **Derive Q4 as `Annual − Q1 − Q2 − Q3`**, and tag every derived row so it is
   never confused with a reported one.
+- **Derive a missing Q2 or Q3 from year-to-date** (`derive_from_year_to_date`):
+  some 10-Qs tag only the six- or nine-month figure. Only where every earlier
+  quarter was reported, calendar fiscal years only, tagged as derived. The
+  SEC gives year-to-date spans no frame, so they come from the raw records.
 - **Never derive Q4 across a segment restructure.** The arithmetic is the same
   but subtracting quarters reported under one structure from an annual reported
   under another produces a plausible, wrong number.
