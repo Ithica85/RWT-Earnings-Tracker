@@ -19,6 +19,8 @@
   --red: #ab3226;
   --gold: #8a7433;
   --gold-wash: #efe9d6;
+  --red-wash: #f3e1dc;
+  --green-wash: #dde8e1;
 
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
     Georgia, serif;
@@ -39,6 +41,8 @@
     --red: #e28376;
     --gold: #c9ae5e;
     --gold-wash: #23200f;
+    --red-wash: #2a1714;
+    --green-wash: #142520;
   }
 }
 
@@ -238,46 +242,6 @@ tr:last-child td {
   font-size: 15px;
 }
 
-/* ---------- signals ---------- */
-
-.signal {
-  display: flex;
-  gap: 16px;
-  align-items: baseline;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--rule);
-  flex-wrap: wrap;
-}
-
-.signal:last-child {
-  border-bottom: none;
-}
-
-.signal-date {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-3);
-  white-space: nowrap;
-}
-
-.signal-item {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  padding: 2px 7px;
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  white-space: nowrap;
-}
-
-.sev-high {
-  color: var(--red);
-}
-.sev-medium {
-  color: var(--ink-3);
-}
-
 .quiet {
   color: var(--ink-2);
   background: var(--paper-2);
@@ -352,4 +316,527 @@ footer code {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ---------- corrections ---------- */
+
+/*
+ * The band that pairs a misleading headline figure with the corrected one.
+ * The corrected value is the largest type on the page by design: the site's
+ * whole claim is that the filed number needs its footnote, so the footnote
+ * gets the visual authority rather than the figure it corrects.
+ */
+
+.correct-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+.correct {
+  background: var(--gold-wash);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.correct .kpi {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.correct .pair {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.correct .filed {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 19px;
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.correct .arrow {
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.correct .true {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 31px;
+  font-weight: 600;
+  color: var(--green);
+  line-height: 1;
+}
+
+/* A correction with no numeric companion states its reading in words. */
+.correct .true.qualitative {
+  font-size: 18px;
+  color: var(--gold);
+  line-height: 1.3;
+}
+
+.correct .why {
+  font-size: 14px;
+  color: var(--ink-2);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* ---------- tier banner ---------- */
+
+.tier-banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border-left: 3px solid var(--green);
+  background: var(--paper-2);
+  padding: 14px 18px;
+}
+
+.tier-banner .lede {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 600;
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+.tier-banner .body {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.tier-banner.generic {
+  border-left-color: var(--gold);
+}
+
+.tier-banner.generic .lede {
+  color: var(--gold);
+}
+
+/* ---------- masthead figures ---------- */
+
+.lede-figs {
+  display: flex;
+  gap: 34px;
+  flex-wrap: wrap;
+}
+
+.lede-fig {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.lede-fig .v {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.lede-fig .k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ---------- charts ---------- */
+
+.spark {
+  display: block;
+}
+
+.chart {
+  display: block;
+  overflow: visible;
+}
+
+.ax {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  fill: var(--ink-3);
+}
+
+.lbl {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+td.trend {
+  width: 150px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+/*
+ * A percentage on a negative base is ambiguous on its own: a loss narrowing
+ * from -$0.07 to -$0.03 reads "+57.1%", which looks like growth beside a red
+ * negative figure. The word disambiguates it.
+ */
+.qual {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  display: block;
+}
+
+.row-flag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  padding: 1px 5px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.row-flag.corrected {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* ---------- signals, compact ---------- */
+
+.sig-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sig-chip {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.sig-chip:hover {
+  border-color: var(--rule-strong);
+}
+
+.sig-chip .d {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- plain-English health checks ---------- */
+
+/*
+ * Colour is never the only carrier of a status: every pill also says its
+ * word (Warning / Watch / OK / Not checked), for colour-blind readers and
+ * for anyone printing the page.
+ */
+
+.rag-red {
+  --rag: var(--red);
+  --rag-wash: var(--red-wash);
+}
+.rag-amber {
+  --rag: var(--gold);
+  --rag-wash: var(--gold-wash);
+}
+.rag-green {
+  --rag: var(--green);
+  --rag-wash: var(--green-wash);
+}
+.rag-grey {
+  --rag: var(--ink-3);
+  --rag-wash: var(--paper-2);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rag);
+  border: 1px solid var(--rag);
+  border-radius: 2px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rag);
+}
+
+.condition {
+  background: var(--rag-wash);
+  border-left: 5px solid var(--rag);
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.condition .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.condition .title {
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.15;
+  color: var(--rag);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.condition .summary {
+  font-size: 18px;
+  margin: 0;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+.condition .watch {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 70ch;
+}
+
+.condition .fine {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  margin: 0;
+  max-width: 70ch;
+}
+
+.how-to {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  margin: 0 0 20px;
+  max-width: 70ch;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.check {
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--rag);
+  background: var(--paper);
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.check h3 {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.check .answer {
+  font-size: 16px;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.check .meaning {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.check .meaning strong,
+.check .jargon strong {
+  color: var(--ink);
+}
+
+.check .jargon {
+  font-size: 14px;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.check .rule {
+  font-size: 13px;
+  color: var(--ink-3);
+  border-top: 1px solid var(--rule);
+  padding-top: 10px;
+  margin: auto 0 0;
+}
+
+.check .rule .k,
+.check .asof {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.check .asof {
+  color: var(--ink-3);
+}
+
+/* ---------- segments ---------- */
+
+.seg-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px 128px;
+  gap: 8px 22px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.seg .name {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.seg .plain {
+  display: block;
+  font-weight: 400;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+
+.seg .figs {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.seg .figs .was {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.seg .pill {
+  justify-self: end;
+}
+
+.seg .verdict {
+  grid-column: 1 / -1;
+  font-size: 14.5px;
+  color: var(--rag);
+}
+
+.seg.total .name {
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .seg {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .seg .pill {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .seg .figs {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+}
+
+/* ---------- deciding for yourself ---------- */
+
+.yourself {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 72ch;
+}
+
+.yourself li {
+  font-size: 16px;
+}
+
+.yourself li strong {
+  display: block;
+}
+
+.yourself li span {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.detail-intro {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  max-width: 70ch;
+  margin: -6px 0 0;
+}
+
+.kpi-plain {
+  display: block;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 2px;
 }

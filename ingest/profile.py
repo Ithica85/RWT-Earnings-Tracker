@@ -129,6 +129,58 @@ def _series_from_csv(spec):
     return series
 
 
+def _segments(profile):
+    """Per-segment net income, read back from the CSV get_segment_facts.py writes.
+
+    Only the current segment structure is exported. The CSV already omits
+    quarters filed under an earlier structure, and earliest_comparable trims
+    anything older, because a segment's history across a redraw compares a
+    business with a differently-drawn version of itself.
+
+    Like derived_elsewhere, a profile that names a CSV which is missing raises
+    rather than shipping a page without the section.
+    """
+    spec = profile.get("segments")
+    if not spec or "csv" not in spec:
+        return None
+
+    path = os.path.join(REPO_ROOT, spec["csv"])
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            f"segments: {spec['csv']} is missing - run {spec.get('script', 'its script')}"
+        )
+
+    earliest = _quarter_key(spec["earliest_comparable"])
+    series = {key: {} for key in spec["current"]}
+    with open(path, newline="") as handle:
+        for row in csv.DictReader(handle):
+            if _quarter_key(row["quarter"]) < earliest:
+                continue
+            for key in spec["current"]:
+                value = (row.get(key) or "").strip()
+                if value:
+                    series[key][row["quarter"]] = float(value)
+
+    describe = spec.get("describe", {})
+    return {
+        "note": spec.get("note"),
+        "earliest_comparable": spec["earliest_comparable"],
+        "segments": [
+            {
+                "key": key,
+                "label": describe.get(key, {}).get("label", key),
+                "plain": describe.get(key, {}).get("plain"),
+                "rated": describe.get(key, {}).get("rated", True),
+                "series": [
+                    {"quarter": q, "value": series[key][q]}
+                    for q in sorted(series[key], key=_quarter_key)
+                ],
+            }
+            for key in spec["current"]
+        ],
+    }
+
+
 def run(ticker):
     """Extract every KPI the profile declares, from both of its sources.
 
@@ -179,4 +231,5 @@ def run(ticker):
         "tier": "curated" if curated else "generic",
         "kpis": results,
         "caveats": profile.get("caveats", []),
+        "segments": _segments(profile),
     }
