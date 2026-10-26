@@ -52,6 +52,22 @@ export type Signal = {
   url: string;
 };
 
+export type Segment = {
+  key: string;
+  label: string;
+  plain?: string;
+  /** False for parts that are not businesses to judge on profit (head office, a wind-down). */
+  rated: boolean;
+  /** Net income per quarter, current segment structure only. */
+  series: Point[];
+};
+
+export type Segments = {
+  note?: string;
+  earliest_comparable: string;
+  segments: Segment[];
+};
+
 export type Company = {
   ticker: string;
   name: string;
@@ -60,6 +76,27 @@ export type Company = {
   kpis: Record<string, Kpi>;
   caveats: Caveat[];
   signals: Signal[];
+  segments?: Segments | null;
+};
+
+/**
+ * A line of plain English per KPI, for readers who don't read filings. Keyed
+ * by the profile's KPI key, so a KPI without an entry simply shows none.
+ */
+export const KPI_PLAIN: Record<string, string> = {
+  eps: "Profit or loss per share. Negative means a loss.",
+  net_income: "Total profit or loss for the quarter.",
+  net_interest_income: "Interest earned on loans, minus interest paid on borrowing.",
+  interest_expense: "Interest paid on everything it has borrowed.",
+  dividends_per_share: "Cash paid to shareholders per share.",
+  total_assets: "Everything it owns, mostly loans and mortgage securities.",
+  total_liabilities: "Everything it owes, including debt it isn't liable for.",
+  stockholders_equity: "Its own money: what it owns minus what it owes.",
+  credit_loss_allowance: "Money set aside for loans that may not be repaid.",
+  book_value_per_share: "Its own money per share. The safety cushion.",
+  operating_expenses: "The cost of running the business, staff included.",
+  recourse_leverage: "Debt it must repay itself, per $1 of its own money.",
+  debt_to_equity: "All debt per $1 of its own money. Overstates the risk.",
 };
 
 export type IndexEntry = {

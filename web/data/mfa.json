@@ -1821,7 +1821,16 @@
       "detail": "Total liabilities over equity counts consolidated obligations the parent may have no liability for - securitisations, VIEs, non-recourse structures. For companies that consolidate heavily this can overstate real leverage several times over. Establishing the true figure requires reading the filing text.\n"
     }
   ],
+  "segments": null,
   "signals": [
+    {
+      "date": "2026-10-08",
+      "item": "5.02",
+      "meaning": "Director or senior officer change (departure OR appointment)",
+      "severity": "medium",
+      "accession": "0001104659-26-114714",
+      "url": "https://www.sec.gov/Archives/edgar/data/1055160/000110465926114714/tm2627083d1_8k.htm"
+    },
     {
       "date": "2025-06-05",
       "item": "5.02",

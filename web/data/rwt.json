@@ -3146,6 +3146,156 @@
       "detail": "Effectively the entire $9.9M half-year build is a re-mark of a single retained interest in the Legacy Trust, a wind-down vehicle. The rollforward is explicit that no new securities entered an allowance position. Ring-fenced and shrinking by design.\n"
     }
   ],
+  "segments": {
+    "note": "Redwood redrew its segments three times in four years, so there is no long segment history. Income-statement figures were materially restated across the 2025/2026 boundary (a net-interest-income reallocation touching every segment); assets were not, beyond Aspire being carved out of Sequoia. Q4 must never be derived across a restructure - doing so buried Aspire's entire result inside another segment's Q4.\n",
+    "earliest_comparable": "CY2025Q1",
+    "segments": [
+      {
+        "key": "SequoiaMortgageBanking",
+        "label": "Sequoia",
+        "plain": "Buys large home loans (too big for government-backed programs) from banks and lenders, and sells them on to investors.",
+        "rated": true,
+        "series": [
+          {
+            "quarter": "CY2025Q1",
+            "value": 22860000.0
+          },
+          {
+            "quarter": "CY2025Q2",
+            "value": 18309000.0
+          },
+          {
+            "quarter": "CY2026Q1",
+            "value": 38375000.0
+          },
+          {
+            "quarter": "CY2026Q2",
+            "value": 32120000.0
+          }
+        ]
+      },
+      {
+        "key": "AspireMortgageBanking",
+        "label": "Aspire",
+        "plain": "Home loans for borrowers outside the standard rules, such as the self-employed. Launched in 2025.",
+        "rated": true,
+        "series": [
+          {
+            "quarter": "CY2025Q1",
+            "value": -948000.0
+          },
+          {
+            "quarter": "CY2025Q2",
+            "value": -1155000.0
+          },
+          {
+            "quarter": "CY2026Q1",
+            "value": 2472000.0
+          },
+          {
+            "quarter": "CY2026Q2",
+            "value": 7478000.0
+          }
+        ]
+      },
+      {
+        "key": "CoreVestMortgageBanking",
+        "label": "CoreVest",
+        "plain": "Loans to property investors who own rental homes.",
+        "rated": true,
+        "series": [
+          {
+            "quarter": "CY2025Q1",
+            "value": 1355000.0
+          },
+          {
+            "quarter": "CY2025Q2",
+            "value": 5197000.0
+          },
+          {
+            "quarter": "CY2026Q1",
+            "value": -3290000.0
+          },
+          {
+            "quarter": "CY2026Q2",
+            "value": 1256000.0
+          }
+        ]
+      },
+      {
+        "key": "RedwoodInvestments",
+        "label": "Redwood Investments",
+        "plain": "The loans and mortgage securities Redwood keeps for itself, to earn income from.",
+        "rated": true,
+        "series": [
+          {
+            "quarter": "CY2025Q1",
+            "value": 19412000.0
+          },
+          {
+            "quarter": "CY2025Q2",
+            "value": 7259000.0
+          },
+          {
+            "quarter": "CY2026Q1",
+            "value": -7342000.0
+          },
+          {
+            "quarter": "CY2026Q2",
+            "value": 1501000.0
+          }
+        ]
+      },
+      {
+        "key": "LegacyInvestments",
+        "label": "Legacy Investments",
+        "plain": "Older holdings that are being run down on purpose. Shrinking by design.",
+        "rated": false,
+        "series": [
+          {
+            "quarter": "CY2025Q1",
+            "value": -8637000.0
+          },
+          {
+            "quarter": "CY2025Q2",
+            "value": -109970000.0
+          },
+          {
+            "quarter": "CY2026Q1",
+            "value": -12803000.0
+          },
+          {
+            "quarter": "CY2026Q2",
+            "value": -23098000.0
+          }
+        ]
+      },
+      {
+        "key": "Corporate",
+        "label": "Corporate (head office)",
+        "plain": "Head-office costs and interest on the company's own borrowing. Always a cost, so always negative.",
+        "rated": false,
+        "series": [
+          {
+            "quarter": "CY2025Q1",
+            "value": -17895000.0
+          },
+          {
+            "quarter": "CY2025Q2",
+            "value": -18132000.0
+          },
+          {
+            "quarter": "CY2026Q1",
+            "value": -22915000.0
+          },
+          {
+            "quarter": "CY2026Q2",
+            "value": -20357000.0
+          }
+        ]
+      }
+    ]
+  },
   "signals": [
     {
       "date": "2026-05-19",

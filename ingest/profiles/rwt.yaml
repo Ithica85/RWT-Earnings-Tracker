@@ -184,3 +184,33 @@ segments:
     segment); assets were not, beyond Aspire being carved out of Sequoia.
     Q4 must never be derived across a restructure - doing so buried Aspire's
     entire result inside another segment's Q4.
+  # Per-segment net income, current structure only. CY2025Q1-Q2 are the
+  # comparatives restated in the 2026 10-Qs, so they share a basis with 2026;
+  # CY2025Q3-Q4 were filed under the old structure and are absent on purpose.
+  script: get_segment_facts.py
+  csv: rwt_segment_contribution.csv
+  # Plain-English descriptions for readers who do not know the business.
+  # `rated: false` marks the two that are not businesses an employee could
+  # judge on profit: head office is a cost by definition, and Legacy is being
+  # wound down on purpose.
+  describe:
+    SequoiaMortgageBanking:
+      label: Sequoia
+      plain: Buys large home loans (too big for government-backed programs) from banks and lenders, and sells them on to investors.
+    AspireMortgageBanking:
+      label: Aspire
+      plain: Home loans for borrowers outside the standard rules, such as the self-employed. Launched in 2025.
+    CoreVestMortgageBanking:
+      label: CoreVest
+      plain: Loans to property investors who own rental homes.
+    RedwoodInvestments:
+      label: Redwood Investments
+      plain: The loans and mortgage securities Redwood keeps for itself, to earn income from.
+    LegacyInvestments:
+      label: Legacy Investments
+      plain: Older holdings that are being run down on purpose. Shrinking by design.
+      rated: false
+    Corporate:
+      label: Corporate (head office)
+      plain: Head-office costs and interest on the company's own borrowing. Always a cost, so always negative.
+      rated: false

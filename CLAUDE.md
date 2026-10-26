@@ -19,7 +19,11 @@ the origin of the project, which began as a personal KPI tracker for one company
 2. **Predicting layoffs or re-orgs.** A probability attached to a named real
    employer can move a stock and affect real people's jobs, and is indefensible
    when wrong. What replaced it is a timeline of legally-required disclosures.
-   **Never reintroduce a layoff probability.**
+   **Never reintroduce a layoff probability** — nor its rewording, a "stay /
+   go" verdict addressed to the reader. The company page carries a
+   *company-condition* band (Steady / Under pressure / In trouble) that
+   describes the firm's finances, plus a "deciding for yourself" checklist
+   for what filings cannot see. Considered and chosen 2026-10-25.
 
 ## Architecture
 
@@ -33,6 +37,7 @@ company-specific truth, and a presentation layer that cannot drop a correction.
 | Signals | `ingest/signals/eight_k.py` | 8-K item codes from the free submissions feed. Works for all filers with zero per-company config |
 | Export | `ingest/export_web.py` | Assembles per-company JSON into `web/data/` |
 | Web | `web/` | Next.js static export. All reads go through `web/lib/data.ts` |
+| Health checks | `web/lib/health.ts` | The five plain-English RAG cards, the condition band and the per-segment view. Every colour comes from a rule in this file, and each card prints its rule |
 
 **No database, deliberately.** The corpus is ~230 KB for five companies and
 changes four times a year, when companies file. Static JSON → static pages. A
@@ -96,7 +101,7 @@ extraction judgment. Do not duplicate its notes here — they drift. Its blocks:
 | `derived_elsewhere:` | Measures CompanyFacts cannot produce at all. Each names its `script`, the `csv` it writes and the `column` to read. The loader reads the series back rather than reimplementing the judgment |
 | `caveats:` | Traps. A KPI listed here must never display without its companion — the naive reading is actively misleading, not merely incomplete |
 | `known_data_issues:` | Defects in what the SEC serves, and what was done about each |
-| `segments:` | The current segment set and why the history is not comparable |
+| `segments:` | The current segment set, why the history is not comparable, the `csv` the loader reads per-segment net income from, and plain-English `describe:` text (with `rated: false` for head office and the wind-down) |
 
 **Caveats are bound to their KPI at the data layer**, in `attachCaveats()` in
 `web/lib/data.ts`, not by convention in a component. A figure that misleads on
@@ -192,6 +197,20 @@ tabular figures throughout. Colours: bone `#F2F3EF`, ink `#191C19`, ledger green
 `#2B5D4F`, filing red `#AB3226`, muted gold `#8A7433` for caveats. `web/app/globals.css`
 carries the same tokens. A strict CSP blocks external hosts, so everything inlines.
 
+## The health-check rules
+
+Plain-English cards for readers who don't read filings. Thresholds live in
+`web/lib/health.ts`; change them there and nowhere else.
+
+- **Grey beats a wrong colour.** A generic-tier company never gets a colour on
+  borrowing (the uncorrected figure was ~6× wrong for Redwood), and fewer than
+  4 of 5 checks assessed shows "Not enough checked to say".
+- **"In trouble" is tied to the company's own acts** — a dividend cut or an
+  item 2.05 restructuring — or every check red. Trends alone reach "Under
+  pressure" at worst.
+- **Compare by quarter label, never by position** (`quarterBack`). Series have
+  gaps, so four points back is not reliably a year ago.
+
 ## The safety net
 
 `tests/fixtures/` holds 20 verified CSVs with checksums; `tests/check_regression.py`
@@ -229,4 +248,5 @@ top-level and bound to their KPI at load time.
 3. **Phase 2 signals** — WARN notices (biggest and messiest), ATS job boards via
    the public Greenhouse/Lever/Ashby endpoints, editorial notes.
 4. **Phase 3** — any-ticker on demand, at which point a database earns its place.
-5. **Surface segment data**, which is extracted but not yet exported.
+5. ~~Surface segment data~~ — done: per-segment net income, year-to-date vs
+   the same months a year earlier, on the company page.

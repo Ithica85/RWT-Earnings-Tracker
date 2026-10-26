@@ -19,6 +19,8 @@
   --red: #ab3226;
   --gold: #8a7433;
   --gold-wash: #efe9d6;
+  --red-wash: #f3e1dc;
+  --green-wash: #dde8e1;
 
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
     Georgia, serif;
@@ -39,6 +41,8 @@
     --red: #e28376;
     --gold: #c9ae5e;
     --gold-wash: #23200f;
+    --red-wash: #2a1714;
+    --green-wash: #142520;
   }
 }
 
@@ -546,4 +550,293 @@ td.trend {
 .sig-chip .d {
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
+}
+
+/* ---------- plain-English health checks ---------- */
+
+/*
+ * Colour is never the only carrier of a status: every pill also says its
+ * word (Warning / Watch / OK / Not checked), for colour-blind readers and
+ * for anyone printing the page.
+ */
+
+.rag-red {
+  --rag: var(--red);
+  --rag-wash: var(--red-wash);
+}
+.rag-amber {
+  --rag: var(--gold);
+  --rag-wash: var(--gold-wash);
+}
+.rag-green {
+  --rag: var(--green);
+  --rag-wash: var(--green-wash);
+}
+.rag-grey {
+  --rag: var(--ink-3);
+  --rag-wash: var(--paper-2);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rag);
+  border: 1px solid var(--rag);
+  border-radius: 2px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+.pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rag);
+}
+
+.condition {
+  background: var(--rag-wash);
+  border-left: 5px solid var(--rag);
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.condition .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.condition .title {
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.15;
+  color: var(--rag);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.condition .summary {
+  font-size: 18px;
+  margin: 0;
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+.condition .watch {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 70ch;
+}
+
+.condition .fine {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  margin: 0;
+  max-width: 70ch;
+}
+
+.how-to {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  margin: 0 0 20px;
+  max-width: 70ch;
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.check {
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--rag);
+  background: var(--paper);
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.check h3 {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.check .answer {
+  font-size: 16px;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.check .meaning {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.check .meaning strong,
+.check .jargon strong {
+  color: var(--ink);
+}
+
+.check .jargon {
+  font-size: 14px;
+  color: var(--ink-2);
+  background: var(--paper-2);
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.check .rule {
+  font-size: 13px;
+  color: var(--ink-3);
+  border-top: 1px solid var(--rule);
+  padding-top: 10px;
+  margin: auto 0 0;
+}
+
+.check .rule .k,
+.check .asof {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.check .asof {
+  color: var(--ink-3);
+}
+
+/* ---------- segments ---------- */
+
+.seg-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px 128px;
+  gap: 8px 22px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.seg .name {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.seg .plain {
+  display: block;
+  font-weight: 400;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+
+.seg .figs {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.seg .figs .was {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.seg .pill {
+  justify-self: end;
+}
+
+.seg .verdict {
+  grid-column: 1 / -1;
+  font-size: 14.5px;
+  color: var(--rag);
+}
+
+.seg.total .name {
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .seg {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .seg .pill {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .seg .figs {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+}
+
+/* ---------- deciding for yourself ---------- */
+
+.yourself {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 72ch;
+}
+
+.yourself li {
+  font-size: 16px;
+}
+
+.yourself li strong {
+  display: block;
+}
+
+.yourself li span {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.detail-intro {
+  font-size: 15.5px;
+  color: var(--ink-2);
+  max-width: 70ch;
+  margin: -6px 0 0;
+}
+
+.kpi-plain {
+  display: block;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 2px;
 }
