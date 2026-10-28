@@ -13,6 +13,8 @@
     --red:         #AB3226;
     --gold:        #8A7433;
     --gold-wash:   #EFE9D6;
+    --red-wash:    #F3E1DC;
+    --green-wash:  #DDE8E1;
 
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --mono:  ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -33,6 +35,8 @@
       --red:         #E28376;
       --gold:        #C9AE5E;
       --gold-wash:   #23200F;
+      --red-wash:    #2A1714;
+      --green-wash:  #142520;
     }
   }
 
@@ -48,6 +52,8 @@
     --red:         #E28376;
     --gold:        #C9AE5E;
     --gold-wash:   #23200F;
+    --red-wash:    #2A1714;
+    --green-wash:  #142520;
   }
 
   :root[data-theme="light"] {
@@ -62,6 +68,8 @@
     --red:         #AB3226;
     --gold:        #8A7433;
     --gold-wash:   #EFE9D6;
+    --red-wash:    #F3E1DC;
+    --green-wash:  #DDE8E1;
   }
 
   body {
@@ -408,6 +416,135 @@
     max-width: 78ch;
   }
 
+  /* ---------- overview: condition, RAG cards, summary ---------- */
+
+  /* Status is never colour alone: every pill also carries its word. */
+  .rag-red   { --rag: var(--red);   --rag-wash: var(--red-wash); }
+  .rag-amber { --rag: var(--gold);  --rag-wash: var(--gold-wash); }
+  .rag-green { --rag: var(--green); --rag-wash: var(--green-wash); }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rag);
+    border: 1px solid var(--rag);
+    border-radius: 2px;
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+  .pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--rag);
+  }
+
+  .condition {
+    background: var(--rag-wash);
+    border-left: 5px solid var(--rag);
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .condition .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .condition h2 {
+    font-size: clamp(27px, 4vw, 38px);
+    font-weight: 400;
+    line-height: 1.12;
+    color: var(--rag);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .condition p { font-size: 18px; max-width: 64ch; margin: 0; text-wrap: pretty; }
+
+  /* Flex, not grid: five cards on a laptop, and when they wrap the last row
+     stretches to fill instead of leaving an empty cell. */
+  .rag-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .rag-card {
+    background: var(--paper);
+    border-top: 4px solid var(--rag);
+    padding: 16px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1 1 170px;
+    min-width: 0;
+  }
+  .rag-card .q { font-size: 16px; font-weight: 600; line-height: 1.3; }
+  .rag-card .fig {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--rag);
+  }
+  .rag-card .what { font-size: 14px; color: var(--ink-2); line-height: 1.45; }
+  .rag-card .rule {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    border-top: 1px solid var(--rule);
+    padding-top: 8px;
+    margin-top: auto;
+    line-height: 1.45;
+  }
+
+  .for-against {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+  }
+  .for-against > div { min-width: 0; }
+  .for-against h3 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--rag);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rag);
+  }
+  .for-against ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 9px; }
+  .for-against li { font-size: 15.5px; color: var(--ink-2); line-height: 1.5; }
+  .for-against li strong { color: var(--ink); }
+
+  .tech {
+    background: var(--paper-2);
+    border-left: 3px solid var(--ink-2);
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tech h3 { font-size: 19px; font-weight: 600; margin: 0; }
+  .tech p { font-size: 15.5px; color: var(--ink-2); margin: 0; max-width: 72ch; }
+  .tech p strong { color: var(--ink); }
+
+  .fine { font-size: 13.5px; color: var(--ink-3); max-width: 76ch; }
+
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
@@ -429,6 +566,82 @@
       <div><dt>Accession</dt><dd>0000930236-26-000027</dd></div>
     </dl>
   </header>
+
+  <section aria-label="Overview">
+    <div class="condition rag-amber">
+      <span class="label">Overall condition · results to 30 June 2026</span>
+      <h2>Under pressure, worth watching closely</h2>
+      <p>On what its own filings show, Redwood is not a company about to collapse or announce mass layoffs. It is not thriving either, and it may face more pressure from outside soon. Think of it as a steady employer under strain, with Q3 results on 3 November as the next test.</p>
+    </div>
+
+    <div class="rag-cards">
+      <article class="rag-card rag-red">
+        <span class="pill">Warning</span>
+        <span class="q">Is it making money?</span>
+        <span class="fig">−7¢</span>
+        <span class="what">Loss per share over the last year. It lost money in 3 of the 4 quarters, though the loss narrowed from 7¢ to 3¢ in Q2.</span>
+        <span class="rule">Warning if it lost money over the last four quarters combined.</span>
+      </article>
+      <article class="rag-card rag-red">
+        <span class="pill">Warning</span>
+        <span class="q">Is its safety cushion shrinking?</span>
+        <span class="fig">$6.90</span>
+        <span class="what">Book value per share, an all-time low. Down 7.9% in a year and 21% in two.</span>
+        <span class="rule">Warning if it fell more than 5% in a year.</span>
+      </article>
+      <article class="rag-card rag-red">
+        <span class="pill">Warning</span>
+        <span class="q">Is it borrowing too much?</span>
+        <span class="fig">4.84×</span>
+        <span class="what">Debt Redwood itself must repay, per $1 of its own money. Up 44% in a year, partly because the cushion shrank.</span>
+        <span class="rule">Warning if it rose more than 25% in a year. The 29.86× figure counts debt it isn't liable for.</span>
+      </article>
+      <article class="rag-card rag-green">
+        <span class="pill">OK</span>
+        <span class="q">Is it still paying shareholders?</span>
+        <span class="fig">$0.18</span>
+        <span class="what">Dividend per share, held through Q3, 109 quarters in a row. A cut is usually the first sign money is tight.</span>
+        <span class="rule">Warning if cut from the quarter before or a year earlier.</span>
+      </article>
+      <article class="rag-card rag-green">
+        <span class="pill">OK</span>
+        <span class="q">Has it announced a restructuring?</span>
+        <span class="fig">None</span>
+        <span class="what">No formal restructuring notice since 2024. Smaller, targeted cuts don't have to be announced, and a severance charge was taken in Q1.</span>
+        <span class="rule">Warning if an 8-K item 2.05 has been filed since 2024.</span>
+      </article>
+    </div>
+
+    <div class="for-against">
+      <div class="rag-green">
+        <h3>In its favour</h3>
+        <ul>
+          <li><strong>No debt deadline is close.</strong> In September it pushed about $124M due in 2027 out to 2030, at a lower rate, and it ended September with about $190M of cash.</li>
+          <li><strong>The scariest figures mislead.</strong> Real leverage is 4.84×, not 29.86×, and the jump in bad-loan reserves is one old asset being wound down.</li>
+          <li><strong>Its home-loan platforms are growing.</strong> Sequoia made $70.5M in the first half of 2026, up from $41.2M. Aspire went from a $2.1M loss to a $9.9M profit.</li>
+          <li><strong>Losses are shrinking</strong>, from 7¢ a share in Q1 to 3¢ in Q2.</li>
+        </ul>
+      </div>
+      <div class="rag-red">
+        <h3>Against it</h3>
+        <ul>
+          <li><strong>Investors are sceptical.</strong> The shares traded near $3.63 in September, about half of book value. Pay held in company stock is worth less.</li>
+          <li><strong>Two businesses swung to losses.</strong> CoreVest and Redwood Investments made money a year ago and lost it in the first half of 2026.</li>
+          <li><strong>Head-office costs are rising while the company loses money:</strong> $43.3M in the first half, up from $36.0M. This is usually where savings are sought.</li>
+          <li><strong>A new 9% shareholder could push for change.</strong> Their 13D filing mentions board changes and possible sales of the company or its businesses. Nothing has been proposed, but a sale or break-up would change jobs more than a weak quarter.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tech">
+      <h3>If you work in technology</h3>
+      <p>Redwood doesn't report technology as a business of its own, so the filings can't show how your area is doing directly. Its cost most likely sits in <strong>Corporate (head office)</strong> or is spread across the businesses it supports, and the filings don't say which.</p>
+      <p>That puts tech in the cost line that is <strong>rising while the company loses money</strong>, and the one an outside shareholder pressing for savings would look at first. On the other side, tech supports the platforms that are growing, and Redwood's own press releases put technology at the centre of its plans, describing an <strong>"AI-first operating model"</strong>. That cuts both ways: it means investment in tech, and an aim to do more with fewer people.</p>
+      <p>Signs to watch for your area: head-office costs in the Q3 10-Q, any severance outside Legacy and CoreVest, and any proposal from the 9% holder.</p>
+    </div>
+
+    <p class="fine">This describes the company's finances from its own SEC filings. It isn't advice about your job, which depends on your team, your pay and your options, none of which a filing shows. The colours follow fixed rules, printed on each card, and match the five checks on the web app.</p>
+  </section>
 
   <section>
     <div class="sec-head">
