@@ -244,13 +244,30 @@ top-level and bound to their KPI at load time.
 
 ## Next steps
 
-1. **The design review's component work** — the corrected-figures band (now
-   unblocked, since `recourse_leverage` is a real KPI), the promoted tier
-   banner, sparklines and the leverage chart as inline SVG, the comparison
-   route, the mobile reflow. See the canvas above.
-2. **Deploy** to Vercel.
-3. **Phase 2 signals** — WARN notices (biggest and messiest), ATS job boards via
+1. **The design review's remaining work** — the index redesign, the
+   comparison route, and checking the mobile reflow in a browser. The
+   corrected-figures band, tier banner, sparklines and leverage chart are
+   built. See the canvas above.
+2. **Company coverage: curate before adding.** An uncurated company shows "Not
+   enough checked to say" (2 of 5 checks), so more generic companies add
+   little. In order:
+   1. **Curate one close peer to Redwood** — Ellington Financial (EFC) or Angel
+      Oak Mortgage (AOMR), the nearest comparison for Aspire. The cost is the
+      same as for Redwood: recourse leverage from MD&A text, BVPS, and checking
+      whether the gross figure misleads.
+   2. **Add one company known to have been in distress**, to test the rules.
+      No covered company has filed an item 2.05 since 2024, so "In trouble" has
+      never fired on real data. Ready Capital (RC) is the first candidate, but
+      verify its dividend and restructuring history from its filings first.
+   3. **Then widen**, once the comparison route exists: Chimera (CIM),
+      a CoreVest comparison such as Arbor Realty (ABR), and large mortgage
+      originators (Rocket, UWM, loanDepot), which are not REITs and need their
+      own profiles.
+   These were suggested from general knowledge on 2026-10-27; check each
+   company's recent filings for mergers or business changes before starting.
+3. **Deploy** to Vercel.
+4. **Phase 2 signals** — WARN notices (biggest and messiest), ATS job boards via
    the public Greenhouse/Lever/Ashby endpoints, editorial notes.
-4. **Phase 3** — any-ticker on demand, at which point a database earns its place.
-5. ~~Surface segment data~~ — done: per-segment net income, year-to-date vs
+5. **Phase 3** — any-ticker on demand, at which point a database earns its place.
+6. ~~Surface segment data~~ — done: per-segment net income, year-to-date vs
    the same months a year earlier, on the company page.
