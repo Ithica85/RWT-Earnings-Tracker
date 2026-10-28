@@ -265,9 +265,24 @@ top-level and bound to their KPI at load time.
       own profiles.
    These were suggested from general knowledge on 2026-10-27; check each
    company's recent filings for mergers or business changes before starting.
-3. **Deploy** to Vercel.
-4. **Phase 2 signals** — WARN notices (biggest and messiest), ATS job boards via
+3. **Employee-side signals from filings** — what working there is like, from
+   the company's own disclosures rather than reviews (which stay out of scope,
+   see the top of this file). In order:
+   1. **Headcount over time**, from the human-capital section every 10-K must
+      include. The most direct measure of a shrinking workforce, and it catches
+      gradual cuts that never trigger an item 2.05.
+   2. **Insider buying and selling** (Form 4). Already in the submissions feed
+      the 8-K collector reads, so cheap. Insiders buying near half of book
+      value is a confidence signal; heavy selling the opposite.
+   3. **Median employee pay and the CEO pay ratio**, from the annual proxy
+      (DEF 14A, usually filed in spring). A pay benchmark, and whether the gap
+      widens while the company loses money.
+   4. **Compensation expense per employee**, if the company reports pay and
+      benefits as its own line; combine with headcount.
+   Job postings stay in Phase 2 below.
+4. **Deploy** to Vercel.
+5. **Phase 2 signals** — WARN notices (biggest and messiest), ATS job boards via
    the public Greenhouse/Lever/Ashby endpoints, editorial notes.
-5. **Phase 3** — any-ticker on demand, at which point a database earns its place.
-6. ~~Surface segment data~~ — done: per-segment net income, year-to-date vs
+6. **Phase 3** — any-ticker on demand, at which point a database earns its place.
+7. ~~Surface segment data~~ — done: per-segment net income, year-to-date vs
    the same months a year earlier, on the company page.
