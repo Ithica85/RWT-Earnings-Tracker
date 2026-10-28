@@ -40,7 +40,7 @@ ax.tick_params(axis="x", rotation=90, labelsize=7)
 
 # Legend: hatch encodes reported vs derived (no color legend needed, single hue)
 legend_handles = [
-    mpatches.Patch(facecolor="white", edgecolor="black", hatch="//", label="Derived Q4 (Annual - Q1 - Q2 - Q3)"),
+    mpatches.Patch(facecolor="white", edgecolor="black", hatch="//", label="Derived from an annual or year-to-date total"),
 ]
 ax.legend(handles=legend_handles, loc="upper left")
 

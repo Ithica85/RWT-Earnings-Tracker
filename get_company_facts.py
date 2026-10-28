@@ -165,10 +165,15 @@ def extract_quarterly_duration_kpi(concept_name, value_key, label, csv_stem,
 
     # Derive missing Q4 values as Annual - (Q1 + Q2 + Q3), for any year where the
     # annual figure and all three reported quarters are available.
-    derived_q4 = facts.derive_q4(by_frame, quarterly, value_key)
+    # A Q2 or Q3 tagged only as year-to-date is backed out first, so its year
+    # can still have Q4 derived. Only the _complete CSV gets these; the
+    # reported-only CSV above stays reported-only.
+    derived_ytd = facts.derive_from_year_to_date(records, quarterly, value_key)
+    with_ytd = {**quarterly, **derived_ytd}
+    derived_q4 = facts.derive_q4(by_frame, with_ytd, value_key)
 
     # Merge reported + derived, tag the source so you always know which is which
-    all_quarters = facts.merge_reported_and_derived(quarterly, derived_q4, value_key)
+    all_quarters = facts.merge_reported_and_derived(with_ytd, derived_q4, value_key)
 
     sorted_all_quarters = sorted(all_quarters.values(), key=lambda x: x["quarter"])
 

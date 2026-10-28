@@ -177,7 +177,8 @@ known_data_issues:
       for the six months ($0.36), with no three-month figure - while tagging
       both for the preferred dividend. Derived as six months - Q1 = $0.18,
       which the September 2026 8-K corroborates ("unchanged from the second
-      quarter"). The root script's CSV, and so its fixture, still lacks it.
+      quarter"). get_company_facts.py derives it the same way, and the
+      dividends fixture was updated deliberately on 2026-10-27 to include it.
 
 # Segment reporting is unusually unstable here and constrains what can be shown.
 segments:
