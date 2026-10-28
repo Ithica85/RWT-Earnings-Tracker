@@ -114,6 +114,15 @@ function at(series: Point[], quarter: string): number | undefined {
   return series.find((p) => p.quarter === quarter)?.value;
 }
 
+/**
+ * Percentage change rounded to 0.1, the precision the cards print. Comparing
+ * unrounded values lets floating-point noise decide a threshold: 5.10 against
+ * 4.08 is 24.999…%, so the colour would disagree with the "+25.0%" shown.
+ */
+function percentChange(now: number, before: number): number {
+  return Math.round(((now - before) / before) * 1000) / 10;
+}
+
 function usable(kpi: Kpi | undefined): kpi is Kpi & { series: Point[] } {
   return Boolean(kpi?.available && kpi.series && kpi.series.length >= 2);
 }
@@ -148,7 +157,9 @@ function profitCard(company: Company): Card {
   }
 
   const four = values as number[];
-  const total = four.reduce((a, b) => a + b, 0);
+  // Rounded to the cent before comparing: 0.11 − 0.07 − 0.03 − 0.01 is
+  // −5e-18 in floating point, which would turn a break-even year red.
+  const total = Math.round(four.reduce((a, b) => a + b, 0) * 100) / 100;
   const losses = four.filter((v) => v < 0).length;
   const previous = four[2];
 
@@ -213,7 +224,7 @@ function cushionCard(company: Company): Card {
     return notChecked(key, question, "There's no figure from a year earlier to compare with.", "", rule);
   }
 
-  const change = ((latest.value - yearAgo) / yearAgo) * 100;
+  const change = percentChange(latest.value, yearAgo);
   const status: Rag = change <= -5 ? "red" : change < 0 ? "amber" : "green";
   const verb = change < 0 ? "fell" : "rose";
 
@@ -261,7 +272,7 @@ function borrowingCard(company: Company): Card {
     return notChecked(key, question, "There's no figure from a year earlier to compare with.", "", rule);
   }
 
-  const change = ((latest.value - yearAgo) / yearAgo) * 100;
+  const change = percentChange(latest.value, yearAgo);
   const status: Rag = change > 25 ? "red" : change > 10 ? "amber" : "green";
   const gross = company.kpis.debt_to_equity;
 

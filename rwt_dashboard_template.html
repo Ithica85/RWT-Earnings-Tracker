@@ -545,6 +545,19 @@
 
   .fine { font-size: 13.5px; color: var(--ink-3); max-width: 76ch; }
 
+  /* ---------- what Q3 needs to show ---------- */
+
+  .q3 { display: flex; flex-direction: column; gap: 16px; }
+  .q3 h3 { font-size: 21px; font-weight: 400; margin: 0; }
+  .q3 > p { font-size: 15.5px; color: var(--ink-2); max-width: 72ch; margin: 0; }
+  .q3 td.band { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13.5px; white-space: nowrap; }
+  .q3 td.band.r { color: var(--red); }
+  .q3 td.band.a { color: var(--gold); }
+  .q3 td.band.g { color: var(--green); }
+  .q3 td.now .pill { margin-right: 6px; }
+  .scenarios { display: flex; flex-wrap: wrap; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .scenarios .rag-card .fig { font-family: var(--serif); font-size: 21px; font-weight: 400; line-height: 1.15; }
+
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
@@ -610,6 +623,90 @@
         <span class="what">No formal restructuring notice since 2024. Smaller, targeted cuts don't have to be announced, and a severance charge was taken in Q1.</span>
         <span class="rule">Warning if an 8-K item 2.05 has been filed since 2024.</span>
       </article>
+    </div>
+
+    <div class="q3">
+      <h3>What Q3 needs to show</h3>
+      <p>Q3 results are due on 3 November. The card rules are fixed, so the figures that would change each colour can be worked out now. These come from running the web app's own scoring code on hypothetical Q3 figures. They are switch points, not a forecast.</p>
+      <div class="scroller">
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th style="text-align:left">Now</th>
+              <th style="text-align:left">Red</th>
+              <th style="text-align:left">Amber</th>
+              <th style="text-align:left">Green</th>
+              <th style="text-align:left">Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="kpi-name">Making money</td>
+              <td class="now rag-red"><span class="pill">Warning</span></td>
+              <td class="band r">Q3 EPS −2¢ or worse</td>
+              <td class="band a">−1¢ or better</td>
+              <td class="band g">not possible</td>
+              <td class="gloss">The Q1 and Q2 losses stay in the four-quarter window until the Q1 2027 results, so the best Q3 can do is amber.</td>
+            </tr>
+            <tr>
+              <td class="kpi-name">Safety cushion</td>
+              <td class="now rag-red"><span class="pill">Warning</span></td>
+              <td class="band r">BVPS $6.98 or less</td>
+              <td class="band a">$6.99 – $7.34</td>
+              <td class="band g">$7.35 or more</td>
+              <td class="gloss">Compared with $7.35 a year earlier. Q2 was $6.90, so even amber needs a small rise.</td>
+            </tr>
+            <tr>
+              <td class="kpi-name">Borrowing</td>
+              <td class="now rag-red"><span class="pill">Warning</span></td>
+              <td class="band r">above 5.10×</td>
+              <td class="band a">4.50× – 5.10×</td>
+              <td class="band g">4.49× or less</td>
+              <td class="gloss">The year-earlier figure moves from 3.36× to 4.08×. So an unchanged 4.84× turns this amber without anything improving.</td>
+            </tr>
+            <tr>
+              <td class="kpi-name">Payout</td>
+              <td class="now rag-green"><span class="pill">OK</span></td>
+              <td class="band r">any cut</td>
+              <td class="band a">—</td>
+              <td class="band g">held at $0.18</td>
+              <td class="gloss">The Q3 dividend was declared at $0.18 on 10 September, so this should stay green for Q3.</td>
+            </tr>
+            <tr>
+              <td class="kpi-name">Restructuring</td>
+              <td class="now rag-green"><span class="pill">OK</span></td>
+              <td class="band r">any 8-K item 2.05</td>
+              <td class="band a">—</td>
+              <td class="band g">none filed</td>
+              <td class="gloss">Can change on any day, not only with results.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="scenarios">
+        <article class="rag-card rag-amber">
+          <span class="q">If things carry on</span>
+          <span class="fig">Under pressure</span>
+          <span class="what">Another 3¢ loss, book value slips to about $6.69, borrowing flat. Borrowing turns amber, but only because of the comparison point.</span>
+        </article>
+        <article class="rag-card rag-amber">
+          <span class="q">If Q3 goes well</span>
+          <span class="fig">Under pressure</span>
+          <span class="what">Break-even, book value $6.99, borrowing 4.48×. Two cards stay amber, which is enough to hold this band.</span>
+        </article>
+        <article class="rag-card rag-green">
+          <span class="q">If Q3 goes very well</span>
+          <span class="fig">Steady</span>
+          <span class="what">Needs all three together: EPS of −1¢ or better, book value back to $7.35, borrowing at 4.49× or below. Book value has not risen that fast in any quarter for two years.</span>
+        </article>
+        <article class="rag-card rag-red">
+          <span class="q">If things go badly</span>
+          <span class="fig">In trouble</span>
+          <span class="what">Only a dividend cut or a restructuring notice does this. A heavy loss on its own, even with every trend red, stays at Under pressure.</span>
+        </article>
+      </div>
     </div>
 
     <div class="for-against">
